@@ -36,7 +36,6 @@ bot.once("ready", () => {
   // To clear all guild commands, uncomment this line,
   // This is useful when moving from guild commands to global commands
   // It must only be executed once
-  //
   //  await bot.clearApplicationCommands(
   //    ...bot.guilds.cache.map((g) => g.id)
   //  );

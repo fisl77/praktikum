@@ -94,6 +94,3 @@ For the full command list please view the [Docker Documentation](https://docs.do
 - [Check examples](https://github.com/discordx-ts/discordx/tree/main/packages/discordx/examples)
 - Ask in the community [Discord server](https://discordx.js.org/discord)
 
-# 💖 Thank you
-
-You can support [discordx](https://www.npmjs.com/package/discordx) by giving it a [GitHub](https://github.com/discordx-ts/discordx) star.
