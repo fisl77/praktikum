@@ -10,7 +10,7 @@ import { Level } from './Level/level.entity';
 import { Questionnaire } from './Questionnaire/questionnaire.entity';
 import { Answer } from './Answer/answer.entity';
 import { Voting } from './Voting/voting.entity';
-import { AuthModule } from './auth/module/auth.module'; // <== Import hinzugefügt
+import { AuthModule } from './auth/module/auth.module';
 
 @Module({
   imports: [
