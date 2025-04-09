@@ -16,7 +16,7 @@ import { AuthModule } from './auth/module/auth.module'; // <== Import hinzugefü
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: './database/database',
+      database: './database-tmp/database',
       entities: [
         Event,
         EventEnemy,
