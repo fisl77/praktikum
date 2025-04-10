@@ -5,10 +5,9 @@ import { LoginResponseDto } from '../dto/LoginResponseDto';
 
 @Injectable()
 export class AdminAuthService {
-  // Hardcoded Admin-Creds – optional aus env
   private readonly adminUser = {
     username: 'admin',
-    password: 'admin123', // Oder aus ENV!
+    password: 'admin123',
   };
 
   constructor(private readonly jwtService: JwtService) {}

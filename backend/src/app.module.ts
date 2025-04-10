@@ -43,7 +43,7 @@ import { AuthModule } from './auth/module/auth.module';
       Answer,
       Voting,
     ]),
-    AuthModule, // <== Modul einbinden
+    AuthModule,
   ],
 })
 export class AppModule {}
