@@ -13,6 +13,8 @@ import { Voting } from './Voting/voting.entity';
 import { AuthModule } from './auth/module/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AdminController } from './admin/admin.controller';
+import { AdminService } from './admin/admin.service';
 
 @Module({
   imports: [
@@ -47,7 +49,7 @@ import { AppService } from './app.service';
     ]),
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AdminController],
+  providers: [AppService, AdminService],
 })
 export class AppModule {}
