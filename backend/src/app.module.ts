@@ -11,6 +11,8 @@ import { Questionnaire } from './Questionnaire/questionnaire.entity';
 import { Answer } from './Answer/answer.entity';
 import { Voting } from './Voting/voting.entity';
 import { AuthModule } from './auth/module/auth.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -45,5 +47,7 @@ import { AuthModule } from './auth/module/auth.module';
     ]),
     AuthModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
