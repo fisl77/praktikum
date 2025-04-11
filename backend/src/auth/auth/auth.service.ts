@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { LoginRequestDto } from '../dto/LoginRequestDto';
 import { LoginResponseDto } from '../dto/LoginResponseDto';
+import { Request } from 'express';
 
 @Injectable()
 export class AdminAuthService {
@@ -10,9 +10,7 @@ export class AdminAuthService {
     password: 'admin123',
   };
 
-  constructor(private readonly jwtService: JwtService) {}
-
-  async login(dto: LoginRequestDto): Promise<LoginResponseDto> {
+  async login(dto: LoginRequestDto, req: Request): Promise<LoginResponseDto> {
     const { username, password } = dto;
 
     if (
@@ -21,11 +19,24 @@ export class AdminAuthService {
     ) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    req.session.user = {
+      username,
+      role: 'admin',
+    };
 
-    const payload = { username, role: 'admin' };
+    return new LoginResponseDto('Session started');
+  }
 
-    const token = await this.jwtService.signAsync(payload);
+  async logout(req: Request): Promise<{ message: string }> {
+    return new Promise((resolve, reject) => {
+      req.session.destroy((err) => {
+        if (err) reject(err);
+        else resolve({ message: 'Logged out successfully' });
+      });
+    });
+  }
 
-    return new LoginResponseDto(token);
+  isAuthenticated(req: Request): boolean {
+    return !!req.session.user;
   }
 }

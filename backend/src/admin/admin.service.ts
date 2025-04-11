@@ -45,7 +45,7 @@ export class AdminService {
     }
 
     // 2. Gültige Enemy-IDs aus DB laden
-    const enemyIDsFromDto = dto.enemies.map(e => e.enemyID);
+    const enemyIDsFromDto = dto.enemies.map((e) => e.enemyID);
     const validEnemies = await this.enemyRepo.findByIds(enemyIDsFromDto);
     if (validEnemies.length !== enemyIDsFromDto.length) {
       throw new BadRequestException('Ungültige EnemyID(s) übergeben');
@@ -71,7 +71,6 @@ export class AdminService {
       })),
     );
 
-
     await this.eventEnemyRepo.save(
       dto.enemies.map((e) => ({
         event: event,
@@ -79,7 +78,6 @@ export class AdminService {
         quantity: e.quantity,
       })),
     );
-
 
     return { ok: true };
   }
