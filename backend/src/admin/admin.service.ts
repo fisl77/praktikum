@@ -71,6 +71,7 @@ export class AdminService {
       question: dto.question,
       startTime: dto.startTime,
       endTime: dto.endTime,
+      isClosed: dto.isClosed ?? false,
     });
 
     await this.answerRepo.save(
@@ -123,11 +124,17 @@ export class AdminService {
       question: q.question,
       startTime: q.startTime,
       endTime: q.endTime,
+      isClosed: q.isClosed,
       answers: q.answers.map((a) => ({
         answerID: a.answerID,
         answer: a.answer,
         number: a.number,
       })),
     }));
+  }
+
+  async closeQuestionnaire(id: number) {
+    await this.questionnaireRepo.update(id, { isClosed: true });
+    return { ok: true, message: 'Umfrage geschlossen' };
   }
 }

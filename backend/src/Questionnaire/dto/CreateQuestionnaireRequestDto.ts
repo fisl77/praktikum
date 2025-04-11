@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateQuestionnaireRequestDto {
   @ApiProperty({ example: 'Was soll passieren?' })
@@ -9,6 +10,12 @@ export class CreateQuestionnaireRequestDto {
 
   @ApiProperty({ example: '2025-04-10T12:00:00Z' })
   endTime: Date;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ example: false, required: false })
+  isClosed?: boolean;
+
 
   @ApiProperty({
     example: [

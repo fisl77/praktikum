@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Get,
+  Patch,
+  Param,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/module/jwt-auth.guard';
 import { AdminGuard } from '../auth/module/admin.guard';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
@@ -36,5 +44,10 @@ export class AdminController {
   @Get('questionnaires')
   getQuestionnairesDetailed() {
     return this.adminService.getAllQuestionnairesDetailed();
+  }
+
+  @Patch('questionnaire/:id/close')
+  closeQuestionnaire(@Param('id') id: number) {
+    return this.adminService.closeQuestionnaire(id);
   }
 }

@@ -21,4 +21,8 @@ export class Questionnaire {
 
   @OneToMany(() => Answer, (answer: Answer) => answer.questionnaire)
   answers: Answer[];
+
+  @Column({ default: false })
+  isClosed: boolean;
+
 }
