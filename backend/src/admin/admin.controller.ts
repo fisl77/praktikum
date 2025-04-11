@@ -5,7 +5,7 @@ import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdminService} from './admin.service';
+import { AdminService } from './admin.service';
 
 @Controller('admin')
 @ApiTags('Admin')
@@ -15,20 +15,17 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
   @Post('event')
   createEvent(@Body() dto: CreateEventRequestDto) {
-    // TODO: call EventService
-    return { ok: true, message: 'Event erstellt' };
+    return this.adminService.createEvent(dto);
   }
 
   @Post('enemy')
   createEnemy(@Body() dto: CreateEnemyRequestDto) {
-    // TODO: call EnemyService
-    return { ok: true, message: 'Enemy erstellt' };
+    return this.adminService.createEnemy(dto);
   }
 
   @Post('questionnaire')
   createQuestionnaire(@Body() dto: CreateQuestionnaireRequestDto) {
-    // TODO: call QuestionnaireService
-    return { ok: true, message: 'Umfrage erstellt' };
+    return this.adminService.createQuestionnaire(dto);
   }
 
   @Get('events')
@@ -40,5 +37,4 @@ export class AdminController {
   getQuestionnairesDetailed() {
     return this.adminService.getAllQuestionnairesDetailed();
   }
-
 }
