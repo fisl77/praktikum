@@ -13,9 +13,9 @@ export class Event {
   @Column()
   endTime: Date;
 
-  @OneToMany(() => EventLevel, (eventLevel: EventLevel) => eventLevel.event)
+  @OneToMany(() => EventLevel, (el) => el.event, { cascade: true })
   eventLevels: EventLevel[];
 
-  @OneToMany(() => EventEnemy, (eventEnemy: EventEnemy) => eventEnemy.event)
+  @OneToMany(() => EventEnemy, (ee) => ee.event, { cascade: true })
   eventEnemies: EventEnemy[];
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
@@ -38,26 +38,48 @@ export class AdminService {
   ) {}
 
   async createEvent(dto: CreateEventRequestDto) {
+    // 1. Gültige Level-IDs aus DB laden
+    const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
+    if (validLevels.length !== dto.levelIDs.length) {
+      throw new BadRequestException('Ungültige LevelID(s) übergeben');
+    }
+
+    // 2. Gültige Enemy-IDs aus DB laden
+    const enemyIDsFromDto = dto.enemies.map(e => e.enemyID);
+    const validEnemies = await this.enemyRepo.findByIds(enemyIDsFromDto);
+    if (validEnemies.length !== enemyIDsFromDto.length) {
+      throw new BadRequestException('Ungültige EnemyID(s) übergeben');
+    }
+    // 3. Event speichern
     const rawEvent = await this.eventRepo.save({
       startTime: dto.startTime,
       endTime: dto.endTime,
     });
 
-    const event = rawEvent as Event;
+    const event = await this.eventRepo.findOneOrFail({
+      where: { eventID: rawEvent.eventID },
+    });
 
-    const all = await this.questionnaireRepo.find();
-    console.log(all);
+    console.log('Event ID:', event.eventID);
+    console.log('Level IDs:', dto.levelIDs);
+
+    // 4. Verknüpfungen speichern
     await this.eventLevelRepo.save(
-      dto.levelIDs.map((levelID) => ({ eventID: event.eventID, levelID })),
+      dto.levelIDs.map((levelID) => ({
+        event: event,
+        level: { levelID },
+      })),
     );
+
 
     await this.eventEnemyRepo.save(
       dto.enemies.map((e) => ({
-        eventID: event.eventID,
-        enemyID: e.enemyID,
+        event: event,
+        enemy: { enemyID: e.enemyID },
         quantity: e.quantity,
       })),
     );
+
 
     return { ok: true };
   }

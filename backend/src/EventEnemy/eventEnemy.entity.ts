@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Event } from '../Event/event.entity';
 import { Enemy } from '../Enemy/enemy.entity';
 
@@ -13,9 +13,12 @@ export class EventEnemy {
   @Column()
   quantity: number;
 
-  @ManyToOne(() => Event, (event: Event) => event.eventEnemies)
+  @ManyToOne(() => Event, (event) => event.eventEnemies, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'eventID' })
   event: Event;
 
-  @ManyToOne(() => Enemy, (enemy: Enemy) => enemy.eventEnemies)
+  @ManyToOne(() => Enemy, (enemy) => enemy.eventEnemies)
+  @JoinColumn({ name: 'enemyID' })
   enemy: Enemy;
+
 }

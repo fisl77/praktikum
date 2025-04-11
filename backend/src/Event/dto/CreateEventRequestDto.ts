@@ -10,7 +10,7 @@ export class CreateEventRequestDto {
 
   @ApiProperty({
     type: [Number],
-    example: [1, 2],
+    example: [1],
     description: 'Liste von Level-IDs, die diesem Event zugeordnet sind',
   })
   levelIDs: number[];
