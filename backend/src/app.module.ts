@@ -19,11 +19,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
-import { BlacklistService } from './auth/module/blacklist.service';
 
 @Module({
   imports: [
-    // ✅ GLOBALER REDIS-CACHE
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: () => ({
@@ -67,6 +65,6 @@ import { BlacklistService } from './auth/module/blacklist.service';
     AuthModule,
   ],
   controllers: [AppController, AdminController],
-  providers: [AppService, AdminService, BlacklistService],
+  providers: [AppService, AdminService],
 })
 export class AppModule {}

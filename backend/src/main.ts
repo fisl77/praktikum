@@ -15,7 +15,7 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 1000 * 60 * 60, // 1 Stunde
+        maxAge: 1000 * 60 * 60, // läuft nach einer Stunde ab
       },
     }),
   );
