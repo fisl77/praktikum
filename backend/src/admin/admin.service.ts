@@ -11,6 +11,7 @@ import { Answer } from '../Answer/answer.entity';
 import { Event } from '../Event/event.entity';
 import { Enemy } from '../Enemy/enemy.entity';
 import { Level } from '../Level/level.entity';
+import { Voting } from '../Voting/voting.entity';
 
 @Injectable()
 export class AdminService {
@@ -35,6 +36,9 @@ export class AdminService {
 
     @InjectRepository(Level)
     private readonly levelRepo: Repository<Level>,
+
+    @InjectRepository(Voting)
+    private readonly votingRepo: Repository<Voting>,
   ) {}
 
   async createEvent(dto: CreateEventRequestDto) {
@@ -142,22 +146,34 @@ export class AdminService {
       relations: ['answers'],
     });
 
-    return questionnaires.map((q) => {
-      const now = new Date();
-      const isLive = now >= q.startTime && now <= q.endTime;
+    return await Promise.all(
+      questionnaires.map(async (q) => {
+        const now = new Date();
+        const isLive = now >= q.startTime && now <= q.endTime;
 
-      return {
-        questionnaireID: q.questionnaireID,
-        question: q.question,
-        startTime: q.startTime,
-        endTime: q.endTime,
-        isLive,
-        answers: q.answers.map((a) => ({
-          answerID: a.answerID,
-          answer: a.answer,
-          number: a.number,
-        })),
-      };
-    });
+        const answers = await Promise.all(
+          q.answers.map(async (a) => {
+            const voteCount = await this.votingRepo.count({
+              where: { answer: { answerID: a.answerID } },
+            });
+
+            return {
+              answerID: a.answerID,
+              answer: a.answer,
+              votes: voteCount,
+            };
+          })
+        );
+
+        return {
+          questionnaireID: q.questionnaireID,
+          question: q.question,
+          startTime: q.startTime,
+          endTime: q.endTime,
+          isLive,
+          answers,
+        };
+      })
+    );
   }
 }

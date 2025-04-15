@@ -9,8 +9,11 @@ import {
 } from '@nestjs/common';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
-import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  CreateQuestionnaireRequestDto,
+  GetQuestionnaireResponseDto,
+} from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { SessionAuthGuard } from '../auth/auth/session-auth.guard';
 
@@ -45,6 +48,7 @@ export class AdminController {
 
   @UseGuards(SessionAuthGuard)
   @Get('questionnaires')
+  @ApiOkResponse({ type: [GetQuestionnaireResponseDto] })
   getQuestionnairesDetailed() {
     return this.adminService.getAllQuestionnairesDetailed();
   }

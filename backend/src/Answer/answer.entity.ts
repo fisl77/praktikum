@@ -3,7 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Voting } from '../Voting/voting.entity';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
@@ -16,8 +17,6 @@ export class Answer {
   @Column()
   answer: string;
 
-  @Column()
-  number: number;
 
   @OneToMany(() => Voting, (voting: Voting) => voting.answer)
   votings: Voting[];
