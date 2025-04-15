@@ -3,7 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  ManyToOne,
+  ManyToOne, JoinColumn,
 } from 'typeorm';
 import { Voting } from '../Voting/voting.entity';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
@@ -23,5 +23,6 @@ export class Answer {
   votings: Voting[];
 
   @ManyToOne(() => Questionnaire, (q) => q.answers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'questionnaireID' })
   questionnaire: Questionnaire;
 }

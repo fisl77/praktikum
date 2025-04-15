@@ -87,16 +87,20 @@ export class AdminService {
   }
 
   async createQuestionnaire(dto: CreateQuestionnaireRequestDto) {
-    const q = await this.questionnaireRepo.save({
+    const rawQ = await this.questionnaireRepo.save({
       question: dto.question,
       startTime: dto.startTime,
       endTime: dto.endTime,
       isClosed: dto.isClosed ?? false,
     });
 
+    const q = await this.questionnaireRepo.findOneOrFail({
+      where: { questionnaireID: rawQ.questionnaireID },
+    })
+
     await this.answerRepo.save(
       dto.answers.map((a) => ({
-        questionnaireID: q.questionnaireID,
+        questionnaire: q,
         answer: a.answer,
         number: a.number,
       })),

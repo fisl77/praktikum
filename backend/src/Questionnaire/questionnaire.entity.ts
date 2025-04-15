@@ -19,7 +19,7 @@ export class Questionnaire {
   @OneToMany(() => Voting, (voting: Voting) => voting.questionnaire)
   votings: Voting[];
 
-  @OneToMany(() => Answer, (answer: Answer) => answer.questionnaire)
+  @OneToMany(() => Answer, (a) => a.questionnaire)
   answers: Answer[];
 
   @Column({ default: false })
