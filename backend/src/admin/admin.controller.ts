@@ -48,10 +48,4 @@ export class AdminController {
   getQuestionnairesDetailed() {
     return this.adminService.getAllQuestionnairesDetailed();
   }
-
-  @UseGuards(SessionAuthGuard)
-  @Patch('questionnaire/:id/close')
-  closeQuestionnaire(@Param('id') id: number) {
-    return this.adminService.closeQuestionnaire(id);
-  }
 }

@@ -11,16 +11,11 @@ export class CreateQuestionnaireRequestDto {
   @ApiProperty({ example: '2025-04-10T12:00:00Z' })
   endTime: Date;
 
-  @IsBoolean()
-  @IsOptional()
-  @ApiProperty({ example: false, required: false })
-  isClosed?: boolean;
-
 
   @ApiProperty({
     example: [
-      { answer: 'Option A', number: 1 },
-      { answer: 'Option B', number: 2 },
+      { answer: 'Option A', number: 0 },
+      { answer: 'Option B', number: 0 },
     ],
   })
   answers: { answer: string; number: number }[];

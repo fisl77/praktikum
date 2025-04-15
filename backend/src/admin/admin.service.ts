@@ -91,7 +91,6 @@ export class AdminService {
       question: dto.question,
       startTime: dto.startTime,
       endTime: dto.endTime,
-      isClosed: dto.isClosed ?? false,
     });
 
     const q = await this.questionnaireRepo.findOneOrFail({
@@ -143,22 +142,22 @@ export class AdminService {
       relations: ['answers'],
     });
 
-    return questionnaires.map((q) => ({
-      questionnaireID: q.questionnaireID,
-      question: q.question,
-      startTime: q.startTime,
-      endTime: q.endTime,
-      isClosed: q.isClosed,
-      answers: q.answers.map((a) => ({
-        answerID: a.answerID,
-        answer: a.answer,
-        number: a.number,
-      })),
-    }));
-  }
+    return questionnaires.map((q) => {
+      const now = new Date();
+      const isLive = now >= q.startTime && now <= q.endTime;
 
-  async closeQuestionnaire(id: number) {
-    await this.questionnaireRepo.update(id, { isClosed: true });
-    return { ok: true, message: 'Umfrage geschlossen' };
+      return {
+        questionnaireID: q.questionnaireID,
+        question: q.question,
+        startTime: q.startTime,
+        endTime: q.endTime,
+        isLive,
+        answers: q.answers.map((a) => ({
+          answerID: a.answerID,
+          answer: a.answer,
+          number: a.number,
+        })),
+      };
+    });
   }
 }
