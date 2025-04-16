@@ -12,6 +12,8 @@ import { Event } from '../Event/event.entity';
 import { Enemy } from '../Enemy/enemy.entity';
 import { Level } from '../Level/level.entity';
 import { Voting } from '../Voting/voting.entity';
+import { EnemyName } from '../EnemyName/enemyName.entity';
+import { EnemyType } from '../EnemyType/enemyType.entity';
 
 @Injectable()
 export class AdminService {
@@ -39,6 +41,13 @@ export class AdminService {
 
     @InjectRepository(Voting)
     private readonly votingRepo: Repository<Voting>,
+
+    @InjectRepository(EnemyName)
+    private readonly enemyNameRepository: Repository<EnemyName>,
+
+    @InjectRepository(EnemyType)
+    private readonly enemyTypeRepository : Repository<EnemyType>
+
   ) {}
 
   async createEvent(dto: CreateEventRequestDto) {
@@ -64,9 +73,6 @@ export class AdminService {
       where: { eventID: rawEvent.eventID },
     });
 
-    console.log('Event ID:', event.eventID);
-    console.log('Level IDs:', dto.levelIDs);
-
     // 4. Verknüpfungen speichern
     await this.eventLevelRepo.save(
       dto.levelIDs.map((levelID) => ({
@@ -86,9 +92,30 @@ export class AdminService {
     return { ok: true };
   }
 
-  createEnemy(dto: CreateEnemyRequestDto) {
-    return { ok: true, message: 'Enemy gespeichert', dto };
+  async createEnemy(dto: CreateEnemyRequestDto) {
+    const name = await this.enemyNameRepository.findOneBy({ nameID: dto.nameID });
+    if (!name) throw new Error(`EnemyName mit ID ${dto.nameID} nicht gefunden`);
+
+    const type = await this.enemyTypeRepository.findOneBy({ typeID : dto.typeID });
+    if (!type) throw new Error(`EnemyType mit ID ${dto.typeID} nicht gefunden`);
+
+    const newEnemy = this.enemyRepo.create({
+      name,
+      type,
+      new_scale: dto.new_scale,
+      max_count: dto.max_count,
+      loners: dto.loners,
+    });
+
+    const saved = await this.enemyRepo.save(newEnemy);
+
+    return {
+      ok: true,
+      message: 'Enemy gespeichert',
+      enemyID: saved.enemyID,
+    };
   }
+
 
   async createQuestionnaire(dto: CreateQuestionnaireRequestDto) {
     const rawQ = await this.questionnaireRepo.save({
@@ -99,7 +126,7 @@ export class AdminService {
 
     const q = await this.questionnaireRepo.findOneOrFail({
       where: { questionnaireID: rawQ.questionnaireID },
-    })
+    });
 
     await this.answerRepo.save(
       dto.answers.map((a) => ({
@@ -175,5 +202,19 @@ export class AdminService {
         };
       })
     );
+  }
+
+  async getEnemy() {
+    const enemies = await this.enemyRepo.find({
+      relations: ['name', 'type'],
+    });
+
+    return enemies.map((enemy) => ({
+      path: `res://enemies/${enemy.name.name}.tscn`, // ⬅️ passt den Pfad an euren Asset-Namen an
+      max_count: enemy.max_count,
+      selected_profile: enemy.type.type, // z. B. "strong_enemy", "default"
+      new_scale: enemy.new_scale,
+      loners: enemy.loners,
+    }));
   }
 }

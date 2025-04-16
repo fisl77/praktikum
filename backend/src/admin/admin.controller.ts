@@ -34,6 +34,13 @@ export class AdminController {
     return this.adminService.createEnemy(dto);
   }
 
+ @UseGuards(SessionAuthGuard)
+ @Get('enemy')
+ getEnemy() {
+    return this.adminService.getEnemy();
+ }
+
+
   @UseGuards(SessionAuthGuard)
   @Post('questionnaire')
   createQuestionnaire(@Body() dto: CreateQuestionnaireRequestDto) {

@@ -11,4 +11,7 @@ export class EnemyName {
 
   @OneToMany(() => Enemy, (enemy: Enemy) => enemy.name)
   enemies: Enemy[];
+
+  @Column()
+  path: string;
 }

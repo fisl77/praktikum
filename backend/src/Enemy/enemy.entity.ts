@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany, Column } from 'typeorm';
 import { EnemyName } from '../EnemyName/enemyName.entity';
 import { EnemyType } from '../EnemyType/enemyType.entity';
 import { EventEnemy } from '../EventEnemy/eventEnemy.entity';
@@ -16,4 +16,13 @@ export class Enemy {
 
   @OneToMany(() => EventEnemy, (ee: EventEnemy) => ee.enemy)
   eventEnemies: EventEnemy[];
+
+ @Column({ type: 'float' })
+  new_scale: number;
+
+ @Column()
+  max_count: number;
+
+ @Column()
+  loners: boolean;
 }
