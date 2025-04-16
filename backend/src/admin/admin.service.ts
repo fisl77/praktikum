@@ -46,8 +46,7 @@ export class AdminService {
     private readonly enemyNameRepository: Repository<EnemyName>,
 
     @InjectRepository(EnemyType)
-    private readonly enemyTypeRepository : Repository<EnemyType>
-
+    private readonly enemyTypeRepository: Repository<EnemyType>,
   ) {}
 
   async createEvent(dto: CreateEventRequestDto) {
@@ -98,7 +97,9 @@ export class AdminService {
     });
     if (!name) throw new Error(`EnemyName mit ID ${dto.nameID} nicht gefunden`);
 
-    const type = await this.enemyTypeRepository.findOneBy({ typeID : dto.typeID });
+    const type = await this.enemyTypeRepository.findOneBy({
+      typeID: dto.typeID,
+    });
     if (!type) throw new Error(`EnemyType mit ID ${dto.typeID} nicht gefunden`);
 
     const newEnemy = this.enemyRepo.create({
@@ -117,7 +118,6 @@ export class AdminService {
       enemyID: saved.enemyID,
     };
   }
-
 
   async createQuestionnaire(dto: CreateQuestionnaireRequestDto) {
     const rawQ = await this.questionnaireRepo.save({
@@ -191,7 +191,7 @@ export class AdminService {
               answer: a.answer,
               votes: voteCount,
             };
-          })
+          }),
         );
 
         return {
@@ -212,9 +212,10 @@ export class AdminService {
     });
 
     return enemies.map((enemy) => ({
-      path: enemy.name.path, // ⬅️ passt den Pfad an euren Asset-Namen an
+      name: enemy.name.name,
+      path: enemy.name.path,
+      type: enemy.type.type,
       max_count: enemy.max_count,
-      selected_profile: enemy.type.type,
       new_scale: enemy.new_scale,
       loners: enemy.loners,
     }));
@@ -238,5 +239,4 @@ export class AdminService {
       loners: enemy.loners,
     };
   }
-
 }
