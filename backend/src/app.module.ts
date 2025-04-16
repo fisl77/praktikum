@@ -28,7 +28,7 @@ import { AdminService } from './admin/admin.service';
         store: redisStore,
         host: 'localhost',
         port: 6379,
-        ttl: 0, // kein Ablauf standardmäßig
+        ttl: 0,
       }),
     }),
 
