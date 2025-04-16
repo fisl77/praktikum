@@ -93,7 +93,9 @@ export class AdminService {
   }
 
   async createEnemy(dto: CreateEnemyRequestDto) {
-    const name = await this.enemyNameRepository.findOneBy({ nameID: dto.nameID });
+    const name = await this.enemyNameRepository.findOneBy({
+      nameID: dto.nameID,
+    });
     if (!name) throw new Error(`EnemyName mit ID ${dto.nameID} nicht gefunden`);
 
     const type = await this.enemyTypeRepository.findOneBy({ typeID : dto.typeID });
@@ -204,17 +206,37 @@ export class AdminService {
     );
   }
 
-  async getEnemy() {
+  async getEnemies() {
     const enemies = await this.enemyRepo.find({
       relations: ['name', 'type'],
     });
 
     return enemies.map((enemy) => ({
-      path: `res://enemies/${enemy.name.name}.tscn`, // ⬅️ passt den Pfad an euren Asset-Namen an
+      path: enemy.name.path, // ⬅️ passt den Pfad an euren Asset-Namen an
       max_count: enemy.max_count,
-      selected_profile: enemy.type.type, // z. B. "strong_enemy", "default"
+      selected_profile: enemy.type.type,
       new_scale: enemy.new_scale,
       loners: enemy.loners,
     }));
   }
+
+  async getEnemyById(id: number) {
+    const enemy = await this.enemyRepo.findOne({
+      where: { enemyID: id },
+      relations: ['name', 'type'],
+    });
+
+    if (!enemy) {
+      throw new BadRequestException(`Enemy mit ID ${id} nicht gefunden`);
+    }
+
+    return {
+      path: enemy.name.path,
+      max_count: enemy.max_count,
+      selected_profile: enemy.type.type,
+      new_scale: enemy.new_scale,
+      loners: enemy.loners,
+    };
+  }
+
 }

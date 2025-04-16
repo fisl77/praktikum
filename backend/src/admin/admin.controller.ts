@@ -35,9 +35,15 @@ export class AdminController {
   }
 
  @UseGuards(SessionAuthGuard)
- @Get('enemy')
- getEnemy() {
-    return this.adminService.getEnemy();
+ @Get('enemies')
+ getEnemies() {
+    return this.adminService.getEnemies();
+ }
+
+ @UseGuards(SessionAuthGuard)
+ @Get('enemy/:id')
+ getEnemybyId(@Param('id') id: number) {
+    return this.adminService.getEnemyById(id)
  }
 
 
