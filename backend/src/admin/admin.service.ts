@@ -202,7 +202,7 @@ export class AdminService {
           isLive,
           answers,
         };
-      })
+      }),
     );
   }
 

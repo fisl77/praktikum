@@ -5,12 +5,13 @@ import {
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AdminAuthService } from '../auth/auth.service';
 import { LoginRequestDto } from '../dto/LoginRequestDto';
 import { LoginResponseDto } from '../dto/LoginResponseDto';
 import { Request } from 'express';
 
+@ApiTags('Anmelden/Abmelden')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AdminAuthService) {}

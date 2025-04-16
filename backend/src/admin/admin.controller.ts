@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Get,
-  Patch,
-  Param,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
 import {
@@ -34,18 +26,17 @@ export class AdminController {
     return this.adminService.createEnemy(dto);
   }
 
- @UseGuards(SessionAuthGuard)
- @Get('enemies')
- getEnemies() {
+  @UseGuards(SessionAuthGuard)
+  @Get('enemies')
+  getEnemies() {
     return this.adminService.getEnemies();
- }
+  }
 
- @UseGuards(SessionAuthGuard)
- @Get('enemy/:id')
- getEnemybyId(@Param('id') id: number) {
-    return this.adminService.getEnemyById(id)
- }
-
+  @UseGuards(SessionAuthGuard)
+  @Get('enemy/:id')
+  getEnemybyId(@Param('id') id: number) {
+    return this.adminService.getEnemyById(id);
+  }
 
   @UseGuards(SessionAuthGuard)
   @Post('questionnaire')

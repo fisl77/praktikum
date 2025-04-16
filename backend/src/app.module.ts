@@ -20,6 +20,8 @@ import { AppService } from './app.service';
 import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
 
+import { PublicModule } from './public/public.module';
+
 @Module({
   imports: [
     CacheModule.registerAsync({
@@ -49,6 +51,7 @@ import { AdminService } from './admin/admin.service';
       ],
       synchronize: true, // DEV only
     }),
+
     TypeOrmModule.forFeature([
       Event,
       EventEnemy,
@@ -63,6 +66,7 @@ import { AdminService } from './admin/admin.service';
     ]),
 
     AuthModule,
+    PublicModule,
   ],
   controllers: [AppController, AdminController],
   providers: [AppService, AdminService],
