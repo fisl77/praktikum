@@ -10,12 +10,12 @@ import { ApiTags } from '@nestjs/swagger';
 
 const API_KEY = '37392788-5fa3-4aa3-aea9-608d7d1835e1';
 
-@ApiTags('Godot')
+@ApiTags('Game-Client')
 @Controller('api')
 export class PublicController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get('godot/enemy/:id')
+  @Get('game-client/enemy/:id')
   async getEnemyById(
     @Headers('x-api-key') apiKey: string,
     @Param('id') id: number,
@@ -27,7 +27,7 @@ export class PublicController {
     return await this.adminService.getEnemyById(id);
   }
 
-  @Get('godot/enemies')
+  @Get('game-client/enemies')
   async getEnemies(@Headers('x-api-key') apiKey: string) {
     if (apiKey !== API_KEY) {
       throw new UnauthorizedException('Ungültiger API-Key');
@@ -35,7 +35,7 @@ export class PublicController {
 
     return await this.adminService.getEnemies(); // ✅ ALLE Gegner
   }
-  @Get('godot/active-enemies')
+  @Get('game-client/active-enemies')
   getActiveEnemies(@Headers('x-api-key') apiKey: string) {
     if (apiKey !== API_KEY) {
       throw new UnauthorizedException('Ungültiger API-Key');
