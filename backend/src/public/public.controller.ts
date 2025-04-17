@@ -35,4 +35,12 @@ export class PublicController {
 
     return await this.adminService.getEnemies(); // ✅ ALLE Gegner
   }
+  @Get('godot/active-enemies')
+  getActiveEnemies(@Headers('x-api-key') apiKey: string) {
+    if (apiKey !== API_KEY) {
+      throw new UnauthorizedException('Ungültiger API-Key');
+    }
+
+    return this.adminService.getActiveEnemies(); // Muss ein JSON sein!
+  }
 }

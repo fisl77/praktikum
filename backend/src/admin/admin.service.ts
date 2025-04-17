@@ -3,7 +3,7 @@ import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { EventLevel } from '../EventLevel/eventLevel.entity';
 import { EventEnemy } from '../EventEnemy/eventEnemy.entity';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
@@ -14,6 +14,7 @@ import { Level } from '../Level/level.entity';
 import { Voting } from '../Voting/voting.entity';
 import { EnemyName } from '../EnemyName/enemyName.entity';
 import { EnemyType } from '../EnemyType/enemyType.entity';
+import { UpdateEventRequestDto } from '../Event/dto/UpdateEventRequestDto';
 
 @Injectable()
 export class AdminService {
@@ -170,6 +171,47 @@ export class AdminService {
     }));
   }
 
+  async updateEvent(dto: UpdateEventRequestDto) {
+    const event = await this.eventRepo.findOne({
+      where: { eventID: dto.eventID },
+    });
+
+    if (!event) {
+      throw new BadRequestException(
+        `Event mit ID ${dto.eventID} nicht gefunden`,
+      );
+    }
+
+    event.startTime = dto.startTime;
+    event.endTime = dto.endTime;
+    await this.eventRepo.save(event);
+
+    // Alte Beziehungen löschen
+    await this.eventLevelRepo.delete({ event: { eventID: dto.eventID } });
+    await this.eventEnemyRepo.delete({ event: { eventID: dto.eventID } });
+
+    // Neue Beziehungen einfügen
+    await this.eventLevelRepo.save(
+      dto.levelIDs.map((levelID) => ({
+        event: { eventID: dto.eventID },
+        level: { levelID },
+      })),
+    );
+
+    await this.eventEnemyRepo.save(
+      dto.enemies.map((e) => ({
+        event: { eventID: dto.eventID },
+        enemy: { enemyID: e.enemyID },
+        quantity: e.quantity,
+      })),
+    );
+
+    return {
+      ok: true,
+      message: `Event ${dto.eventID} erfolgreich aktualisiert.`,
+    };
+  }
+
   async getAllQuestionnairesDetailed() {
     const questionnaires = await this.questionnaireRepo.find({
       relations: ['answers'],
@@ -238,5 +280,32 @@ export class AdminService {
       new_scale: enemy.new_scale,
       loners: enemy.loners,
     };
+  }
+  async getActiveEnemies() {
+    const now = new Date();
+
+    // Suche aktives Event (läuft gerade)
+    const activeEvent = await this.eventRepo.findOne({
+      where: {
+        startTime: LessThanOrEqual(now),
+        endTime: MoreThanOrEqual(now),
+      },
+      relations: [
+        'eventEnemies',
+        'eventEnemies.enemy',
+        'eventEnemies.enemy.name',
+        'eventEnemies.enemy.type',
+      ],
+    });
+
+    if (!activeEvent) return []; // Keine Gegner wenn kein aktives Event
+    return activeEvent.eventEnemies.map((ee) => ({
+      name: ee.enemy.name.name,
+      path: ee.enemy.name.path,
+      selected_profile: ee.enemy.type.type, // ✅ richtiges Feld verwenden
+      max_count: ee.enemy.max_count,
+      new_scale: ee.enemy.new_scale,
+      loners: ee.enemy.loners,
+    }));
   }
 }

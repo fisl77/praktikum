@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
+import {Controller, Post, Body, UseGuards, Get, Param, Patch} from '@nestjs/common';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
 import {
@@ -8,6 +8,7 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { SessionAuthGuard } from '../auth/auth/session-auth.guard';
+import { UpdateEventRequestDto } from '../Event/dto/UpdateEventRequestDto';
 
 @Controller('admin')
 @ApiTags('Admin')
@@ -48,6 +49,12 @@ export class AdminController {
   @Get('events')
   getEventsDetailed() {
     return this.adminService.getAllEventsDetailed();
+  }
+
+  @Patch('event')
+  @UseGuards(SessionAuthGuard)
+  updateEvent(@Body() dto: UpdateEventRequestDto) {
+    return this.adminService.updateEvent(dto);
   }
 
   @UseGuards(SessionAuthGuard)
