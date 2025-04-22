@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { PublicController } from './public.controller';
 import { AdminService } from '../admin/admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +13,7 @@ import { Level } from '../Level/level.entity';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
 import { Voting } from '../Voting/voting.entity';
+import { ApiKeyMiddleware } from './api-key.middleware';
 
 @Module({
   imports: [
@@ -32,4 +33,8 @@ import { Voting } from '../Voting/voting.entity';
   controllers: [PublicController],
   providers: [AdminService],
 })
-export class PublicModule {}
+export class PublicModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ApiKeyMiddleware).forRoutes(PublicController); // optional: { path: 'api/game-client', method: RequestMethod.GET }
+  }
+}
