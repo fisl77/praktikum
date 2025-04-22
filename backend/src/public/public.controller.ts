@@ -1,4 +1,3 @@
-// public.controller.ts
 import { Controller, Get, Param } from '@nestjs/common';
 import { AdminService } from '../admin/admin.service';
 import { ApiTags } from '@nestjs/swagger';
