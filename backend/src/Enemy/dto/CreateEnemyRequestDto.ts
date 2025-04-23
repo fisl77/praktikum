@@ -17,8 +17,4 @@ export class CreateEnemyRequestDto {
   @ApiProperty({ example: 3, description: 'How many Enemies are spawning' })
   @IsInt()
   max_count: number;
-
-  @ApiProperty({ example: true, description: 'if true, only one enemy of this type exists' })
-  @IsBoolean()
-  loners: boolean;
 }
