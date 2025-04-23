@@ -3,7 +3,7 @@ import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {LessThanOrEqual, MoreThanOrEqual, Not, Repository} from 'typeorm';
 import { EventLevel } from '../EventLevel/eventLevel.entity';
 import { EventEnemy } from '../EventEnemy/eventEnemy.entity';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
@@ -51,19 +51,33 @@ export class AdminService {
   ) {}
 
   async createEvent(dto: CreateEventRequestDto) {
-    // 1. Gültige Level-IDs aus DB laden
+    const overlappingEvent = await this.eventRepo.findOne({
+      where: [
+        {
+          startTime: LessThanOrEqual(dto.endTime),
+          endTime: MoreThanOrEqual(dto.startTime),
+        },
+      ],
+    });
+
+    if (overlappingEvent) {
+      throw new BadRequestException(
+        'Es existiert bereits ein aktives Event in diesem Zeitraum.',
+      );
+    }
+
+    // Gültige Level & Enemies wie gehabt prüfen
     const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
     if (validLevels.length !== dto.levelIDs.length) {
       throw new BadRequestException('Ungültige LevelID(s) übergeben');
     }
 
-    // 2. Gültige Enemy-IDs aus DB laden
     const enemyIDsFromDto = dto.enemies.map((e) => e.enemyID);
     const validEnemies = await this.enemyRepo.findByIds(enemyIDsFromDto);
     if (validEnemies.length !== enemyIDsFromDto.length) {
       throw new BadRequestException('Ungültige EnemyID(s) übergeben');
     }
-    // 3. Event speichern
+
     const rawEvent = await this.eventRepo.save({
       startTime: dto.startTime,
       endTime: dto.endTime,
@@ -73,7 +87,6 @@ export class AdminService {
       where: { eventID: rawEvent.eventID },
     });
 
-    // 4. Verknüpfungen speichern
     await this.eventLevelRepo.save(
       dto.levelIDs.map((levelID) => ({
         event: event,
@@ -178,7 +191,6 @@ export class AdminService {
     });
   }
 
-
   async updateEvent(dto: UpdateEventRequestDto) {
     const event = await this.eventRepo.findOne({
       where: { eventID: dto.eventID },
@@ -190,15 +202,29 @@ export class AdminService {
       );
     }
 
+    // Prüfe, ob ein anderes Event im neuen Zeitraum aktiv wäre
+    const overlappingEvent = await this.eventRepo.findOne({
+      where: {
+        startTime: LessThanOrEqual(dto.endTime),
+        endTime: MoreThanOrEqual(dto.startTime),
+        eventID: Not(dto.eventID), // eigenes Event ausschließen
+      },
+    });
+
+    if (overlappingEvent) {
+      throw new BadRequestException(
+        'Überschneidung mit einem anderen aktiven Event.',
+      );
+    }
+
+    // Event aktualisieren
     event.startTime = dto.startTime;
     event.endTime = dto.endTime;
     await this.eventRepo.save(event);
 
-    // Alte Beziehungen löschen
     await this.eventLevelRepo.delete({ event: { eventID: dto.eventID } });
     await this.eventEnemyRepo.delete({ event: { eventID: dto.eventID } });
 
-    // Neue Beziehungen einfügen
     await this.eventLevelRepo.save(
       dto.levelIDs.map((levelID) => ({
         event: { eventID: dto.eventID },

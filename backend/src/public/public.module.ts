@@ -35,6 +35,6 @@ import { ApiKeyMiddleware } from './api-key.middleware';
 })
 export class PublicModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ApiKeyMiddleware).forRoutes(PublicController); // optional: { path: 'api/game-client', method: RequestMethod.GET }
+    consumer.apply(ApiKeyMiddleware).forRoutes(PublicController);
   }
 }
