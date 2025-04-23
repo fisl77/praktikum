@@ -11,3 +11,4 @@ export class CreateEventResponseDto {
     this.ok = ok;
   }
 }
+
