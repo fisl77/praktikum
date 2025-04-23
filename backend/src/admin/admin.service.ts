@@ -103,12 +103,14 @@ export class AdminService {
     });
     if (!type) throw new Error(`EnemyType mit ID ${dto.typeID} nicht gefunden`);
 
+    const isLoner = name.name.toLowerCase() === 'hide';
+
     const newEnemy = this.enemyRepo.create({
       name,
       type,
       new_scale: dto.new_scale,
       max_count: dto.max_count,
-      loners: dto.loners,
+      loners: isLoner,
     });
 
     const saved = await this.enemyRepo.save(newEnemy);
@@ -178,7 +180,6 @@ export class AdminService {
     });
   }
 
-
   async updateEvent(dto: UpdateEventRequestDto) {
     const event = await this.eventRepo.findOne({
       where: { eventID: dto.eventID },
@@ -189,16 +190,26 @@ export class AdminService {
         `Event mit ID ${dto.eventID} nicht gefunden`,
       );
     }
+    const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
+    if (validLevels.length !== dto.levelIDs.length) {
+      throw new BadRequestException('Mindestens eine Level-ID ist ungültig.');
+    }
 
+    const enemyIDs = dto.enemies.map((e) => e.enemyID);
+    const validEnemies = await this.enemyRepo.findByIds(enemyIDs);
+    if (validEnemies.length !== enemyIDs.length) {
+      throw new BadRequestException('Mindestens eine Enemy-ID ist ungültig.');
+    }
+
+    // 🕒 Zeiten aktualisieren
     event.startTime = dto.startTime;
     event.endTime = dto.endTime;
     await this.eventRepo.save(event);
 
-    // Alte Beziehungen löschen
+    // 🔁 Beziehungen aktualisieren
     await this.eventLevelRepo.delete({ event: { eventID: dto.eventID } });
     await this.eventEnemyRepo.delete({ event: { eventID: dto.eventID } });
 
-    // Neue Beziehungen einfügen
     await this.eventLevelRepo.save(
       dto.levelIDs.map((levelID) => ({
         event: { eventID: dto.eventID },
@@ -262,6 +273,7 @@ export class AdminService {
     });
 
     return enemies.map((enemy) => ({
+      id: enemy.enemyID,
       name: enemy.name.name,
       path: enemy.name.path,
       type: enemy.type.type,
