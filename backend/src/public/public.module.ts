@@ -14,6 +14,8 @@ import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
 import { Voting } from '../Voting/voting.entity';
 import { ApiKeyMiddleware } from './api-key.middleware';
+import { BotPublicService } from './bot-public.service';
+import { BotPublicController } from './bot-public.controller';
 
 @Module({
   imports: [
@@ -30,11 +32,13 @@ import { ApiKeyMiddleware } from './api-key.middleware';
       Voting,
     ]),
   ],
-  controllers: [PublicController],
-  providers: [AdminService],
+  controllers: [PublicController, BotPublicController],
+  providers: [AdminService, BotPublicService],
 })
 export class PublicModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ApiKeyMiddleware).forRoutes(PublicController);
+    consumer
+      .apply(ApiKeyMiddleware)
+      .forRoutes(PublicController, BotPublicController);
   }
 }

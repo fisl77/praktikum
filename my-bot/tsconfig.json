@@ -1,9 +1,10 @@
+// tsconfig.json (my-bot)
 {
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
     "outDir": "build",
-    "rootDir": "src",
+    "rootDir": "../",             // 👈 wichtig
     "strict": true,
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
@@ -12,7 +13,12 @@
     "emitDecoratorMetadata": false,
 
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
   "exclude": ["build", "node_modules"]
 }

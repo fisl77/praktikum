@@ -16,6 +16,9 @@ export class Questionnaire {
   @Column()
   endTime: Date;
 
+  @Column({ default: false })
+  isLive: boolean;
+
   @OneToMany(() => Voting, (voting: Voting) => voting.questionnaire)
   votings: Voting[];
 

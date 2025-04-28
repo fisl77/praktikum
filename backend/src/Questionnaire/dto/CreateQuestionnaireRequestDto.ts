@@ -51,4 +51,11 @@ export class CreateQuestionnaireRequestDto {
 
   @ApiProperty({ type: [CreateAnswerDto] })
   answers: CreateAnswerDto[];
+
+  @ApiProperty({
+    example: '1364918839699046400',
+    description:
+      'Die ID des Discord-Channels, in dem die Umfrage erscheinen soll.',
+  })
+  channelId: string;
 }

@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +27,14 @@ async function bootstrap() {
     .setTitle('Community Game Admin API')
     .setDescription('API zur Verwaltung von Events, Gegnern, Umfragen etc.')
     .setVersion('1.0')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-api-key',
+        in: 'header',
+      },
+      'API-KEY',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
