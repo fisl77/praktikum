@@ -17,12 +17,12 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 1000 * 60 * 60, // läuft nach einer Stunde ab
+        maxAge: 1000 * 60 * 60, // 1 Stunde
       },
     }),
   );
 
-  // Swagger
+  // ✅ Swagger Konfiguration mit API-Key Unterstützung
   const config = new DocumentBuilder()
     .setTitle('Community Game Admin API')
     .setDescription('API zur Verwaltung von Events, Gegnern, Umfragen etc.')
@@ -33,7 +33,7 @@ async function bootstrap() {
         name: 'x-api-key',
         in: 'header',
       },
-      'API-KEY',
+      'API-KEY', // dieser Name ist wichtig für Swagger
     )
     .build();
 

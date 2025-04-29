@@ -1,15 +1,15 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { BotPublicService } from './bot-public.service';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Discord-Bot')
+@ApiSecurity('API-KEY')
 @Controller('public')
 export class BotPublicController {
   constructor(private readonly publicService: BotPublicService) {}
 
-  @ApiSecurity('API-KEY')
-  @Post('start-poll')
+  @Post('post-questionnaire')
   async startPoll(@Body() dto: CreateQuestionnaireRequestDto) {
     return this.publicService.startAndTrackPoll(dto);
   }
