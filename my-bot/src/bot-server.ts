@@ -15,35 +15,40 @@ interface StartPollRequest {
   endTime: string;
 }
 
-app.post("/start-poll", async (req: Request<any, any, StartPollRequest>, res: Response) => {
-  const { question, answers, channelId, endTime } = req.body;
-  const apiKey = req.headers["x-api-key"];
+app.post(
+  "/questionnaire",
+  async (req: Request<any, any, StartPollRequest>, res: Response) => {
+    const { question, answers, channelId, endTime } = req.body;
+    const apiKey = req.headers["x-api-key"];
 
-  if (apiKey !== API_KEY) {
-    return res.status(401).json({ error: "Ungültiger API-Key" });
-  }
-
-  try {
-    const channel = await bot.channels.fetch(channelId);
-    if (!channel?.isTextBased()) {
-      return res.status(400).json({ error: "Kein Textkanal gefunden" });
+    if (apiKey !== API_KEY) {
+      return res.status(401).json({ error: "Ungültiger API-Key" });
     }
 
-    const messageText =
-      `📊 **${question}**\n` +
-      answers.map((a, i) => `🔘 ${String.fromCharCode(65 + i)}: ${a.answer}`).join("\n");
+    try {
+      const channel = await bot.channels.fetch(channelId);
+      if (!channel?.isTextBased()) {
+        return res.status(400).json({ error: "Kein Textkanal gefunden" });
+      }
 
-    const msg = await (channel as TextChannel).send(messageText);
+      const messageText =
+        `📊 **${question}**\n` +
+        answers
+          .map((a, i) => `🔘 ${String.fromCharCode(65 + i)}: ${a.answer}`)
+          .join("\n");
 
-    for (let i = 0; i < answers.length; i++) {
-      await msg.react(["🇦", "🇧", "🇨", "🇩", "🇪"][i]);
+      const msg = await (channel as TextChannel).send(messageText);
+
+      for (let i = 0; i < answers.length; i++) {
+        await msg.react(["🇦", "🇧", "🇨", "🇩", "🇪"][i]);
+      }
+
+      res.json({ messageId: msg.id });
+    } catch (err) {
+      console.error("Fehler beim Senden der Umfrage:", err);
+      res.status(500).json({ error: "Bot Fehler" });
     }
-
-    res.json({ messageId: msg.id });
-  } catch (err) {
-    console.error("Fehler beim Senden der Umfrage:", err);
-    res.status(500).json({ error: "Bot Fehler" });
-  }
-});
+  },
+);
 
 app.listen(PORT, () => console.log(`Bot HTTP-Server läuft auf Port ${PORT}`));

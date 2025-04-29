@@ -9,7 +9,7 @@ import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 export class BotPublicController {
   constructor(private readonly publicService: BotPublicService) {}
 
-  @Post('post-questionnaire')
+  @Post('questionnaire')
   async startPoll(@Body() dto: CreateQuestionnaireRequestDto) {
     return this.publicService.startAndTrackPoll(dto);
   }
