@@ -49,7 +49,14 @@ export class CreateQuestionnaireRequestDto {
   @ApiProperty({ example: '2025-04-10T12:00:00.000Z' })
   endTime: Date;
 
-  @ApiProperty({ type: [CreateAnswerDto] })
+  @ApiProperty({
+    type: [CreateAnswerDto],
+    example: [
+      { answer: 'Option A', number: 1 },
+      { answer: 'Option B', number: 2 },
+      { answer: 'Option C', number: 3 },
+    ],
+  })
   answers: CreateAnswerDto[];
 
   @ApiProperty({

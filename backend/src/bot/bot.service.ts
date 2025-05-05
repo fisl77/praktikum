@@ -1,4 +1,3 @@
-// src/bot/bot.service.ts
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
   Channel,
@@ -43,7 +42,7 @@ export class BotService implements OnModuleInit {
 
     this.client.on('messageCreate', (message) => {
       if (message.content === '!Bist du da?') {
-        message.reply('Ich bin immer da :)!');
+        message.reply('Ich bin immer da :)');
       }
     });
 
@@ -57,7 +56,7 @@ export class BotService implements OnModuleInit {
   }
 
   async startAndTrackVote(dto: CreateQuestionnaireRequestDto) {
-    // 1️⃣ Speichern in Datenbank
+    //Speichern in Datenbank
     const questionnaire = await this.questionnaireRepo.save({
       question: dto.question,
       startTime: dto.startTime,
@@ -70,7 +69,7 @@ export class BotService implements OnModuleInit {
     );
     await this.answerRepo.save(answers);
 
-    // 2️⃣ Umfrage auf Discord senden
+    //Umfrage auf Discord senden
     const channelId: string = dto.channelId;
     const channel: Channel = await this.client.channels.fetch(channelId);
     if (!channel || !channel.isTextBased()) {
@@ -94,7 +93,7 @@ export class BotService implements OnModuleInit {
 
     this.logger.log(`Umfrage gesendet an Channel ${channelId}`);
 
-    // 3️⃣ Automatisch beenden
+    //Automatisch beenden
     this.scheduleVoteTracking(
       questionnaire.questionnaireID,
       new Date(dto.endTime),
