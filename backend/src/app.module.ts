@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-ioredis';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config'; // <-- NEU
 
 import { Event } from './Event/event.entity';
 import { EventEnemy } from './EventEnemy/eventEnemy.entity';
@@ -21,9 +22,16 @@ import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
 
 import { PublicModule } from './public/public.module';
+import { BotModule } from './bot/bot.module';
 
 @Module({
   imports: [
+    // ⬇️ .env laden
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
+    // ⬇️ Redis-Caching
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: () => ({
@@ -34,6 +42,7 @@ import { PublicModule } from './public/public.module';
       }),
     }),
 
+    // ⬇️ Datenbankverbindung
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './database-tmp/database',
@@ -49,9 +58,10 @@ import { PublicModule } from './public/public.module';
         Answer,
         Voting,
       ],
-      synchronize: true, // DEV only
+      synchronize: true, // Nur für DEV!
     }),
 
+    // ⬇️ TypeORM-Entities verfügbar machen
     TypeOrmModule.forFeature([
       Event,
       EventEnemy,
@@ -65,8 +75,10 @@ import { PublicModule } from './public/public.module';
       Voting,
     ]),
 
+    // ⬇️ Eigene Module
     AuthModule,
     PublicModule,
+    BotModule,
   ],
   controllers: [AppController, AdminController],
   providers: [AppService, AdminService],

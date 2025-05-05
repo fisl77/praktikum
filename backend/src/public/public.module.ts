@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { PublicController } from './public.controller';
+import { BotPublicController } from './bot-public.controller';
 import { AdminService } from '../admin/admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -13,9 +14,9 @@ import { Level } from '../Level/level.entity';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
 import { Voting } from '../Voting/voting.entity';
+
 import { ApiKeyMiddleware } from './api-key.middleware';
-import { BotPublicService } from './bot-public.service';
-import { BotPublicController } from './bot-public.controller';
+import { BotModule } from '../bot/bot.module';
 
 @Module({
   imports: [
@@ -31,9 +32,10 @@ import { BotPublicController } from './bot-public.controller';
       Answer,
       Voting,
     ]),
+    BotModule,
   ],
   controllers: [PublicController, BotPublicController],
-  providers: [AdminService, BotPublicService],
+  providers: [AdminService],
 })
 export class PublicModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
