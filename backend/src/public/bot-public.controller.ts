@@ -9,7 +9,7 @@ import { SessionAuthGuard } from '../auth/auth/session-auth.guard';
 export class BotPublicController {
   constructor(private readonly botService: BotService) {}
 
-  @Post('questionnaire')
+  @Post('StartVoting')
   async startPoll(@Body() dto: CreateQuestionnaireRequestDto) {
     return this.botService.startAndTrackVote(dto);
   }
