@@ -39,8 +39,6 @@ import { BotModule } from '../bot/bot.module';
 })
 export class PublicModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(ApiKeyMiddleware)
-      .forRoutes(PublicController, BotPublicController);
+    consumer.apply(ApiKeyMiddleware).forRoutes(PublicController);
   }
 }

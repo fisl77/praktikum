@@ -105,6 +105,7 @@ export class BotService implements OnModuleInit {
     };
   }
 
+  //cronjob anwenden!
   private scheduleVoteTracking(questionnaireID: number, endTime: Date) {
     const interval = setInterval(async () => {
       const now = new Date();
