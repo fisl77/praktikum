@@ -123,14 +123,12 @@ export class BotService implements OnModuleInit {
 
     if (start < now) {
       throw new BadRequestException(
-        '❌ Startzeit darf nicht in der Vergangenheit liegen.',
+        'Startzeit darf nicht in der Vergangenheit liegen.',
       );
     }
 
     if (end <= start) {
-      throw new BadRequestException(
-        '❌ Endzeit muss nach der Startzeit liegen.',
-      );
+      throw new BadRequestException('Endzeit muss nach der Startzeit liegen.');
     }
 
     const questionnaire = await this.questionnaireRepo.save({
@@ -171,7 +169,7 @@ export class BotService implements OnModuleInit {
       .join('\n');
 
     const message = await (channel as TextChannel).send(
-      `**${question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
+      `**${question}**\n\n${optionsText}\n\n Abstimmung endet am **${endTimeFormatted}**`,
     );
 
     for (let i = 0; i < dto.answers.length; i++) {
@@ -210,7 +208,7 @@ export class BotService implements OnModuleInit {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async checkForEndedVotes() {
-    this.logger.log('🕐 Cronjob: Überprüfe auf beendete Umfragen...');
+    this.logger.log('Cronjob: Überprüfe auf beendete Umfragen...');
     const now = new Date();
     const expiredVotes = await this.questionnaireRepo.find({
       where: {
@@ -235,11 +233,11 @@ export class BotService implements OnModuleInit {
           }),
         );
         this.logger.log(
-          `✅ Abschlussmeldung für ${vote.questionnaireID} gesendet.`,
+          `Abschlussmeldung für ${vote.questionnaireID} gesendet.`,
         );
       } catch (err) {
         this.logger.error(
-          `❌ Fehler beim POST an /public/vote-end für ${vote.questionnaireID}:`,
+          `Fehler beim POST an /public/vote-end für ${vote.questionnaireID}:`,
           err,
         );
       }
@@ -258,7 +256,7 @@ export class BotService implements OnModuleInit {
     });
 
     if (!questionnaire) {
-      this.logger.warn(`⚠️ Umfrage ${questionnaireID} nicht gefunden.`);
+      this.logger.warn(`Umfrage ${questionnaireID} nicht gefunden.`);
       return { success: false, message: 'Questionnaire not found' };
     }
 
@@ -267,11 +265,11 @@ export class BotService implements OnModuleInit {
     const channel = await this.client.channels.fetch(questionnaire.channelId);
     if (channel && channel.isTextBased()) {
       await (channel as TextChannel).send(
-        `❗️ Die Umfrage **${questionnaire.question}** ist nun beendet. Vielen Dank fürs Mitmachen!`,
+        `Die Umfrage **${questionnaire.question}** ist nun beendet. Vielen Dank fürs Mitmachen!`,
       );
     }
 
-    this.logger.log(`📴 Umfrage ${questionnaireID} wurde manuell beendet.`);
+    this.logger.log(`Umfrage ${questionnaireID} wurde manuell beendet.`);
     return { success: true };
   }
 }
