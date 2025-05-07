@@ -24,4 +24,7 @@ export class Questionnaire {
 
   @OneToMany(() => Answer, (a) => a.questionnaire)
   answers: Answer[];
+
+  @Column()
+  channelId: string;
 }

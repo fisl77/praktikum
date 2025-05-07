@@ -1,8 +1,10 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-ioredis';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config'; // <-- NEU
+import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { Event } from './Event/event.entity';
 import { EventEnemy } from './EventEnemy/eventEnemy.entity';
@@ -26,12 +28,12 @@ import { BotModule } from './bot/bot.module';
 
 @Module({
   imports: [
-    // ⬇️ .env laden
+    // ⬇️ .env Variablen laden (z. B. BOT_TOKEN)
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
-    // ⬇️ Redis-Caching
+    // ⬇️ Redis Cache für Sessions etc.
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: () => ({
@@ -42,7 +44,10 @@ import { BotModule } from './bot/bot.module';
       }),
     }),
 
-    // ⬇️ Datenbankverbindung
+    // ⬇️ Cronjobs aktivieren
+    ScheduleModule.forRoot(),
+
+    // ⬇️ SQLite-Datenbank
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './database-tmp/database',
@@ -58,10 +63,10 @@ import { BotModule } from './bot/bot.module';
         Answer,
         Voting,
       ],
-      synchronize: true, // Nur für DEV!
+      synchronize: true, // Nur für DEV
     }),
 
-    // ⬇️ TypeORM-Entities verfügbar machen
+    // ⬇️ Repositories verfügbar machen
     TypeOrmModule.forFeature([
       Event,
       EventEnemy,

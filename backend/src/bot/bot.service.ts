@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   Channel,
   Client,
@@ -12,6 +17,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -24,6 +33,8 @@ export class BotService implements OnModuleInit {
     private questionnaireRepo: Repository<Questionnaire>,
     @InjectRepository(Answer)
     private answerRepo: Repository<Answer>,
+    private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly httpService: HttpService,
   ) {}
 
   async onModuleInit() {
@@ -37,7 +48,7 @@ export class BotService implements OnModuleInit {
     });
 
     this.client.once('ready', () => {
-      this.logger.log(`Bot logged in as ${this.client.user?.tag}`);
+      this.logger.log(`✅ Bot logged in as ${this.client.user?.tag}`);
     });
 
     this.client.on('messageCreate', (message) => {
@@ -56,12 +67,28 @@ export class BotService implements OnModuleInit {
   }
 
   async startAndTrackVote(dto: CreateQuestionnaireRequestDto) {
-    //Speichern in Datenbank
+    const now = new Date();
+    const start = new Date(dto.startTime);
+    const end = new Date(dto.endTime);
+
+    if (start < now) {
+      throw new BadRequestException(
+        '❌ Startzeit darf nicht in der Vergangenheit liegen.',
+      );
+    }
+
+    if (end <= start) {
+      throw new BadRequestException(
+        '❌ Endzeit muss nach der Startzeit liegen.',
+      );
+    }
+
     const questionnaire = await this.questionnaireRepo.save({
       question: dto.question,
       startTime: dto.startTime,
       endTime: dto.endTime,
       isLive: true,
+      channelId: dto.channelId,
     });
 
     const answers = dto.answers.map((a) =>
@@ -69,7 +96,6 @@ export class BotService implements OnModuleInit {
     );
     await this.answerRepo.save(answers);
 
-    //Umfrage auf Discord senden
     const channelId: string = dto.channelId;
     const channel: Channel = await this.client.channels.fetch(channelId);
     if (!channel || !channel.isTextBased()) {
@@ -79,22 +105,30 @@ export class BotService implements OnModuleInit {
       return;
     }
 
-    const question: string = dto.question;
-    const optionsText: string = dto.answers
+    const endTimeFormatted = new Date(dto.endTime).toLocaleString('de-DE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Berlin',
+    });
+
+    const question = dto.question;
+    const optionsText = dto.answers
       .map((a, i) => `${String.fromCodePoint(0x1f1e6 + i)} ${a.answer}`)
       .join('\n');
 
     const message = await (channel as TextChannel).send(
-      `**${question}**\n\n${optionsText}`,
+      `**${question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted} Uhr**`,
     );
+
     for (let i = 0; i < dto.answers.length; i++) {
       await message.react(String.fromCodePoint(0x1f1e6 + i));
     }
 
     this.logger.log(`Umfrage gesendet an Channel ${channelId}`);
-
-    //Automatisch beenden
-    this.scheduleVoteTracking(
+    this.scheduleVoteClosing(
       questionnaire.questionnaireID,
       new Date(dto.endTime),
     );
@@ -105,20 +139,53 @@ export class BotService implements OnModuleInit {
     };
   }
 
-  //cronjob anwenden!
-  private scheduleVoteTracking(questionnaireID: number, endTime: Date) {
-    const interval = setInterval(async () => {
-      const now = new Date();
-      if (now >= endTime) {
-        clearInterval(interval);
-        await this.questionnaireRepo.update(
-          { questionnaireID },
-          { isLive: false },
-        );
-        this.logger.log(
-          `Umfrage ${questionnaireID} wurde automatisch beendet.`,
-        );
+  private scheduleVoteClosing(questionnaireID: number, endTime: Date) {
+    const jobName = `close-poll-${questionnaireID}`;
+    const delay = endTime.getTime() - Date.now();
+
+    const timeout = setTimeout(async () => {
+      await this.questionnaireRepo.update(
+        { questionnaireID },
+        { isLive: false },
+      );
+
+      try {
+        const url = `${this.configService.get<string>('BACKEND_URL')}/public/vote-end`;
+        await lastValueFrom(this.httpService.post(url, { questionnaireID }));
+        this.logger.log(`✅ Abschlussmeldung für ${questionnaireID} gesendet.`);
+      } catch (err) {
+        this.logger.error('❌ Fehler beim POST an /public/vote-end:', err);
       }
-    }, 60_000);
+
+      this.schedulerRegistry.deleteTimeout(jobName);
+      this.logger.log(`🔚 Umfrage ${questionnaireID} automatisch beendet.`);
+    }, delay);
+
+    this.schedulerRegistry.addTimeout(jobName, timeout);
+  }
+
+  async handleVoteEnd(dto: MarkVoteEndedRequestDto) {
+    const { questionnaireID } = dto;
+
+    const questionnaire = await this.questionnaireRepo.findOne({
+      where: { questionnaireID },
+    });
+
+    if (!questionnaire) {
+      this.logger.warn(`Umfrage ${questionnaireID} nicht gefunden.`);
+      return { success: false, message: 'Questionnaire not found' };
+    }
+
+    await this.questionnaireRepo.update({ questionnaireID }, { isLive: false });
+
+    const channel = await this.client.channels.fetch(questionnaire.channelId);
+    if (channel && channel.isTextBased()) {
+      await (channel as TextChannel).send(
+        `❗️ Die Umfrage **${questionnaire.question}** ist nun beendet. Vielen Dank fürs Mitmachen!`,
+      );
+    }
+
+    this.logger.log(`Umfrage ${questionnaireID} wurde manuell beendet.`);
+    return { success: true };
   }
 }
