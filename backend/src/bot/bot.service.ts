@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   Channel,
   Client,
@@ -7,12 +12,16 @@ import {
   TextChannel,
 } from 'discord.js';
 import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
+import { Repository, LessThanOrEqual } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
 import { Voting } from '../Voting/voting.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
+import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -25,6 +34,7 @@ export class BotService implements OnModuleInit {
     private questionnaireRepo: Repository<Questionnaire>,
     @InjectRepository(Answer)
     private answerRepo: Repository<Answer>,
+    private readonly httpService: HttpService,
     @InjectRepository(Voting)
     private votingRepo: Repository<Voting>,
   ) {}
@@ -107,12 +117,28 @@ export class BotService implements OnModuleInit {
   }
 
   async startAndTrackVote(dto: CreateQuestionnaireRequestDto) {
-    //Speichern in Datenbank
+    const now = new Date();
+    const start = new Date(dto.startTime);
+    const end = new Date(dto.endTime);
+
+    if (start < now) {
+      throw new BadRequestException(
+        '❌ Startzeit darf nicht in der Vergangenheit liegen.',
+      );
+    }
+
+    if (end <= start) {
+      throw new BadRequestException(
+        '❌ Endzeit muss nach der Startzeit liegen.',
+      );
+    }
+
     const questionnaire = await this.questionnaireRepo.save({
       question: dto.question,
       startTime: dto.startTime,
       endTime: dto.endTime,
       isLive: true,
+      channelId: dto.channelId,
     });
 
     const answers = dto.answers.map((a) =>
@@ -120,7 +146,6 @@ export class BotService implements OnModuleInit {
     );
     await this.answerRepo.save(answers);
 
-    //Umfrage auf Discord senden
     const channelId: string = dto.channelId;
     const channel: Channel = await this.client.channels.fetch(channelId);
     if (!channel || !channel.isTextBased()) {
@@ -130,29 +155,34 @@ export class BotService implements OnModuleInit {
       return;
     }
 
-    const question: string = dto.question;
-    const optionsText: string = dto.answers
+    const endDate = new Date(dto.endTime);
+    const endTimeFormatted = endDate.toLocaleString('de-DE', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Berlin',
+    });
+
+    const question = dto.question;
+    const optionsText = dto.answers
       .map((a, i) => `${String.fromCodePoint(0x1f1e6 + i)} ${a.answer}`)
       .join('\n');
 
     const message = await (channel as TextChannel).send(
-      `**${question}**\n\n${optionsText}`,
+      `**${question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
     );
+
     for (let i = 0; i < dto.answers.length; i++) {
       await message.react(String.fromCodePoint(0x1f1e6 + i));
     }
 
-    // 5. messageId in der DB speichern (NEU!)
-    questionnaire.messageId = message.id;
-    await this.questionnaireRepo.save(questionnaire); // <- Update mit messageId
+      // 5. messageId in der DB speichern (NEU!)
+      questionnaire.messageId = message.id;
+      await this.questionnaireRepo.save(questionnaire);
 
     this.logger.log(`Umfrage gesendet an Channel ${channelId}`);
-
-    //Automatisch beenden
-    this.scheduleVoteTracking(
-      questionnaire.questionnaireID,
-      new Date(dto.endTime),
-    );
 
     return {
       success: true,
@@ -160,38 +190,88 @@ export class BotService implements OnModuleInit {
     };
   }
 
-  async getResults(questionnaireID: number) {
-    const votes = await this.votingRepo.find({
-      where: { questionnaireID },
-      relations: ['answer'],
-    });
+    async getResults(questionnaireID: number) {
+        const votes = await this.votingRepo.find({
+            where: { questionnaireID },
+            relations: ['answer'],
+        });
 
-    const resultMap = new Map<string, number>();
-    for (const vote of votes) {
-      const label = vote.answer.answer;
-      resultMap.set(label, (resultMap.get(label) || 0) + 1);
+        const resultMap = new Map<string, number>();
+        for (const vote of votes) {
+            const label = vote.answer.answer;
+            resultMap.set(label, (resultMap.get(label) || 0) + 1);
+        }
+
+        return Array.from(resultMap.entries()).map(([answer, count]) => ({
+            answer,
+            count,
+        }));
     }
 
-    return Array.from(resultMap.entries()).map(([answer, count]) => ({
-      answer,
-      count,
-    }));
-  }
+  @Cron(CronExpression.EVERY_MINUTE)
+  async checkForEndedVotes() {
+    this.logger.log('🕐 Cronjob: Überprüfe auf beendete Umfragen...');
+    const now = new Date();
+    const expiredVotes = await this.questionnaireRepo.find({
+      where: {
+        isLive: true,
+        endTime: LessThanOrEqual(now),
+      },
+    });
 
-  //cronjob anwenden!
-  private scheduleVoteTracking(questionnaireID: number, endTime: Date) {
-    const interval = setInterval(async () => {
-      const now = new Date();
-      if (now >= endTime) {
-        clearInterval(interval);
-        await this.questionnaireRepo.update(
-          { questionnaireID },
-          { isLive: false },
+    for (const vote of expiredVotes) {
+      this.logger.log(`🔍 Beende Umfrage ${vote.questionnaireID}...`);
+
+      await this.questionnaireRepo.update(
+        { questionnaireID: vote.questionnaireID },
+        { isLive: false },
+      );
+
+      try {
+        const url = `${this.configService.get<string>('BACKEND_URL')}/public/vote-end`;
+        await lastValueFrom(
+          this.httpService.post(url, {
+            questionnaireID: vote.questionnaireID,
+          }),
         );
         this.logger.log(
-          `Umfrage ${questionnaireID} wurde automatisch beendet.`,
+          `✅ Abschlussmeldung für ${vote.questionnaireID} gesendet.`,
+        );
+      } catch (err) {
+        this.logger.error(
+          `❌ Fehler beim POST an /public/vote-end für ${vote.questionnaireID}:`,
+          err,
         );
       }
-    }, 60_000);
+
+      this.logger.log(
+        `🔚 Umfrage ${vote.questionnaireID} automatisch beendet.`,
+      );
+    }
+  }
+
+  async handleVoteEnd(dto: MarkVoteEndedRequestDto) {
+    const { questionnaireID } = dto;
+
+    const questionnaire = await this.questionnaireRepo.findOne({
+      where: { questionnaireID },
+    });
+
+    if (!questionnaire) {
+      this.logger.warn(`⚠️ Umfrage ${questionnaireID} nicht gefunden.`);
+      return { success: false, message: 'Questionnaire not found' };
+    }
+
+    await this.questionnaireRepo.update({ questionnaireID }, { isLive: false });
+
+    const channel = await this.client.channels.fetch(questionnaire.channelId);
+    if (channel && channel.isTextBased()) {
+      await (channel as TextChannel).send(
+        `❗️ Die Umfrage **${questionnaire.question}** ist nun beendet. Vielen Dank fürs Mitmachen!`,
+      );
+    }
+
+    this.logger.log(`📴 Umfrage ${questionnaireID} wurde manuell beendet.`);
+    return { success: true };
   }
 }
