@@ -218,7 +218,7 @@ export class BotService implements OnModuleInit {
     });
 
     for (const vote of expiredVotes) {
-      this.logger.log(`🔍 Beende Umfrage ${vote.questionnaireID}...`);
+      this.logger.log(`Beende Umfrage ${vote.questionnaireID}...`);
 
       await this.questionnaireRepo.update(
         { questionnaireID: vote.questionnaireID },
