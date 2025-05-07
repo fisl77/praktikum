@@ -178,9 +178,9 @@ export class BotService implements OnModuleInit {
       await message.react(String.fromCodePoint(0x1f1e6 + i));
     }
 
-      // 5. messageId in der DB speichern (NEU!)
-      questionnaire.messageId = message.id;
-      await this.questionnaireRepo.save(questionnaire);
+    // 5. messageId in der DB speichern (NEU!)
+    questionnaire.messageId = message.id;
+    await this.questionnaireRepo.save(questionnaire);
 
     this.logger.log(`Umfrage gesendet an Channel ${channelId}`);
 
@@ -190,23 +190,23 @@ export class BotService implements OnModuleInit {
     };
   }
 
-    async getResults(questionnaireID: number) {
-        const votes = await this.votingRepo.find({
-            where: { questionnaireID },
-            relations: ['answer'],
-        });
+  async getResults(questionnaireID: number) {
+    const votes = await this.votingRepo.find({
+      where: { questionnaireID },
+      relations: ['answer'],
+    });
 
-        const resultMap = new Map<string, number>();
-        for (const vote of votes) {
-            const label = vote.answer.answer;
-            resultMap.set(label, (resultMap.get(label) || 0) + 1);
-        }
-
-        return Array.from(resultMap.entries()).map(([answer, count]) => ({
-            answer,
-            count,
-        }));
+    const resultMap = new Map<string, number>();
+    for (const vote of votes) {
+      const label = vote.answer.answer;
+      resultMap.set(label, (resultMap.get(label) || 0) + 1);
     }
+
+    return Array.from(resultMap.entries()).map(([answer, count]) => ({
+      answer,
+      count,
+    }));
+  }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async checkForEndedVotes() {

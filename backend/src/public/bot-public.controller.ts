@@ -17,6 +17,7 @@ export class BotPublicController {
     return this.botService.startAndTrackVote(dto);
   }
 
+  @UseGuards(SessionAuthGuard)
   @Get('results/:questionnaireID')
   async getResults(@Param('questionnaireID') id: number) {
     return this.botService.getResults(id);
