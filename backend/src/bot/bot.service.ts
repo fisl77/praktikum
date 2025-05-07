@@ -242,9 +242,7 @@ export class BotService implements OnModuleInit {
         );
       }
 
-      this.logger.log(
-        `🔚 Umfrage ${vote.questionnaireID} automatisch beendet.`,
-      );
+      this.logger.log(`Umfrage ${vote.questionnaireID} automatisch beendet.`);
     }
   }
 

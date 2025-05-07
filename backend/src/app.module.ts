@@ -28,7 +28,7 @@ import { BotModule } from './bot/bot.module';
 
 @Module({
   imports: [
-    // ⬇️ .env Variablen laden (z. B. BOT_TOKEN)
+    // ⬇️ .env Variablen laden ( Wie zum Beispiel der BOT_TOKEN)
     ConfigModule.forRoot({
       isGlobal: true,
     }),

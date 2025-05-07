@@ -13,7 +13,7 @@ import { Voting } from '../Voting/voting.entity';
 @Module({
   imports: [
     ConfigModule,
-    ScheduleModule.forRoot(), // ✅ Hier ist die Korrektur!
+    ScheduleModule.forRoot(),
     HttpModule,
     TypeOrmModule.forFeature([Questionnaire, Answer, Voting]),
   ],
