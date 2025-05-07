@@ -12,12 +12,12 @@ import {
   TextChannel,
 } from 'discord.js';
 import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
+import { Repository, LessThanOrEqual } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
-import { SchedulerRegistry } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
@@ -33,7 +33,6 @@ export class BotService implements OnModuleInit {
     private questionnaireRepo: Repository<Questionnaire>,
     @InjectRepository(Answer)
     private answerRepo: Repository<Answer>,
-    private readonly schedulerRegistry: SchedulerRegistry,
     private readonly httpService: HttpService,
   ) {}
 
@@ -105,7 +104,8 @@ export class BotService implements OnModuleInit {
       return;
     }
 
-    const endTimeFormatted = new Date(dto.endTime).toLocaleString('de-DE', {
+    const endDate = new Date(dto.endTime);
+    const endTimeFormatted = endDate.toLocaleString('de-DE', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -120,18 +120,14 @@ export class BotService implements OnModuleInit {
       .join('\n');
 
     const message = await (channel as TextChannel).send(
-      `**${question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted} Uhr**`,
+      `**${question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
     );
 
     for (let i = 0; i < dto.answers.length; i++) {
       await message.react(String.fromCodePoint(0x1f1e6 + i));
     }
 
-    this.logger.log(`Umfrage gesendet an Channel ${channelId}`);
-    this.scheduleVoteClosing(
-      questionnaire.questionnaireID,
-      new Date(dto.endTime),
-    );
+    this.logger.log(`📤 Umfrage gesendet an Channel ${channelId}`);
 
     return {
       success: true,
@@ -139,29 +135,46 @@ export class BotService implements OnModuleInit {
     };
   }
 
-  private scheduleVoteClosing(questionnaireID: number, endTime: Date) {
-    const jobName = `close-poll-${questionnaireID}`;
-    const delay = endTime.getTime() - Date.now();
+  @Cron(CronExpression.EVERY_MINUTE)
+  async checkForEndedVotes() {
+    this.logger.log('🕐 Cronjob: Überprüfe auf beendete Umfragen...');
+    const now = new Date();
+    const expiredVotes = await this.questionnaireRepo.find({
+      where: {
+        isLive: true,
+        endTime: LessThanOrEqual(now),
+      },
+    });
 
-    const timeout = setTimeout(async () => {
+    for (const vote of expiredVotes) {
+      this.logger.log(`🔍 Beende Umfrage ${vote.questionnaireID}...`);
+
       await this.questionnaireRepo.update(
-        { questionnaireID },
+        { questionnaireID: vote.questionnaireID },
         { isLive: false },
       );
 
       try {
         const url = `${this.configService.get<string>('BACKEND_URL')}/public/vote-end`;
-        await lastValueFrom(this.httpService.post(url, { questionnaireID }));
-        this.logger.log(`✅ Abschlussmeldung für ${questionnaireID} gesendet.`);
+        await lastValueFrom(
+          this.httpService.post(url, {
+            questionnaireID: vote.questionnaireID,
+          }),
+        );
+        this.logger.log(
+          `✅ Abschlussmeldung für ${vote.questionnaireID} gesendet.`,
+        );
       } catch (err) {
-        this.logger.error('❌ Fehler beim POST an /public/vote-end:', err);
+        this.logger.error(
+          `❌ Fehler beim POST an /public/vote-end für ${vote.questionnaireID}:`,
+          err,
+        );
       }
 
-      this.schedulerRegistry.deleteTimeout(jobName);
-      this.logger.log(`🔚 Umfrage ${questionnaireID} automatisch beendet.`);
-    }, delay);
-
-    this.schedulerRegistry.addTimeout(jobName, timeout);
+      this.logger.log(
+        `🔚 Umfrage ${vote.questionnaireID} automatisch beendet.`,
+      );
+    }
   }
 
   async handleVoteEnd(dto: MarkVoteEndedRequestDto) {
@@ -172,7 +185,7 @@ export class BotService implements OnModuleInit {
     });
 
     if (!questionnaire) {
-      this.logger.warn(`Umfrage ${questionnaireID} nicht gefunden.`);
+      this.logger.warn(`⚠️ Umfrage ${questionnaireID} nicht gefunden.`);
       return { success: false, message: 'Questionnaire not found' };
     }
 
@@ -185,7 +198,7 @@ export class BotService implements OnModuleInit {
       );
     }
 
-    this.logger.log(`Umfrage ${questionnaireID} wurde manuell beendet.`);
+    this.logger.log(`📴 Umfrage ${questionnaireID} wurde manuell beendet.`);
     return { success: true };
   }
 }

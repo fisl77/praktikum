@@ -12,7 +12,7 @@ import { Answer } from '../Answer/answer.entity';
 @Module({
   imports: [
     ConfigModule,
-    ScheduleModule,
+    ScheduleModule.forRoot(), // ✅ Hier ist die Korrektur!
     HttpModule,
     TypeOrmModule.forFeature([Questionnaire, Answer]),
   ],
