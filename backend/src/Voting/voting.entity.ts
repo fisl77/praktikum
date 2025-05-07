@@ -1,18 +1,21 @@
-import { Entity, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
 
 @Entity()
 export class Voting {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
+  votingID: number;
+
+  @Column()
   questionnaireID: number;
 
-  @PrimaryColumn()
+  @Column()
   answerID: number;
 
-  @ManyToOne(() => Questionnaire, (q: Questionnaire) => q.votings)
+  @ManyToOne(() => Questionnaire, (q) => q.votings)
   questionnaire: Questionnaire;
 
-  @ManyToOne(() => Answer, (a: Answer) => a.votings)
+  @ManyToOne(() => Answer, (a) => a.votings)
   answer: Answer;
 }

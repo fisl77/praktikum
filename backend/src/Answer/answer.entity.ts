@@ -17,7 +17,6 @@ export class Answer {
   @Column()
   answer: string;
 
-
   @OneToMany(() => Voting, (voting: Voting) => voting.answer)
   votings: Voting[];
 

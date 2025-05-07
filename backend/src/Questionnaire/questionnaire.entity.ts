@@ -19,6 +19,9 @@ export class Questionnaire {
   @Column({ default: false })
   isLive: boolean;
 
+  @Column({ nullable: true })
+  messageId: string;
+
   @OneToMany(() => Voting, (voting: Voting) => voting.questionnaire)
   votings: Voting[];
 
