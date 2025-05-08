@@ -22,7 +22,7 @@ async function bootstrap() {
     }),
   );
 
-  // ✅ Swagger Konfiguration mit API-Key Unterstützung
+  //Swagger Konfiguration mit API-Key Unterstützung
   const config = new DocumentBuilder()
     .setTitle('Community Game Admin API')
     .setDescription('API zur Verwaltung von Events, Gegnern, Umfragen etc.')
