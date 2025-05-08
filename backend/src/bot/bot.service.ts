@@ -12,7 +12,7 @@ import {
   TextChannel,
 } from 'discord.js';
 import { ConfigService } from '@nestjs/config';
-import { Repository, LessThanOrEqual } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
@@ -20,7 +20,6 @@ import { Answer } from '../Answer/answer.entity';
 import { Voting } from '../Voting/voting.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
 import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
 
 @Injectable()
@@ -51,7 +50,7 @@ export class BotService implements OnModuleInit {
     });
 
     this.client.once('ready', () => {
-      this.logger.log(`Bot logged in as ${this.client.user?.tag}`);
+      this.logger.log(`✅ Bot logged in as ${this.client.user?.tag}`);
     });
 
     this.client.on('messageCreate', (message) => {
@@ -62,7 +61,7 @@ export class BotService implements OnModuleInit {
 
     this.client.on('messageReactionAdd', async (reaction, user) => {
       try {
-        this.logger.log(`Reaktion empfangen: ${reaction.emoji.name}`);
+        this.logger.log(`🟡 Reaktion empfangen: ${reaction.emoji.name}`);
 
         if (user?.bot) return;
 
@@ -70,7 +69,7 @@ export class BotService implements OnModuleInit {
         if (reaction.message.partial) await reaction.message.fetch();
 
         const messageId = reaction.message.id;
-        this.logger.log(`Message ID: ${messageId}`);
+        this.logger.log(`🔎 Message ID: ${messageId}`);
 
         const questionnaire = await this.questionnaireRepo.findOne({
           where: { isLive: true, messageId },
@@ -78,7 +77,9 @@ export class BotService implements OnModuleInit {
         });
 
         if (!questionnaire) {
-          this.logger.warn(`Keine Umfrage gefunden für messageId ${messageId}`);
+          this.logger.warn(
+            `⚠️ Keine Umfrage gefunden für messageId ${messageId}`,
+          );
           return;
         }
 
@@ -86,7 +87,7 @@ export class BotService implements OnModuleInit {
         const answer = questionnaire.answers[emojiIndex];
 
         if (!answer) {
-          this.logger.warn(`Keine Antwort bei emojiIndex ${emojiIndex}`);
+          this.logger.warn(`⚠️ Keine Antwort bei emojiIndex ${emojiIndex}`);
           return;
         }
 
@@ -100,16 +101,16 @@ export class BotService implements OnModuleInit {
         await this.votingRepo.save(vote);
 
         this.logger.log(
-          `Vote gespeichert: Fragebogen ${questionnaire.questionnaireID}, Antwort ${answer.answer}`,
+          `✅ Vote gespeichert: Fragebogen ${questionnaire.questionnaireID}, Antwort ${answer.answer}`,
         );
       } catch (err) {
-        this.logger.error('Fehler beim Verarbeiten der Reaktion:', err);
+        this.logger.error('❌ Fehler beim Verarbeiten der Reaktion:', err);
       }
     });
 
     const token = this.configService.get<string>('BOT_TOKEN');
     if (!token) {
-      this.logger.error('BOT_TOKEN is not defined in .env');
+      this.logger.error('❌ BOT_TOKEN is not defined in .env');
       return;
     }
 
@@ -123,12 +124,14 @@ export class BotService implements OnModuleInit {
 
     if (start < now) {
       throw new BadRequestException(
-        'Startzeit darf nicht in der Vergangenheit liegen.',
+        '❌ Startzeit darf nicht in der Vergangenheit liegen.',
       );
     }
 
     if (end <= start) {
-      throw new BadRequestException('Endzeit muss nach der Startzeit liegen.');
+      throw new BadRequestException(
+        '❌ Endzeit muss nach der Startzeit liegen.',
+      );
     }
 
     const questionnaire = await this.questionnaireRepo.save({
@@ -148,7 +151,7 @@ export class BotService implements OnModuleInit {
     const channel: Channel = await this.client.channels.fetch(channelId);
     if (!channel || !channel.isTextBased()) {
       this.logger.error(
-        `Channel ${channelId} nicht gefunden oder kein Textkanal.`,
+        `📭 Channel ${channelId} nicht gefunden oder kein Textkanal.`,
       );
       return;
     }
@@ -169,18 +172,17 @@ export class BotService implements OnModuleInit {
       .join('\n');
 
     const message = await (channel as TextChannel).send(
-      `**${question}**\n\n${optionsText}\n\n Abstimmung endet am **${endTimeFormatted}**`,
+      `**${question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
     );
 
     for (let i = 0; i < dto.answers.length; i++) {
       await message.react(String.fromCodePoint(0x1f1e6 + i));
     }
 
-    // 5. messageId in der DB speichern (NEU!)
     questionnaire.messageId = message.id;
     await this.questionnaireRepo.save(questionnaire);
 
-    this.logger.log(`Umfrage gesendet an Channel ${channelId}`);
+    this.logger.log(`📤 Umfrage gesendet an Channel ${channelId}`);
 
     return {
       success: true,
@@ -208,46 +210,57 @@ export class BotService implements OnModuleInit {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async checkForEndedVotes() {
-    this.logger.log('Cronjob: Überprüfe auf beendete Umfragen...');
+    this.logger.log('🕐 Cronjob gestartet: Überprüfe auf beendete Umfragen...');
+
     const now = new Date();
-    const expiredVotes = await this.questionnaireRepo.find({
-      where: {
-        isLive: true,
-        endTime: LessThanOrEqual(now),
-      },
+    this.logger.log(`📅 Aktuelles Datum/Zeit (UTC): ${now.toISOString()}`);
+
+    // Hole alle Umfragen, die noch live sind
+    const liveVotes = await this.questionnaireRepo.find({
+      where: { isLive: true },
     });
 
-    for (const vote of expiredVotes) {
-      this.logger.log(`Beende Umfrage ${vote.questionnaireID}...`);
+    // Finde alle, deren Endzeit abgelaufen ist
+    const expiredVotes = liveVotes.filter((vote) => {
+      const endTime = new Date(vote.endTime);
+      const isExpired = endTime.getTime() <= now.getTime();
 
-      await this.questionnaireRepo.update(
-        { questionnaireID: vote.questionnaireID },
-        { isLive: false },
+      this.logger.log(
+        `🧪 Umfrage ${vote.questionnaireID}: endTime=${endTime.toISOString()}, now=${now.toISOString()}, abgelaufen=${isExpired}`,
       );
 
-      try {
-        const url = `${this.configService.get<string>('BACKEND_URL')}/public/vote-end`;
-        await lastValueFrom(
-          this.httpService.post(url, {
-            questionnaireID: vote.questionnaireID,
-          }),
-        );
+      return isExpired;
+    });
+
+    this.logger.log(
+      `📋 Insgesamt ${expiredVotes.length} Umfragen sind abgelaufen und werden beendet...`,
+    );
+
+    for (const vote of expiredVotes) {
+      this.logger.log(`🔍 Beende Umfrage ${vote.questionnaireID}...`);
+
+      const result = await this.handleVoteEnd({
+        questionnaireID: vote.questionnaireID,
+      });
+
+      if (result.success) {
         this.logger.log(
-          `Abschlussmeldung für ${vote.questionnaireID} gesendet.`,
+          `✅ Umfrage ${vote.questionnaireID} erfolgreich beendet.`,
         );
-      } catch (err) {
-        this.logger.error(
-          `Fehler beim POST an /public/vote-end für ${vote.questionnaireID}:`,
-          err,
+      } else {
+        this.logger.warn(
+          `⚠️ Fehler beim Beenden von Umfrage ${vote.questionnaireID}: ${result.message}`,
         );
       }
-
-      this.logger.log(`Umfrage ${vote.questionnaireID} automatisch beendet.`);
     }
   }
 
   async handleVoteEnd(dto: MarkVoteEndedRequestDto) {
     const { questionnaireID } = dto;
+
+    this.logger.log(
+      `handleVoteEnd aufgerufen für QuestionnaireID: ${questionnaireID}`,
+    );
 
     const questionnaire = await this.questionnaireRepo.findOne({
       where: { questionnaireID },
@@ -258,16 +271,37 @@ export class BotService implements OnModuleInit {
       return { success: false, message: 'Questionnaire not found' };
     }
 
-    await this.questionnaireRepo.update({ questionnaireID }, { isLive: false });
+    this.logger.log(
+      `✅ handleVoteEnd gestartet – ID: ${questionnaireID}, channelId: ${questionnaire.channelId}`,
+    );
 
-    const channel = await this.client.channels.fetch(questionnaire.channelId);
-    if (channel && channel.isTextBased()) {
-      await (channel as TextChannel).send(
-        `Die Umfrage **${questionnaire.question}** ist nun beendet. Vielen Dank fürs Mitmachen!`,
+    await this.questionnaireRepo.update({ questionnaireID }, { isLive: false });
+    this.logger.log(
+      `📦 Fragebogen ${questionnaireID} in DB auf isLive = false gesetzt.`,
+    );
+
+    try {
+      const channel = await this.client.channels.fetch(questionnaire.channelId);
+      if (channel && channel.isTextBased()) {
+        await (channel as TextChannel).send(
+          `❗️ Die Umfrage **${questionnaire.question}** ist nun beendet. Vielen Dank fürs Mitmachen!`,
+        );
+        this.logger.log(
+          `📨 Benachrichtigung im Channel ${questionnaire.channelId} gesendet.`,
+        );
+      } else {
+        this.logger.warn(
+          `📭 Channel ${questionnaire.channelId} ist nicht textbasiert oder nicht gefunden.`,
+        );
+      }
+    } catch (err) {
+      this.logger.error(
+        `❌ Fehler beim Senden der Discord-Nachricht für ${questionnaireID}:`,
+        err,
       );
     }
 
-    this.logger.log(`Umfrage ${questionnaireID} wurde manuell beendet.`);
+    this.logger.log(`📴 Umfrage ${questionnaireID} wurde manuell beendet.`);
     return { success: true };
   }
 }
