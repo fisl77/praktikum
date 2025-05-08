@@ -90,14 +90,25 @@ export class BotService implements OnModuleInit {
           return;
         }
 
-        const vote = this.votingRepo.create({
+        const alreadyVoted = await this.votingRepo.findOne({
+          where: {
+            questionnaireID: questionnaire.questionnaireID,
+            userId: user.id,
+          },
+        });
+
+        if (alreadyVoted) {
+          this.logger.log(`${user.username} hat bereits abgestimmt.`);
+          return;
+        }
+
+        await this.votingRepo.save({
           questionnaireID: questionnaire.questionnaireID,
           answerID: answer.answerID,
+          userId: user.id,
           questionnaire,
           answer,
         });
-
-        await this.votingRepo.save(vote);
 
         this.logger.log(
           `Vote gespeichert: Fragebogen ${questionnaire.questionnaireID}, Antwort ${answer.answer}`,
@@ -247,6 +258,82 @@ export class BotService implements OnModuleInit {
       this.logger.log(
         `🔚 Umfrage ${vote.questionnaireID} automatisch beendet.`,
       );
+    }
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async syncReactionsWithDatabase() {
+    this.logger.log('Cronjob: Synchronisiere Reaktionen mit der Datenbank...');
+
+    const liveQuestionnaires = await this.questionnaireRepo.find({
+      where: { isLive: true },
+      relations: ['answers'],
+    });
+
+    for (const questionnaire of liveQuestionnaires) {
+      if (!questionnaire.messageId || !questionnaire.channelId) {
+        this.logger.warn(
+          `Umfrage ${questionnaire.questionnaireID} ohne gültige messageId oder channelId übersprungen.`,
+        );
+        continue;
+      }
+
+      try {
+        const channel = await this.client.channels.fetch(
+          questionnaire.channelId,
+        );
+        if (!channel || !channel.isTextBased()) continue;
+
+        const message = await (channel as TextChannel).messages.fetch(
+          questionnaire.messageId,
+        );
+        const reactions = message.reactions.cache;
+
+        for (let i = 0; i < questionnaire.answers.length; i++) {
+          const answer = questionnaire.answers[i];
+          const emoji = String.fromCodePoint(0x1f1e6 + i); // 🇦, 🇧, 🇨 ...
+
+          const reaction = reactions.get(emoji);
+          if (!reaction) continue;
+
+          const users = await reaction.users.fetch();
+
+          for (const [, user] of users) {
+            if (user.bot) continue;
+
+            const existingVote = await this.votingRepo.findOne({
+              where: {
+                questionnaireID: questionnaire.questionnaireID,
+                answerID: answer.answerID,
+                userId: user.id,
+              },
+            });
+
+            if (existingVote) {
+              this.logger.log(
+                `${user.username} hat bereits für "${answer.answer}" abgestimmt – übersprungen.`,
+              );
+              continue;
+            }
+
+            await this.votingRepo.save({
+              questionnaireID: questionnaire.questionnaireID,
+              answerID: answer.answerID,
+              userId: user.id,
+              questionnaire,
+              answer,
+            });
+
+            this.logger.log(
+              `Vote von ${user.username} für "${answer.answer}" (Frage ${questionnaire.questionnaireID}) gespeichert.`,
+            );
+          }
+        }
+      } catch (err) {
+        this.logger.error(
+          `Fehler beim Synchronisieren von Umfrage ${questionnaire.questionnaireID}: ${err.message}`,
+        );
+      }
     }
   }
 
