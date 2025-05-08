@@ -3,14 +3,12 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   Column,
-  Index,
   JoinColumn,
 } from 'typeorm';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
 import { Answer } from '../Answer/answer.entity';
 
 @Entity()
-@Index(['questionnaireID', 'answerID', 'userId'], { unique: true })
 export class Voting {
   @PrimaryGeneratedColumn()
   votingID: number;
@@ -20,9 +18,6 @@ export class Voting {
 
   @Column()
   answerID: number;
-
-  @Column()
-  userId: string;
 
   @ManyToOne(() => Questionnaire, (q) => q.votings)
   @JoinColumn({ name: 'questionnaireID' })

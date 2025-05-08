@@ -60,63 +60,63 @@ export class BotService implements OnModuleInit {
       }
     });
 
-    this.client.on('messageReactionAdd', async (reaction, user) => {
-      try {
-        this.logger.log(`Reaktion empfangen: ${reaction.emoji.name}`);
-
-        if (user?.bot) return;
-
-        if (reaction.partial) await reaction.fetch();
-        if (reaction.message.partial) await reaction.message.fetch();
-
-        const messageId = reaction.message.id;
-        this.logger.log(`Message ID: ${messageId}`);
-
-        const questionnaire = await this.questionnaireRepo.findOne({
-          where: { isLive: true, messageId },
-          relations: ['answers'],
-        });
-
-        if (!questionnaire) {
-          this.logger.warn(`Keine Umfrage gefunden für messageId ${messageId}`);
-          return;
-        }
-
-        const emojiIndex = reaction.emoji.name.codePointAt(0)! - 0x1f1e6;
-        const answer = questionnaire.answers[emojiIndex];
-
-        if (!answer) {
-          this.logger.warn(`Keine Antwort bei emojiIndex ${emojiIndex}`);
-          return;
-        }
-
-        const alreadyVoted = await this.votingRepo.findOne({
-          where: {
-            questionnaireID: questionnaire.questionnaireID,
-            userId: user.id,
-          },
-        });
-
-        if (alreadyVoted) {
-          this.logger.log(`${user.username} hat bereits abgestimmt.`);
-          return;
-        }
-
-        await this.votingRepo.save({
-          questionnaireID: questionnaire.questionnaireID,
-          answerID: answer.answerID,
-          userId: user.id,
-          questionnaire,
-          answer,
-        });
-
-        this.logger.log(
-          `Vote gespeichert: Fragebogen ${questionnaire.questionnaireID}, Antwort ${answer.answer}`,
-        );
-      } catch (err) {
-        this.logger.error('Fehler beim Verarbeiten der Reaktion:', err);
-      }
-    });
+    // this.client.on('messageReactionAdd', async (reaction, user) => {
+    //   try {
+    //     this.logger.log(`Reaktion empfangen: ${reaction.emoji.name}`);
+    //
+    //     if (user?.bot) return;
+    //
+    //     if (reaction.partial) await reaction.fetch();
+    //     if (reaction.message.partial) await reaction.message.fetch();
+    //
+    //     const messageId = reaction.message.id;
+    //     this.logger.log(`Message ID: ${messageId}`);
+    //
+    //     const questionnaire = await this.questionnaireRepo.findOne({
+    //       where: { isLive: true, messageId },
+    //       relations: ['answers'],
+    //     });
+    //
+    //     if (!questionnaire) {
+    //       this.logger.warn(`Keine Umfrage gefunden für messageId ${messageId}`);
+    //       return;
+    //     }
+    //
+    //     const emojiIndex = reaction.emoji.name.codePointAt(0)! - 0x1f1e6;
+    //     const answer = questionnaire.answers[emojiIndex];
+    //
+    //     if (!answer) {
+    //       this.logger.warn(`Keine Antwort bei emojiIndex ${emojiIndex}`);
+    //       return;
+    //     }
+    //
+    //     const alreadyVoted = await this.votingRepo.findOne({
+    //       where: {
+    //         questionnaireID: questionnaire.questionnaireID,
+    //         userId: user.id,
+    //       },
+    //     });
+    //
+    //     if (alreadyVoted) {
+    //       this.logger.log(`${user.username} hat bereits abgestimmt.`);
+    //       return;
+    //     }
+    //
+    //     await this.votingRepo.save({
+    //       questionnaireID: questionnaire.questionnaireID,
+    //       answerID: answer.answerID,
+    //       userId: user.id,
+    //       questionnaire,
+    //       answer,
+    //     });
+    //
+    //     this.logger.log(
+    //       `Vote gespeichert: Fragebogen ${questionnaire.questionnaireID}, Antwort ${answer.answer}`,
+    //     );
+    //   } catch (err) {
+    //     this.logger.error('Fehler beim Verarbeiten der Reaktion:', err);
+    //   }
+    // });
 
     const token = this.configService.get<string>('BOT_TOKEN');
     if (!token) {
@@ -263,7 +263,9 @@ export class BotService implements OnModuleInit {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async syncReactionsWithDatabase() {
-    this.logger.log('Cronjob: Synchronisiere Reaktionen mit der Datenbank...');
+    this.logger.log(
+      'Cronjob: Synchronisiere Reaktionsanzahl mit der Datenbank...',
+    );
 
     const liveQuestionnaires = await this.questionnaireRepo.find({
       where: { isLive: true },
@@ -294,40 +296,20 @@ export class BotService implements OnModuleInit {
           const emoji = String.fromCodePoint(0x1f1e6 + i); // 🇦, 🇧, 🇨 ...
 
           const reaction = reactions.get(emoji);
-          if (!reaction) continue;
+          const count = reaction?.count ?? 0;
 
-          const users = await reaction.users.fetch();
+          if (count === 0) continue;
 
-          for (const [, user] of users) {
-            if (user.bot) continue;
-
-            const existingVote = await this.votingRepo.findOne({
-              where: {
-                questionnaireID: questionnaire.questionnaireID,
-                answerID: answer.answerID,
-                userId: user.id,
-              },
-            });
-
-            if (existingVote) {
-              this.logger.log(
-                `${user.username} hat bereits für "${answer.answer}" abgestimmt – übersprungen.`,
-              );
-              continue;
-            }
-
+          for (let j = 0; j < count; j++) {
             await this.votingRepo.save({
-              questionnaireID: questionnaire.questionnaireID,
-              answerID: answer.answerID,
-              userId: user.id,
               questionnaire,
               answer,
             });
-
-            this.logger.log(
-              `Vote von ${user.username} für "${answer.answer}" (Frage ${questionnaire.questionnaireID}) gespeichert.`,
-            );
           }
+
+          this.logger.log(
+            `${count} Stimme(n) für "${answer.answer}" (Frage ${questionnaire.questionnaireID}) gespeichert.`,
+          );
         }
       } catch (err) {
         this.logger.error(
