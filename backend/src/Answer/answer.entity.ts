@@ -17,6 +17,9 @@ export class Answer {
   @Column()
   answer: string;
 
+  @Column({ default: 0 })
+  lastSyncedCount: number;
+
   @OneToMany(() => Voting, (voting: Voting) => voting.answer)
   votings: Voting[];
 
