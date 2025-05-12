@@ -4,13 +4,7 @@ import {
   OnModuleInit,
   BadRequestException,
 } from '@nestjs/common';
-import {
-  Channel,
-  Client,
-  GatewayIntentBits,
-  Partials,
-  TextChannel,
-} from 'discord.js';
+import { Client, GatewayIntentBits, Partials, TextChannel } from 'discord.js';
 import { ConfigService } from '@nestjs/config';
 import { Repository, LessThanOrEqual } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,6 +15,7 @@ import { Voting } from '../Voting/voting.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { HttpService } from '@nestjs/axios';
 import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
+import { GetAllQuestionnairesResponseDto } from '../Questionnaire/dto/get-all-questionnaires-response';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -338,5 +333,25 @@ export class BotService implements OnModuleInit {
 
     this.logger.log(`Umfrage ${questionnaireID} wurde manuell beendet.`);
     return { success: true };
+  }
+
+  async getAllQuestionnaires(): Promise<GetAllQuestionnairesResponseDto[]> {
+    const questionnaires = await this.questionnaireRepo.find({
+      relations: ['answers', 'answers.votings'],
+    });
+
+    return questionnaires.map((q) => ({
+      questionnaireID: q.questionnaireID,
+      question: q.question,
+      startTime: q.startTime,
+      endTime: q.endTime,
+      isLive: q.isLive,
+      wasPostedToDiscord: q.wasPostedToDiscord,
+      answers: q.answers.map((a) => ({
+        answerID: a.answerID,
+        answer: a.answer,
+        totalVotes: a.votings.length,
+      })),
+    }));
   }
 }

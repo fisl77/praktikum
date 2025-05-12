@@ -3,8 +3,9 @@ import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
 import { BotService } from '../bot/bot.service';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { SessionAuthGuard } from '../auth/auth/session-auth.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
+import { GetAllQuestionnairesResponseDto } from '../Questionnaire/dto/get-all-questionnaires-response';
 
 @ApiTags('Discord-Bot')
 @Controller('public')
@@ -25,5 +26,12 @@ export class BotPublicController {
   @Post('vote-end')
   markVoteEnded(@Body() dto: MarkVoteEndedRequestDto) {
     return this.botService.handleVoteEnd(dto);
+  }
+
+  @UseGuards(SessionAuthGuard)
+  @Get('allQuestionnaires')
+  @ApiOkResponse({ type: [GetAllQuestionnairesResponseDto] })
+  async getAllQuestionnaires(): Promise<GetAllQuestionnairesResponseDto[]> {
+    return this.botService.getAllQuestionnaires();
   }
 }
