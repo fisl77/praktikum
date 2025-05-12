@@ -12,7 +12,7 @@ import {
   TextChannel,
 } from 'discord.js';
 import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
+import { Repository, LessThanOrEqual } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
@@ -89,6 +89,7 @@ export class BotService implements OnModuleInit {
       endTime: dto.endTime,
       isLive: true,
       channelId: dto.channelId,
+      wasPostedToDiscord: false,
     });
 
     const answers = dto.answers.map((a) =>
@@ -96,42 +97,9 @@ export class BotService implements OnModuleInit {
     );
     await this.answerRepo.save(answers);
 
-    const channelId: string = dto.channelId;
-    const channel: Channel = await this.client.channels.fetch(channelId);
-    if (!channel || !channel.isTextBased()) {
-      this.logger.error(
-        `Channel ${channelId} nicht gefunden oder kein Textkanal.`,
-      );
-      return;
-    }
-
-    const endDate = new Date(dto.endTime);
-    const endTimeFormatted = endDate.toLocaleString('de-DE', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Europe/Berlin',
-    });
-
-    const question = dto.question;
-    const optionsText = dto.answers
-      .map((a, i) => `${String.fromCodePoint(0x1f1e6 + i)} ${a.answer}`)
-      .join('\n');
-
-    const message = await (channel as TextChannel).send(
-      `**${question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
+    this.logger.log(
+      `Umfrage ${questionnaire.questionnaireID} in DB gespeichert, aber noch nicht gepostet.`,
     );
-
-    for (let i = 0; i < dto.answers.length; i++) {
-      await message.react(String.fromCodePoint(0x1f1e6 + i));
-    }
-
-    questionnaire.messageId = message.id;
-    await this.questionnaireRepo.save(questionnaire);
-
-    this.logger.log(`Umfrage gesendet an Channel ${channelId}`);
 
     return {
       success: true,
@@ -199,6 +167,62 @@ export class BotService implements OnModuleInit {
           `Fehler beim Beenden von Umfrage ${vote.questionnaireID}: ${result.message}`,
         );
       }
+    }
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async checkForPostingVotes() {
+    this.logger.log(
+      '🕐 Cronjob gestartet: Überprüfe auf zu postende Umfragen...',
+    );
+    const now = new Date();
+
+    const pendingVotes = await this.questionnaireRepo.find({
+      where: {
+        isLive: true,
+        wasPostedToDiscord: false,
+        startTime: LessThanOrEqual(now),
+      },
+      relations: ['answers'],
+    });
+
+    this.logger.log(`📋 Gefundene Umfragen zum Posten: ${pendingVotes.length}`);
+
+    for (const vote of pendingVotes) {
+      const channel = await this.client.channels.fetch(vote.channelId);
+      if (!channel || !channel.isTextBased()) {
+        this.logger.warn(`📭 Channel ${vote.channelId} ungültig.`);
+        continue;
+      }
+
+      const endTimeFormatted = new Date(vote.endTime).toLocaleString('de-DE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Europe/Berlin',
+      });
+
+      const optionsText = vote.answers
+        .map((a, i) => `${String.fromCodePoint(0x1f1e6 + i)} ${a.answer}`)
+        .join('\n');
+
+      const message = await (channel as TextChannel).send(
+        `**${vote.question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
+      );
+
+      for (let i = 0; i < vote.answers.length; i++) {
+        await message.react(String.fromCodePoint(0x1f1e6 + i));
+      }
+
+      vote.messageId = message.id;
+      vote.wasPostedToDiscord = true;
+      await this.questionnaireRepo.save(vote);
+
+      this.logger.log(
+        `📤 Umfrage ${vote.questionnaireID} wurde jetzt gepostet.`,
+      );
     }
   }
 

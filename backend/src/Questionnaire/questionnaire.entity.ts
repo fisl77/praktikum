@@ -30,4 +30,7 @@ export class Questionnaire {
 
   @Column()
   channelId: string;
+
+  @Column({ default: false })
+  wasPostedToDiscord: boolean;
 }
