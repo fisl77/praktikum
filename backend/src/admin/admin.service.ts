@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
-import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { EventLevel } from '../EventLevel/eventLevel.entity';
@@ -135,28 +134,6 @@ export class AdminService {
     };
   }
 
-  async createQuestionnaire(dto: CreateQuestionnaireRequestDto) {
-    const rawQ = await this.questionnaireRepo.save({
-      question: dto.question,
-      startTime: dto.startTime,
-      endTime: dto.endTime,
-    });
-
-    const q = await this.questionnaireRepo.findOneOrFail({
-      where: { questionnaireID: rawQ.questionnaireID },
-    });
-
-    await this.answerRepo.save(
-      dto.answers.map((a) => ({
-        questionnaire: q,
-        answer: a.answer,
-        number: a.number,
-      })),
-    );
-
-    return { ok: true };
-  }
-
   async getAllEventsDetailed() {
     const events = await this.eventRepo.find({
       relations: [
@@ -222,20 +199,16 @@ export class AdminService {
         'Überschneidung mit einem anderen aktiven Event.',
       );
     }
-
-    // Event aktualisieren
     const enemyIDs = dto.enemies.map((e) => e.enemyID);
     const validEnemies = await this.enemyRepo.findByIds(enemyIDs);
     if (validEnemies.length !== enemyIDs.length) {
       throw new BadRequestException('Mindestens eine Enemy-ID ist ungültig.');
     }
 
-    // 🕒 Zeiten aktualisieren
     event.startTime = dto.startTime;
     event.endTime = dto.endTime;
     await this.eventRepo.save(event);
 
-    // 🔁 Beziehungen aktualisieren
     await this.eventLevelRepo.delete({ event: { eventID: dto.eventID } });
     await this.eventEnemyRepo.delete({ event: { eventID: dto.eventID } });
 
@@ -258,42 +231,6 @@ export class AdminService {
       ok: true,
       message: `Event ${dto.eventID} erfolgreich aktualisiert.`,
     };
-  }
-
-  async getAllQuestionnairesDetailed() {
-    const questionnaires = await this.questionnaireRepo.find({
-      relations: ['answers'],
-    });
-
-    return await Promise.all(
-      questionnaires.map(async (q) => {
-        const now = new Date();
-        const isLive = now >= q.startTime && now <= q.endTime;
-
-        const answers = await Promise.all(
-          q.answers.map(async (a) => {
-            const voteCount = await this.votingRepo.count({
-              where: { answer: { answerID: a.answerID } },
-            });
-
-            return {
-              answerID: a.answerID,
-              answer: a.answer,
-              votes: voteCount,
-            };
-          }),
-        );
-
-        return {
-          questionnaireID: q.questionnaireID,
-          question: q.question,
-          startTime: q.startTime,
-          endTime: q.endTime,
-          isLive,
-          answers,
-        };
-      }),
-    );
   }
 
   async getEnemies() {
@@ -333,7 +270,7 @@ export class AdminService {
   async getActiveEnemies() {
     const now = new Date();
 
-    // Suche aktives Event (läuft gerade)
+    // Suche aktives Event
     const activeEvent = await this.eventRepo.findOne({
       where: {
         startTime: LessThanOrEqual(now),

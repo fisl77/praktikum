@@ -14,7 +14,7 @@ import { Answer } from '../Answer/answer.entity';
 import { Voting } from '../Voting/voting.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { HttpService } from '@nestjs/axios';
-import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
+import { MarkQuestionnaireEndedRequestDto } from '../Questionnaire/dto/MarkQuestionnaireEndedRequestDto';
 import { GetAllQuestionnairesResponseDto } from '../Questionnaire/dto/get-all-questionnaires-response';
 
 @Injectable()
@@ -63,7 +63,7 @@ export class BotService implements OnModuleInit {
     await this.client.login(token);
   }
 
-  async startAndTrackVote(dto: CreateQuestionnaireRequestDto) {
+  async startAndTrackQuestionnaire(dto: CreateQuestionnaireRequestDto) {
     const now = new Date();
     const start = new Date(dto.startTime);
     const end = new Date(dto.endTime);
@@ -121,7 +121,7 @@ export class BotService implements OnModuleInit {
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async checkForEndedVotes() {
+  async checkForEndedQuestionnaires() {
     this.logger.log('Cronjob gestartet: Überprüfe auf beendete Umfragen...');
 
     const now = new Date();
@@ -151,7 +151,7 @@ export class BotService implements OnModuleInit {
     for (const vote of expiredVotes) {
       this.logger.log(`Beende Umfrage ${vote.questionnaireID}...`);
 
-      const result = await this.handleVoteEnd({
+      const result = await this.handleQuestionnaireEnd({
         questionnaireID: vote.questionnaireID,
       });
 
@@ -281,7 +281,7 @@ export class BotService implements OnModuleInit {
     }
   }
 
-  async handleVoteEnd(dto: MarkVoteEndedRequestDto) {
+  async handleQuestionnaireEnd(dto: MarkQuestionnaireEndedRequestDto) {
     const { questionnaireID } = dto;
 
     this.logger.log(

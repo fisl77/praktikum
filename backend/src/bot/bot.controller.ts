@@ -4,7 +4,7 @@ import { BotService } from './bot.service';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';
 import { SessionAuthGuard } from '../auth/auth/session-auth.guard';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { MarkVoteEndedRequestDto } from '../Questionnaire/dto/MarkVoteEndedRequestDto';
+import { MarkQuestionnaireEndedRequestDto } from '../Questionnaire/dto/MarkQuestionnaireEndedRequestDto';
 import { GetAllQuestionnairesResponseDto } from '../Questionnaire/dto/get-all-questionnaires-response';
 
 @ApiTags('Discord-Bot')
@@ -13,19 +13,14 @@ export class BotController {
   constructor(private readonly botService: BotService) {}
 
   @UseGuards(SessionAuthGuard)
-  @Post('startQuestionnaires')
+  @Post('startQuestionnaire')
   async startPoll(@Body() dto: CreateQuestionnaireRequestDto) {
-    return this.botService.startAndTrackVote(dto);
+    return this.botService.startAndTrackQuestionnaire(dto);
   }
 
-  @UseGuards(SessionAuthGuard)
-  @Get('results/:questionnaireID')
-  async getResults(@Param('questionnaireID') id: number) {
-    return this.botService.getResults(id);
-  }
-  @Post('endQuestionnaires')
-  markVoteEnded(@Body() dto: MarkVoteEndedRequestDto) {
-    return this.botService.handleVoteEnd(dto);
+  @Post('endQuestionnaire')
+  markQuestionnaireEnded(@Body() dto: MarkQuestionnaireEndedRequestDto) {
+    return this.botService.handleQuestionnaireEnd(dto);
   }
 
   @UseGuards(SessionAuthGuard)
@@ -33,5 +28,11 @@ export class BotController {
   @ApiOkResponse({ type: [GetAllQuestionnairesResponseDto] })
   async getAllQuestionnaires(): Promise<GetAllQuestionnairesResponseDto[]> {
     return this.botService.getAllQuestionnaires();
+  }
+
+  @UseGuards(SessionAuthGuard)
+  @Get('results/:questionnaireID')
+  async getResults(@Param('questionnaireID') id: number) {
+    return this.botService.getResults(id);
   }
 }
