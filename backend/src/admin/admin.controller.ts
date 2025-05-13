@@ -7,7 +7,7 @@ import {
   Param,
   Patch,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { AdminService } from './admin.service';
 import { SessionAuthGuard } from '../auth/auth/session-auth.guard';
@@ -22,7 +22,6 @@ import {
 
 @Controller('admin')
 @ApiTags('Admin')
-@ApiBearerAuth()
 @UseGuards(SessionAuthGuard)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}

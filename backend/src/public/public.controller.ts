@@ -1,8 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { AdminService } from '../admin/admin.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Game-Client')
+@ApiSecurity('x-api-key')
 @Controller('public')
 export class PublicController {
   constructor(private readonly adminService: AdminService) {}

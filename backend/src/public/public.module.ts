@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { PublicController } from './public.controller';
-import { BotPublicController } from './bot-public.controller';
+import { BotController } from '../bot/bot.controller';
 import { AdminService } from '../admin/admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -34,7 +34,7 @@ import { BotModule } from '../bot/bot.module';
     ]),
     BotModule,
   ],
-  controllers: [PublicController, BotPublicController],
+  controllers: [PublicController, BotController],
   providers: [AdminService],
 })
 export class PublicModule implements NestModule {

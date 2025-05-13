@@ -28,12 +28,12 @@ import { BotModule } from './bot/bot.module';
 
 @Module({
   imports: [
-    // ⬇️ .env Variablen laden ( Wie zum Beispiel der BOT_TOKEN)
+    //.env Variablen laden ( Wie zum Beispiel der BOT_TOKEN)
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
-    // ⬇️ Redis Cache für Sessions etc.
+    //Redis Cache für Sessions etc.
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: () => ({
@@ -44,10 +44,10 @@ import { BotModule } from './bot/bot.module';
       }),
     }),
 
-    // ⬇️ Cronjobs aktivieren
+    // ronjobs aktivieren
     ScheduleModule.forRoot(),
 
-    // ⬇️ SQLite-Datenbank
+    //SQLite-Datenbank
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './database-tmp/database',
@@ -63,10 +63,10 @@ import { BotModule } from './bot/bot.module';
         Answer,
         Voting,
       ],
-      synchronize: true, // Nur für DEV
+      synchronize: true,
     }),
 
-    // ⬇️ Repositories verfügbar machen
+    //Repositories verfügbar machen
     TypeOrmModule.forFeature([
       Event,
       EventEnemy,
@@ -80,7 +80,7 @@ import { BotModule } from './bot/bot.module';
       Voting,
     ]),
 
-    // ⬇️ Eigene Module
+    //Eigene Module
     AuthModule,
     PublicModule,
     BotModule,

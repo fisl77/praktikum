@@ -351,7 +351,7 @@ export class AdminService {
     return activeEvent.eventEnemies.map((ee) => ({
       name: ee.enemy.name.name,
       path: ee.enemy.name.path,
-      selected_profile: ee.enemy.type.type, // ✅ richtiges Feld verwenden
+      selected_profile: ee.enemy.type.type,
       max_count: ee.enemy.max_count,
       new_scale: ee.enemy.new_scale,
       loners: ee.enemy.loners,

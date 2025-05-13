@@ -1,15 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as session from 'express-session';
-import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
 import * as dotenv from 'dotenv';
+
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Session & Cookies
   app.use(cookieParser());
   app.use(
     session({
@@ -17,12 +17,12 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 1000 * 60 * 60, // 1 Stunde
+        maxAge: 1000 * 60 * 60,
       },
     }),
   );
 
-  //Swagger Konfiguration mit API-Key Unterstützung
+  // 🛠️ Hier: Swagger Setup mit richtigem API-Key-Header
   const config = new DocumentBuilder()
     .setTitle('Community Game Admin API')
     .setDescription('API zur Verwaltung von Events, Gegnern, Umfragen etc.')
@@ -33,7 +33,7 @@ async function bootstrap() {
         name: 'x-api-key',
         in: 'header',
       },
-      'API-KEY', // dieser Name ist wichtig für Swagger
+      'x-api-key',
     )
     .build();
 

@@ -167,9 +167,7 @@ export class BotService implements OnModuleInit {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async checkForPostingVotes() {
-    this.logger.log(
-      '🕐 Cronjob gestartet: Überprüfe auf zu postende Umfragen...',
-    );
+    this.logger.log('Cronjob gestartet: Überprüfe auf zu postende Umfragen...');
     const now = new Date();
 
     const pendingVotes = await this.questionnaireRepo.find({
@@ -181,7 +179,7 @@ export class BotService implements OnModuleInit {
       relations: ['answers'],
     });
 
-    this.logger.log(`📋 Gefundene Umfragen zum Posten: ${pendingVotes.length}`);
+    this.logger.log(`Gefundene Umfragen zum Posten: ${pendingVotes.length}`);
 
     for (const vote of pendingVotes) {
       const channel = await this.client.channels.fetch(vote.channelId);
@@ -215,9 +213,7 @@ export class BotService implements OnModuleInit {
       vote.wasPostedToDiscord = true;
       await this.questionnaireRepo.save(vote);
 
-      this.logger.log(
-        `📤 Umfrage ${vote.questionnaireID} wurde jetzt gepostet.`,
-      );
+      this.logger.log(`Umfrage ${vote.questionnaireID} wurde jetzt gepostet.`);
     }
   }
 
