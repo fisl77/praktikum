@@ -1,30 +1,39 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  templateUrl: './login.component.html',
   imports: [FormsModule],
-  styleUrls: ['./login.component.css'],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   username = '';
   password = '';
+  errorMessage = '';
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
+    if (!this.username || !this.password) {
+      this.errorMessage = 'Bitte Username und Passwort eingeben.';
+      return;
+    }
+
     this.authService.login(this.username, this.password).subscribe({
       next: () => {
-        console.log('Login erfolgreich, Weiterleitung zum Dashboard');
-        this.router.navigate(['/dashboard']);
+        console.log('Login erfolgreich!');
+
+        // ⏳  Kleiner Timeout bevor wir navigieren:
+        setTimeout(() => {
+          this.router.navigate(['/dashboard']);
+        }, 300); // 100 ms reicht aus!
       },
-      error: (err) => {
-        console.error('Login fehlgeschlagen:', err);
-        alert('Login fehlgeschlagen!');
+      error: () => {
+        this.errorMessage = 'Login fehlgeschlagen!';
       }
     });
   }

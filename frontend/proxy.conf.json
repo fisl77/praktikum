@@ -1,0 +1,26 @@
+{
+  "/auth": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "cookieDomainRewrite": "localhost"
+  },
+  "/admin": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "cookieDomainRewrite": "localhost"
+  },
+  "/discord-bot": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "cookieDomainRewrite": "localhost"
+  },
+  "/public": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "cookieDomainRewrite": "localhost"
+  }
+}

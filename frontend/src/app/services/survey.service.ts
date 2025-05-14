@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class SurveyService {
-  private apiUrl = 'http://localhost:3000/discord-bot/allQuestionnaires';
+  private apiUrl = '/discord-bot/allQuestionnaires'; // <-- ohne localhost
 
   constructor(private http: HttpClient) {}
 

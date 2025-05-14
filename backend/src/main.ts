@@ -3,28 +3,26 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // 🎯 Einfaches CORS
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: true, // ALLES erlauben (wie TicTacToe)
     credentials: true,
   });
-
   app.use(cookieParser());
+
   app.use(
     session({
-      secret: process.env.SESSION_SECRET || 'ultrasecretkey',
+      secret: 'ultrasecretkey', // oder aus .env lesen
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 1000 * 60 * 60,
-        sameSite: 'lax',
-        secure: false,
+        maxAge: 1000 * 60 * 60, // 1h
+        sameSite: 'lax', // nicht "strict"!
+        secure: false, // darf über http laufen
       },
     }),
   );
@@ -33,12 +31,11 @@ async function bootstrap() {
     .setTitle('Community Game Admin API')
     .setDescription('API zur Verwaltung von Events, Gegnern, Umfragen etc.')
     .setVersion('1.0')
-    .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'x-api-key')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(3000);
 }
 bootstrap();

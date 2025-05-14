@@ -1,37 +1,38 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginRequestDto } from '../dto/LoginRequestDto';
-import { LoginResponseDto } from '../dto/LoginResponseDto';
 import { Request } from 'express';
 
 @Injectable()
-export class AdminAuthService {
+export class AuthService {
   private readonly adminUser = {
     username: 'admin',
     password: 'admin123',
   };
 
-  async login(dto: LoginRequestDto, req: Request): Promise<LoginResponseDto> {
-    const { username, password } = dto;
-
+  async login(username: string, password: string, req: Request): Promise<void> {
     if (
       username !== this.adminUser.username ||
       password !== this.adminUser.password
     ) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
     req.session.user = {
       username,
       role: 'admin',
     };
 
-    return new LoginResponseDto('Session started');
+    console.log('Login erfolgreich:', username);
   }
 
-  async logout(req: Request): Promise<{ message: string }> {
+  async logout(req: Request): Promise<void> {
     return new Promise((resolve, reject) => {
       req.session.destroy((err) => {
-        if (err) reject(err);
-        else resolve({ message: 'Logged out successfully' });
+        if (err) {
+          reject(new UnauthorizedException('Logout fehlgeschlagen'));
+        } else {
+          console.log('Logout erfolgreich');
+          resolve();
+        }
       });
     });
   }

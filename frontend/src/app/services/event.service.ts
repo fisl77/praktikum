@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
-  private apiUrl = 'http://localhost:3000/admin/events';
+  private apiUrl = '/admin/events'; // <-- ohne localhost
 
   constructor(private http: HttpClient) {}
 
