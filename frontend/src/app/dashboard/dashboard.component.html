@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+</head>
+<body>
+<div class="dashboard-container">
+  <h1>DASHBOARD</h1>
+  <button (click)="logout()">Logout</button>
+
+  <h2>Event History</h2>
+  <div *ngFor="let event of events" class="event-card">
+    <p>{{ event.name }}</p>
+    <p>{{ event.startTime }} - {{ event.endTime }}</p>
+  </div>
+
+  <h2>Results</h2>
+  <div *ngFor="let survey of surveys" class="survey-card">
+    <p>{{ survey.question }}</p>
+    <p>Winner: {{ survey.winner }}</p>
+  </div>
+
+  <button (click)="openEventPopup()">Start Event</button>
+  <button (click)="openSurveyPopup()">Start Survey</button>
+</div>
+</body>
+</html>
