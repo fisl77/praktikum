@@ -49,7 +49,7 @@ export class BotService implements OnModuleInit {
     });
 
     this.client.on('messageCreate', (message) => {
-      if (message.content === '!Bist du da?') {
+      if (message.content === '/Bist du da?') {
         message.reply('Ich bin immer da :)');
       }
     });
@@ -166,11 +166,11 @@ export class BotService implements OnModuleInit {
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async checkForPostingVotes() {
+  async checkForPostingQuestionnaire() {
     this.logger.log('Cronjob gestartet: Überprüfe auf zu postende Umfragen...');
     const now = new Date();
 
-    const pendingVotes = await this.questionnaireRepo.find({
+    const pendingQuestionnaire = await this.questionnaireRepo.find({
       where: {
         isLive: true,
         wasPostedToDiscord: false,
@@ -179,41 +179,54 @@ export class BotService implements OnModuleInit {
       relations: ['answers'],
     });
 
-    this.logger.log(`Gefundene Umfragen zum Posten: ${pendingVotes.length}`);
+    this.logger.log(
+      `Gefundene Umfragen zum Posten: ${pendingQuestionnaire.length}`,
+    );
 
-    for (const vote of pendingVotes) {
-      const channel = await this.client.channels.fetch(vote.channelId);
-      if (!channel || !channel.isTextBased()) {
-        this.logger.warn(`📭 Channel ${vote.channelId} ungültig.`);
-        continue;
+    for (const vote of pendingQuestionnaire) {
+      try {
+        const channel = await this.client.channels.fetch(vote.channelId);
+        if (!channel || !channel.isTextBased()) {
+          this.logger.warn(`📭 Channel ${vote.channelId} ungültig.`);
+          continue;
+        }
+
+        const endTimeFormatted = new Date(vote.endTime).toLocaleString(
+          'de-DE',
+          {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'Europe/Berlin',
+          },
+        );
+
+        const optionsText = vote.answers
+          .map((a, i) => `${String.fromCodePoint(0x1f1e6 + i)} ${a.answer}`)
+          .join('\n');
+
+        const message = await (channel as TextChannel).send(
+          `**${vote.question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
+        );
+
+        for (let i = 0; i < vote.answers.length; i++) {
+          await message.react(String.fromCodePoint(0x1f1e6 + i));
+        }
+
+        vote.messageId = message.id;
+        vote.wasPostedToDiscord = true;
+        await this.questionnaireRepo.save(vote);
+
+        this.logger.log(
+          `Umfrage ${vote.questionnaireID} wurde jetzt gepostet.`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `Fehler beim Posten der Umfrage ${vote.questionnaireID}: ${error.message}`,
+        );
       }
-
-      const endTimeFormatted = new Date(vote.endTime).toLocaleString('de-DE', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Europe/Berlin',
-      });
-
-      const optionsText = vote.answers
-        .map((a, i) => `${String.fromCodePoint(0x1f1e6 + i)} ${a.answer}`)
-        .join('\n');
-
-      const message = await (channel as TextChannel).send(
-        `**${vote.question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
-      );
-
-      for (let i = 0; i < vote.answers.length; i++) {
-        await message.react(String.fromCodePoint(0x1f1e6 + i));
-      }
-
-      vote.messageId = message.id;
-      vote.wasPostedToDiscord = true;
-      await this.questionnaireRepo.save(vote);
-
-      this.logger.log(`Umfrage ${vote.questionnaireID} wurde jetzt gepostet.`);
     }
   }
 

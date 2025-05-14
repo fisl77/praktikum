@@ -20,7 +20,7 @@ export class Questionnaire {
   isLive: boolean;
 
   @Column({ nullable: true })
-  messageId: string;
+  messageId: string | null;
 
   @OneToMany(() => Voting, (voting: Voting) => voting.questionnaire)
   votings: Voting[];
