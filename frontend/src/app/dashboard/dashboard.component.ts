@@ -3,6 +3,7 @@ import { AuthService } from '../auth/auth.service';
 import { EventService } from '../services/event.service';
 import { SurveyService } from '../services/survey.service';
 import { NgForOf } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,7 +19,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private eventService: EventService,
-    private surveyService: SurveyService
+    private surveyService: SurveyService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -31,7 +33,15 @@ export class DashboardComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log('Logout erfolgreich!');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Fehler beim Logout:', err);
+      }
+    });
   }
 
   openEventPopup() {
