@@ -1,12 +1,12 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-survey-popup',
+  selector: 'app-event-popup',
   standalone: true,
-  templateUrl: './survey-popup.html',
-  styleUrls: ['./survey-popup.css']
+  templateUrl: './event-popup.html',
+  styleUrls: ['./event-popup.css']
 })
-export class SurveyPopupComponent {
+export class EventPopupComponent {
   @Output() close = new EventEmitter<void>();
 
   closePopup() {

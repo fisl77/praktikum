@@ -9,9 +9,9 @@ export class AuthGuard implements CanActivate {
 
   canActivate() {
     return this.http.get('/auth/check', { withCredentials: true }).pipe(
-      map(() => true), // Wenn erfolgreich: Zugriff erlaubt
+      map(() => true),
       catchError(() => {
-        this.router.navigate(['/login']); // Wenn nicht: zurück zu Login
+        this.router.navigate(['/login']);
         return of(false);
       })
     );

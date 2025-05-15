@@ -10,4 +10,7 @@ export class EventService {
   getEvents() {
     return this.http.get<any[]>(this.apiUrl, { withCredentials: true });
   }
+  getAllEventsDetailed() {
+    return this.http.get<any[]>('/admin/events', { withCredentials: true });
+  }
 }

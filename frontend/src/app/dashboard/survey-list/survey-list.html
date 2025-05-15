@@ -1,0 +1,14 @@
+<div class="survey-section">
+  <h2>Start Survey</h2>
+  <div class="survey-cards">
+    <div *ngFor="let survey of surveys" class="survey-card">
+      <p>{{ survey.question }}</p>
+      <div *ngFor="let answer of survey.answers">
+        <span>{{ answer.text }}</span>
+        <div class="bar" [style.width.%]="answer.percentage">{{ answer.percentage }}%</div>
+      </div>
+      <p *ngIf="survey.winner"><strong>Winner:</strong> {{ survey.winner }}</p>
+      <span *ngIf="survey.isLive" class="live-badge">LIVE</span>
+    </div>
+  </div>
+</div>

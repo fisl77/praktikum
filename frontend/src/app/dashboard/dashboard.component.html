@@ -1,20 +1,15 @@
-<div class="dashboard-container">
-  <h1>DASHBOARD</h1>
-  <button (click)="logout()">Logout</button>
+<app-nav></app-nav>
 
+<div class="dashboard-container">
   <h2>Event History</h2>
-  <div *ngFor="let event of events" class="event-card">
-    <p>{{ event.name }}</p>
-    <p>{{ event.startTime }} - {{ event.endTime }}</p>
-  </div>
+  <app-event-list [events]="events"></app-event-list>
 
   <h2>Results</h2>
-  <div *ngFor="let survey of surveys" class="survey-card">
-    <p>{{ survey.question }}</p>
-    <p>Winner: {{ survey.winner }}</p>
-  </div>
+  <app-survey-list [surveys]="surveys"></app-survey-list>
 
-  <button (click)="openEventPopup()">Start Event</button>
-  <button (click)="openSurveyPopup()">Start Survey</button>
+  <button (click)="showEventPopup = true">Start Event</button>
+  <button (click)="showSurveyPopup = true">Start Survey</button>
+
+  <app-event-popup *ngIf="showEventPopup" (close)="showEventPopup = false"></app-event-popup>
+  <app-survey-popup *ngIf="showSurveyPopup" (close)="showSurveyPopup = false"></app-survey-popup>
 </div>
-
