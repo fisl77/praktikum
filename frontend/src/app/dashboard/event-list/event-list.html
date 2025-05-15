@@ -1,9 +1,9 @@
 <div class="event-section">
-  <h2>Start Event</h2>
+  <h2>Zeitdauer des Events</h2>
   <div class="event-cards">
     <div *ngFor="let event of events" class="event-card">
       <p>{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} - {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</p>
-      <p><strong>Levels:</strong></p>
+      <p><strong>Map:</strong></p>
       <ul>
         <li *ngFor="let level of event.levels">{{ level.name }}</li>
       </ul>
