@@ -1,15 +1,19 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth/auth.service'; // Pfad anpassen!
+import { AuthService } from '../auth/auth.service';
+import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-nav',
   standalone: true,
-  templateUrl: './nav.html',
-  styleUrls: ['./nav.css'],
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.css'],
+  imports: [
+    NgIf
+  ]
 })
 export class NavComponent {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(public authService: AuthService, private router: Router) {}
 
   logout() {
     this.authService.logout().subscribe({

@@ -3,7 +3,7 @@ import { EventPopupComponent } from './event-popup/event-popup';
 import { SurveyPopupComponent } from './survey-popup/survey-popup';
 import { SurveyListComponent } from './survey-list/survey-list';
 import { EventListComponent } from './event-list/event-list';
-import { NavComponent } from '../nav/nav';
+import { NavComponent } from '../nav/navbar.component';
 import { NgIf, NgForOf } from '@angular/common'; // <-- beides importieren!
 import { EventService } from '../services/event.service';
 import { SurveyService } from '../services/survey.service';

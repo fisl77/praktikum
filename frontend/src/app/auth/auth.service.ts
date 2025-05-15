@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {catchError, map, Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,5 +15,12 @@ export class AuthService {
 
   logout(): Observable<any> {
     return this.http.post('/auth/logout', {}, { withCredentials: true });
+  }
+
+  checkLoginStatus() {
+    return this.http.get('/auth/check', { withCredentials: true }).pipe(
+      map(() => true),
+      catchError(() => of(false))
+    );
   }
 }

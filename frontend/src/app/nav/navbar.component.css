@@ -1,0 +1,18 @@
+.custom-navbar {
+  background-color: #4b0082;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.navbar-logo {
+  height: 8em;
+  width: auto;
+  object-fit: contain;
+}
+
+.custom-btn {
+  color: white;
+  border-color: white;
+}
