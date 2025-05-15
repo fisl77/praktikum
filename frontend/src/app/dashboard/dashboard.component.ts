@@ -4,7 +4,7 @@ import { SurveyPopupComponent } from './survey-popup/survey-popup';
 import { SurveyListComponent } from './survey-list/survey-list';
 import { EventListComponent } from './event-list/event-list';
 import { NavComponent } from '../nav/nav';
-import { NgIf, NgForOf } from '@angular/common'; // <-- beides importieren!
+import { NgIf } from '@angular/common';
 import { EventService } from '../services/event.service';
 import { SurveyService } from '../services/survey.service';
 import { Router } from '@angular/router';
@@ -20,10 +20,9 @@ import { AuthService } from '../auth/auth.service';
     EventPopupComponent,
     SurveyPopupComponent,
     NgIf,
-    NgForOf, // <-- wichtig für *ngFor
   ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
   events: any[] = [];
@@ -40,34 +39,45 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.eventService.getAllEventsDetailed().subscribe(events => {
-      this.events = events;
+    this.loadData();
+  }
+
+  /**
+   * Lädt Events und Surveys vom Server
+   */
+  loadData(): void {
+    this.eventService.getAllEventsDetailed().subscribe({
+      next: (events) => {
+        console.log('Geladene Events:', events);
+        this.events = events;
+      },
+      error: (err) => console.error('Fehler beim Laden der Events:', err),
     });
 
-    this.surveyService.getAllSurveys().subscribe(surveys => {
-      this.surveys = surveys;
+    this.surveyService.getAllSurveys().subscribe({
+      next: (surveys) => {
+        console.log('Geladene Surveys:', surveys);
+        this.surveys = surveys;
+      },
+      error: (err) => console.error('Fehler beim Laden der Surveys:', err),
     });
   }
 
-  loadData() {
-    this.eventService.getEvents().subscribe(events => {
-      console.log('Geladene Events:', events);
-      this.events = events;
-    });
-
-    this.surveyService.getAllSurveys().subscribe(surveys => {
-      console.log('Geladene Surveys:', surveys);
-      this.surveys = surveys;
-    });
-
-  }
-
-
-  openEventPopup() {
+  openEventPopup(): void {
     this.showEventPopup = true;
   }
 
-  openSurveyPopup() {
+  closeEventPopup(): void {
+    this.showEventPopup = false;
+    this.loadData(); // ✨ Popup geschlossen ➔ Neu laden
+  }
+
+  openSurveyPopup(): void {
     this.showSurveyPopup = true;
+  }
+
+  closeSurveyPopup(): void {
+    this.showSurveyPopup = false;
+    this.loadData(); // ✨ Popup geschlossen ➔ Neu laden
   }
 }
