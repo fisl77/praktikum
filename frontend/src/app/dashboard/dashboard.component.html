@@ -5,9 +5,9 @@
   <h2>Results</h2>
   <app-survey-list [surveys]="surveys"></app-survey-list>
 
-  <button (click)="showEventPopup = true">Start Event</button>
-  <button (click)="showSurveyPopup = true">Start Survey</button>
+  <button (click)="openEventPopup()">Start Event</button>
+  <button (click)="openSurveyPopup()">Start Survey</button>
 
-  <app-event-popup *ngIf="showEventPopup" (close)="showEventPopup = false"></app-event-popup>
-  <app-survey-popup *ngIf="showSurveyPopup" (close)="showSurveyPopup = false"></app-survey-popup>
+  <app-event-popup *ngIf="showEventPopup" (close)="closeEventPopup()"></app-event-popup>
+  <app-survey-popup *ngIf="showSurveyPopup" (close)="closeSurveyPopup()"></app-survey-popup>
 </div>

@@ -1,7 +1,46 @@
-<div class="popup-overlay">
-  <div class="popup-content">
-    <h3>Survey erstellen</h3>
-    <!-- Hier später Formularfelder einbauen! -->
-    <button (click)="closePopup()">Schließen</button>
+<div class="overlay">
+  <div class="popup">
+    <h2>Survey erstellen</h2>
+
+    <form (ngSubmit)="submitSurvey()">
+      <label>Frage</label>
+      <input type="text" [(ngModel)]="question" name="question" required />
+
+      <label>Antworten</label>
+      <div *ngFor="let answer of answers; let i = index" class="answer-row">
+        <input
+          type="text"
+          [(ngModel)]="answer.text"
+          [name]="'answer' + i"
+          required
+        />
+        <button type="button" (click)="removeAnswer(i)">✖️</button>
+      </div>
+
+      <button type="button" (click)="addAnswer()">Antwort hinzufügen</button>
+
+      <label>Startzeit</label>
+      <input
+        type="datetime-local"
+        [(ngModel)]="startTime"
+        name="startTime"
+        [min]="minDateTime"
+        required
+      />
+
+      <label>Endzeit</label>
+      <input
+        type="datetime-local"
+        [(ngModel)]="endTime"
+        name="endTime"
+        [min]="startTime || minDateTime"
+        required
+      />
+
+      <div class="buttons">
+        <button type="submit">Erstellen</button>
+        <button type="button" (click)="closePopup()">Abbrechen</button>
+      </div>
+    </form>
   </div>
 </div>

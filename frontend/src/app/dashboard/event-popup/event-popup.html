@@ -1,7 +1,41 @@
-<div class="popup-overlay">
-  <div class="popup-content">
-    <h3>Event erstellen</h3>
-    <!-- Hier später Formularfelder einbauen! -->
-    <button (click)="closePopup()">Schließen</button>
+<div class="overlay">
+  <div class="popup">
+    <button class="close" (click)="close.emit()">X</button>
+    <h2>Event</h2>
+
+    <h3>Enemies:</h3>
+    <div *ngFor="let enemy of enemies">
+      <label>
+        <input type="radio" name="enemy" [value]="enemy" [(ngModel)]="selectedEnemy">
+        {{ enemy }}
+      </label>
+    </div>
+
+    <h3>Type:</h3>
+    <div>
+      <label><input type="radio" name="type" value="default" [(ngModel)]="selectedType"> default</label>
+      <label><input type="radio" name="type" value="strong" [(ngModel)]="selectedType"> strong</label>
+      <label><input type="radio" name="type" value="weak" [(ngModel)]="selectedType"> weak</label>
+    </div>
+
+    <h3>Scale:</h3>
+    <input type="number" [(ngModel)]="scale" step="0.1">
+
+    <h3>Max Count:</h3>
+    <input type="number" [(ngModel)]="maxCount">
+
+    <h3>Loners:</h3>
+    <select [(ngModel)]="loners">
+      <option [value]="true">true</option>
+      <option [value]="false">false</option>
+    </select>
+
+    <h3>Start Time:</h3>
+    <input type="datetime-local" [(ngModel)]="startTime">
+
+    <h3>End Time:</h3>
+    <input type="datetime-local" [(ngModel)]="endTime">
+
+    <button (click)="createEvent()">Create Event</button>
   </div>
 </div>

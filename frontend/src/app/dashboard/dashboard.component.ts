@@ -40,34 +40,46 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.eventService.getAllEventsDetailed().subscribe(events => {
-      this.events = events;
-    });
-
-    this.surveyService.getAllSurveys().subscribe(surveys => {
-      this.surveys = surveys;
-    });
+    this.loadData();
   }
 
-  loadData() {
-    this.eventService.getEvents().subscribe(events => {
-      console.log('Geladene Events:', events);
-      this.events = events;
+  /**
+   * Lädt Events und Surveys vom Server
+   */
+  loadData(): void {
+    this.eventService.getAllEventsDetailed().subscribe({
+      next: (events) => {
+        console.log('Geladene Events:', events);
+        this.events = events;
+      },
+      error: (err) => console.error('Fehler beim Laden der Events:', err),
     });
 
-    this.surveyService.getAllSurveys().subscribe(surveys => {
-      console.log('Geladene Surveys:', surveys);
-      this.surveys = surveys;
+    this.surveyService.getAllSurveys().subscribe({
+      next: (surveys) => {
+        console.log('Geladene Surveys:', surveys);
+        this.surveys = surveys;
+      },
+      error: (err) => console.error('Fehler beim Laden der Surveys:', err),
     });
 
   }
 
-
-  openEventPopup() {
+  openEventPopup(): void {
     this.showEventPopup = true;
   }
 
-  openSurveyPopup() {
+  closeEventPopup(): void {
+    this.showEventPopup = false;
+    this.loadData(); // ✨ Popup geschlossen ➔ Neu laden
+  }
+
+  openSurveyPopup(): void {
     this.showSurveyPopup = true;
+  }
+
+  closeSurveyPopup(): void {
+    this.showSurveyPopup = false;
+    this.loadData(); // ✨ Popup geschlossen ➔ Neu laden
   }
 }
