@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-survey-popup',
+  selector: 'app-questionnaire-popup',
   standalone: true,
   imports: [NgIf, NgForOf, FormsModule],
-  templateUrl: './survey-popup.html',
-  styleUrls: ['./survey-popup.css'],
+  templateUrl: './survey-popup.component.html',
+  styleUrls: ['./survey-popup.component.css'],
 })
 export class SurveyPopupComponent {
   @Output() close = new EventEmitter<void>();

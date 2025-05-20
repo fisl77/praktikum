@@ -17,7 +17,6 @@ export class EventPopupComponent {
   selectedType = '';
   scale = 1.0;
   maxCount = 1;
-  loners = false;
   startTime = '';
   endTime = '';
 
@@ -27,7 +26,6 @@ export class EventPopupComponent {
       selectedType: this.selectedType,
       scale: this.scale,
       maxCount: this.maxCount,
-      loners: this.loners,
       startTime: this.startTime,
       endTime: this.endTime,
     });

@@ -148,26 +148,31 @@ export class AdminService {
 
     const now = new Date();
 
-    return events.map((event) => {
-      const isLive = now >= event.startTime && now <= event.endTime;
+    return events
+      .map((event) => {
+        const isLive = now >= event.startTime && now <= event.endTime;
 
-      return {
-        eventID: event.eventID,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        isLive,
-        levels: event.eventLevels.map((el) => ({
-          levelID: el.level.levelID,
-          name: el.level.name,
-        })),
-        enemies: event.eventEnemies.map((ee) => ({
-          enemyID: ee.enemy.enemyID,
-          name: ee.enemy.name.name,
-          type: ee.enemy.type.type,
-          quantity: ee.quantity,
-        })),
-      };
-    });
+        return {
+          eventID: event.eventID,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          isLive,
+          levels: event.eventLevels.map((el) => ({
+            levelID: el.level.levelID,
+            name: el.level.name,
+          })),
+          enemies: event.eventEnemies.map((ee) => ({
+            enemyID: ee.enemy.enemyID,
+            name: ee.enemy.name.name,
+            type: ee.enemy.type.type,
+            quantity: ee.quantity,
+          })),
+        };
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.startTime).getTime() - new Date(a.startTime).getTime(),
+      );
   }
 
   async updateEvent(dto: UpdateEventRequestDto) {
