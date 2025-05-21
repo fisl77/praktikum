@@ -1,6 +1,6 @@
 import {Component, HostListener, OnInit} from '@angular/core';
 import { EventPopupComponent } from './event-popup/event-popup';
-import { SurveyPopupComponent} from './survey-popup/survey-popup';
+import { SurveyPopupComponent} from './survey-popup/survey-popup.component';
 import { SurveyListComponent } from './survey-list/survey-list';
 import { EventListComponent } from './event-list/event-list';
 import { NavComponent } from '../nav/navbar.component';

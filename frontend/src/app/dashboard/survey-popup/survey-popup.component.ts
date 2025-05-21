@@ -7,8 +7,8 @@ import { SurveyService } from '../../services/survey.service'; // <-- Service be
   selector: 'app-survey-popup',
   standalone: true,
   imports: [ NgForOf, FormsModule],
-  templateUrl: './survey-popup.html',
-  styleUrls: ['./survey-popup.css'],
+  templateUrl: './survey-popup.component.html',
+  styleUrls: ['./survey-popup.component.css'],
 })
 export class SurveyPopupComponent {
   @Output() close = new EventEmitter<void>();
