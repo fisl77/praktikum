@@ -1,26 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {catchError, map, Observable, of} from 'rxjs';
+import { ApiEndpoints } from '../../api.endpoints';
+import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<any> {
-    const user = { username, password };
-    return this.http.post('/auth/login', user, { withCredentials: true });
+    return this.http.post(
+      ApiEndpoints.AUTH_LOGIN,
+      { username, password },
+      { withCredentials: true }
+    );
   }
 
   logout(): Observable<any> {
-    return this.http.post('/auth/logout', {}, { withCredentials: true });
+    return this.http.post(ApiEndpoints.AUTH_LOGOUT, {}, { withCredentials: true });
   }
 
-  checkLoginStatus() {
-    return this.http.get('/auth/check', { withCredentials: true }).pipe(
-      map(() => true),
-      catchError(() => of(false))
-    );
+  checkLogin(): Observable<any> {
+    return this.http.get(ApiEndpoints.AUTH_CHECK, { withCredentials: true });
   }
 }

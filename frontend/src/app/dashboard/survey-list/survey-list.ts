@@ -9,5 +9,5 @@ import {NgForOf, NgIf} from '@angular/common';
   imports: [NgForOf, NgIf]
 })
 export class SurveyListComponent {
-  @Input() surveys: any[] = []; // <-- Daten kommen vom Dashboard!
+  @Input() surveys: any[] = [];
 }

@@ -4,8 +4,8 @@ import {NavComponent} from './nav/navbar.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,   // ❗ GANZ WICHTIG
-  imports: [RouterOutlet, NavComponent],  // ❗ GANZ WICHTIG
+  standalone: true,
+  imports: [RouterOutlet, NavComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

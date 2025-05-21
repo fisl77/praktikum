@@ -14,6 +14,7 @@ import { Voting } from '../Voting/voting.entity';
 import { EnemyName } from '../EnemyName/enemyName.entity';
 import { EnemyType } from '../EnemyType/enemyType.entity';
 import { UpdateEventRequestDto } from '../Event/dto/UpdateEventRequestDto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class AdminService {
@@ -50,6 +51,14 @@ export class AdminService {
   ) {}
 
   async createEvent(dto: CreateEventRequestDto) {
+    const now = new Date();
+
+    if (new Date(dto.startTime) < now) {
+      throw new BadRequestException(
+        'Startzeit darf nicht in der Vergangenheit liegen.',
+      );
+    }
+
     const overlappingEvent = await this.eventRepo.findOne({
       where: [
         {
@@ -65,21 +74,24 @@ export class AdminService {
       );
     }
 
-    // Gültige Level & Enemies wie gehabt prüfen
     const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
     if (validLevels.length !== dto.levelIDs.length) {
-      throw new BadRequestException('Ungültige LevelID(s) übergeben');
+      throw new BadRequestException('Ungültige LevelID(s) übergeben.');
     }
 
     const enemyIDsFromDto = dto.enemies.map((e) => e.enemyID);
     const validEnemies = await this.enemyRepo.findByIds(enemyIDsFromDto);
     if (validEnemies.length !== enemyIDsFromDto.length) {
-      throw new BadRequestException('Ungültige EnemyID(s) übergeben');
+      throw new BadRequestException('Ungültige EnemyID(s) übergeben.');
     }
+
+    const isLiveNow =
+      now >= new Date(dto.startTime) && now <= new Date(dto.endTime);
 
     const rawEvent = await this.eventRepo.save({
       startTime: dto.startTime,
       endTime: dto.endTime,
+      isLive: isLiveNow,
     });
 
     const event = await this.eventRepo.findOneOrFail({
@@ -88,14 +100,14 @@ export class AdminService {
 
     await this.eventLevelRepo.save(
       dto.levelIDs.map((levelID) => ({
-        event: event,
+        event,
         level: { levelID },
       })),
     );
 
     await this.eventEnemyRepo.save(
       dto.enemies.map((e) => ({
-        event: event,
+        event,
         enemy: { enemyID: e.enemyID },
         quantity: e.quantity,
       })),
@@ -146,51 +158,47 @@ export class AdminService {
       ],
     });
 
-    const now = new Date();
-
-    return events.map((event) => {
-      const isLive = now >= event.startTime && now <= event.endTime;
-
-      return {
-        eventID: event.eventID,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        isLive,
-        levels: event.eventLevels.map((el) => ({
-          levelID: el.level.levelID,
-          name: el.level.name,
-        })),
-        enemies: event.eventEnemies.map((ee) => ({
-          enemyID: ee.enemy.enemyID,
-          name: ee.enemy.name.name,
-          type: ee.enemy.type.type,
-          quantity: ee.quantity,
-        })),
-      };
-    });
+    return events.map((event) => ({
+      eventID: event.eventID,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      isLive: event.isLive,
+      levels: event.eventLevels.map((el) => ({
+        levelID: el.level.levelID,
+        name: el.level.name,
+      })),
+      enemies: event.eventEnemies.map((ee) => ({
+        enemyID: ee.enemy.enemyID,
+        name: ee.enemy.name.name,
+        type: ee.enemy.type.type,
+        quantity: ee.quantity,
+      })),
+    }));
   }
 
   async updateEvent(dto: UpdateEventRequestDto) {
+    const now = new Date();
+
     const event = await this.eventRepo.findOne({
       where: { eventID: dto.eventID },
     });
 
     if (!event) {
       throw new BadRequestException(
-        `Event mit ID ${dto.eventID} nicht gefunden`,
+        `Event mit ID ${dto.eventID} nicht gefunden.`,
       );
     }
+
     const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
     if (validLevels.length !== dto.levelIDs.length) {
       throw new BadRequestException('Mindestens eine Level-ID ist ungültig.');
     }
 
-    // Prüfe, ob ein anderes Event im neuen Zeitraum aktiv wäre
     const overlappingEvent = await this.eventRepo.findOne({
       where: {
         startTime: LessThanOrEqual(dto.endTime),
         endTime: MoreThanOrEqual(dto.startTime),
-        eventID: Not(dto.eventID), // eigenes Event ausschließen
+        eventID: Not(dto.eventID),
       },
     });
 
@@ -199,14 +207,12 @@ export class AdminService {
         'Überschneidung mit einem anderen aktiven Event.',
       );
     }
-    const enemyIDs = dto.enemies.map((e) => e.enemyID);
-    const validEnemies = await this.enemyRepo.findByIds(enemyIDs);
-    if (validEnemies.length !== enemyIDs.length) {
-      throw new BadRequestException('Mindestens eine Enemy-ID ist ungültig.');
-    }
 
     event.startTime = dto.startTime;
     event.endTime = dto.endTime;
+    event.isLive =
+      now >= new Date(dto.startTime) && now <= new Date(dto.endTime);
+
     await this.eventRepo.save(event);
 
     await this.eventLevelRepo.delete({ event: { eventID: dto.eventID } });
@@ -234,9 +240,7 @@ export class AdminService {
   }
 
   async getEnemies() {
-    const enemies = await this.enemyRepo.find({
-      relations: ['name', 'type'],
-    });
+    const enemies = await this.enemyRepo.find({ relations: ['name', 'type'] });
 
     return enemies.map((enemy) => ({
       id: enemy.enemyID,
@@ -267,10 +271,9 @@ export class AdminService {
       loners: enemy.loners,
     };
   }
+
   async getActiveEnemies() {
     const now = new Date();
-
-    // Suche aktives Event
     const activeEvent = await this.eventRepo.findOne({
       where: {
         startTime: LessThanOrEqual(now),
@@ -284,7 +287,8 @@ export class AdminService {
       ],
     });
 
-    if (!activeEvent) return []; // Keine Gegner wenn kein aktives Event
+    if (!activeEvent) return [];
+
     return activeEvent.eventEnemies.map((ee) => ({
       name: ee.enemy.name.name,
       path: ee.enemy.name.path,
@@ -293,5 +297,19 @@ export class AdminService {
       new_scale: ee.enemy.new_scale,
       loners: ee.enemy.loners,
     }));
+  }
+
+  @Cron(CronExpression.EVERY_SECOND)
+  async updateLiveStatus() {
+    const now = new Date();
+    const events = await this.eventRepo.find();
+
+    for (const event of events) {
+      const shouldBeLive = now >= event.startTime && now <= event.endTime;
+      if (event.isLive !== shouldBeLive) {
+        event.isLive = shouldBeLive;
+        await this.eventRepo.save(event);
+      }
+    }
   }
 }

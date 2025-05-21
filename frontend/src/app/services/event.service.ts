@@ -1,16 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { ApiEndpoints } from '../../api.endpoints';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
-  private apiUrl = '/admin/events'; // <-- ohne localhost
-
   constructor(private http: HttpClient) {}
 
-  getEvents() {
-    return this.http.get<any[]>(this.apiUrl, { withCredentials: true });
+  getEvents(): Observable<any[]> {
+    return this.http.get<any[]>(ApiEndpoints.ADMIN_EVENTS, { withCredentials: true });
   }
-  getAllEventsDetailed() {
-    return this.http.get<any[]>('/admin/events', { withCredentials: true });
+
+  getAllEventsDetailed(): Observable<any[]> {
+    return this.http.get<any[]>(ApiEndpoints.ADMIN_EVENTS, { withCredentials: true });
+  }
+
+  createEvent(eventData: any): Observable<any> {
+    return this.http.post(ApiEndpoints.ADMIN_EVENT, eventData, { withCredentials: true });
+  }
+
+  updateEvent(eventData: any): Observable<any> {
+    return this.http.patch(ApiEndpoints.ADMIN_UPDATE_EVENT, eventData, { withCredentials: true });
   }
 }

@@ -8,9 +8,7 @@ import {NgIf} from '@angular/common';
   standalone: true,
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
-  imports: [
-    NgIf
-  ]
+  imports: []
 })
 export class NavComponent {
   constructor(public authService: AuthService, private router: Router) {}

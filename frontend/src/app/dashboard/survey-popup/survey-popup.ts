@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
+import { NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { SurveyService } from '../../services/survey.service'; // <-- Service benutzen
 
 @Component({
   selector: 'app-survey-popup',
   standalone: true,
-  imports: [NgIf, NgForOf, FormsModule],
+  imports: [ NgForOf, FormsModule],
   templateUrl: './survey-popup.html',
   styleUrls: ['./survey-popup.css'],
 })
@@ -19,13 +19,13 @@ export class SurveyPopupComponent {
   endTime: string = '';
   minDateTime: string = '';
 
-  constructor(private http: HttpClient) {
+  constructor(private surveyService: SurveyService) {
     this.minDateTime = this.getMinDateTime();
   }
 
   private getMinDateTime(): string {
     const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); // Korrektur wegen UTC
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, 16);
   }
 
@@ -40,17 +40,16 @@ export class SurveyPopupComponent {
 
     console.log('POST an Bot:', payload);
 
-    this.http.post('/discord-bot/startQuestionnaire', payload, { withCredentials: true })
-      .subscribe({
-        next: (response) => {
-          console.log('Umfrage erfolgreich gestartet:', response);
-          this.close.emit();
-        },
-        error: (error) => {
-          console.error('Fehler beim Starten der Umfrage:', error);
-          alert('Fehler beim Erstellen der Umfrage');
-        }
-      });
+    this.surveyService.startSurvey(payload).subscribe({
+      next: (response) => {
+        console.log('Umfrage erfolgreich gestartet:', response);
+        this.close.emit();
+      },
+      error: (error) => {
+        console.error('Fehler beim Starten der Umfrage:', error);
+        alert('Fehler beim Erstellen der Umfrage');
+      }
+    });
   }
 
   addAnswer() {

@@ -18,4 +18,7 @@ export class Event {
 
   @OneToMany(() => EventEnemy, (ee) => ee.event, { cascade: true })
   eventEnemies: EventEnemy[];
+
+  @Column({ default: false })
+  isLive: boolean;
 }

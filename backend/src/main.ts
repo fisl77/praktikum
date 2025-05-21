@@ -6,14 +6,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
 
-  // 🎯 Einfaches CORS
-  app.enableCors({
-    origin: true, // ALLES erlauben (wie TicTacToe)
-    credentials: true,
-  });
   app.use(cookieParser());
-
   app.use(
     session({
       secret: 'ultrasecretkey', // oder aus .env lesen

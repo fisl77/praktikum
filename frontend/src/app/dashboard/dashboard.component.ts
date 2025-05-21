@@ -14,13 +14,11 @@ import { AuthService } from '../auth/auth.service';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    NavComponent,
     EventListComponent,
     SurveyListComponent,
     EventPopupComponent,
     SurveyPopupComponent,
     NgIf,
-    NgForOf, // <-- wichtig für *ngFor
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']

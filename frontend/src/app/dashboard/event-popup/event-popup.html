@@ -6,8 +6,13 @@
     <h3>Enemies:</h3>
     <div *ngFor="let enemy of enemies">
       <label>
-        <input type="radio" name="enemy" [value]="enemy" [(ngModel)]="selectedEnemy">
-        {{ enemy }}
+        <input
+          type="radio"
+          name="enemy"
+          [value]="enemy.id"
+          [(ngModel)]="selectedEnemyId"
+        >
+        {{ enemy.name }}
       </label>
     </div>
 

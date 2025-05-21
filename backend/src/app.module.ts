@@ -1,11 +1,11 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-ioredis';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 
+// Deine Entitäten importieren
 import { Event } from './Event/event.entity';
 import { EventEnemy } from './EventEnemy/eventEnemy.entity';
 import { Enemy } from './Enemy/enemy.entity';
@@ -22,32 +22,24 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdminController } from './admin/admin.controller';
 import { AdminService } from './admin/admin.service';
-
 import { PublicModule } from './public/public.module';
 import { BotModule } from './bot/bot.module';
 
 @Module({
   imports: [
-    //.env Variablen laden ( Wie zum Beispiel der BOT_TOKEN)
-    ConfigModule.forRoot({
-      isGlobal: true,
+    ServeStaticModule.forRoot({
+      rootPath: join(
+        process.cwd(),
+        '..',
+        'frontend',
+        'dist',
+        'frontend',
+        'browser',
+      ),
     }),
-
-    //Redis Cache für Sessions etc.
-    CacheModule.registerAsync({
-      isGlobal: true,
-      useFactory: () => ({
-        store: redisStore,
-        host: 'localhost',
-        port: 6379,
-        ttl: 0,
-      }),
-    }),
-
-    // ronjobs aktivieren
+    ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
 
-    //SQLite-Datenbank
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './database-tmp/database',
@@ -66,7 +58,6 @@ import { BotModule } from './bot/bot.module';
       synchronize: true,
     }),
 
-    //Repositories verfügbar machen
     TypeOrmModule.forFeature([
       Event,
       EventEnemy,
@@ -80,7 +71,6 @@ import { BotModule } from './bot/bot.module';
       Voting,
     ]),
 
-    //Eigene Module
     AuthModule,
     PublicModule,
     BotModule,
