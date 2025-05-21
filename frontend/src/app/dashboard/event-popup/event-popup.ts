@@ -18,7 +18,6 @@ export class EventPopupComponent implements OnInit {
   selectedType = '';
   scale = 1.0;
   maxCount = 1;
-  loners = false;
   startTime = '';
   endTime = '';
 

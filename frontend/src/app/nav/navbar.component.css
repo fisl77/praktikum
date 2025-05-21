@@ -16,3 +16,7 @@
   color: white;
   border-color: white;
 }
+.custom-btn:hover {
+  color: #453075;
+  background-color: white;
+}

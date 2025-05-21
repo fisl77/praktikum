@@ -349,6 +349,10 @@ export class BotService implements OnModuleInit {
       relations: ['answers', 'answers.votings'],
     });
 
+    questionnaires.sort(
+      (a, b) => new Date(b.endTime).getTime() - new Date(a.endTime).getTime(),
+    );
+
     return questionnaires.map((q) => ({
       questionnaireID: q.questionnaireID,
       question: q.question,

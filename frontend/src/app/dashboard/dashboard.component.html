@@ -1,13 +1,164 @@
-<div class="dashboard-container">
-  <h2>Event History</h2>
-  <app-event-list [events]="events"></app-event-list>
+<div class="container my-4">
+  <!-- Header und Buttons -->
+  <div class="row mb-4 justify-content-between align-items-center">
+    <div class="col-auto">
+      <button class="btn custom-btn" (click)="openEventPopup()">Start Event</button>
+      <button class="btn custom-btn" (click)="openSurveyPopup()">Start Survey</button>
+    </div>
+  </div>
 
-  <h2>Results</h2>
-  <app-survey-list [surveys]="surveys"></app-survey-list>
+  <!-- Survey-Liste -->
+  <!-- 📱 Mobile: normale Liste -->
+  <div *ngIf="!isLargeScreen" class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+    <div class="col" *ngFor="let questionnaire of visibleSurveys">
+      <div class="custom-dashboard-card">
+        <h5 class="custom-dashboard-title">{{ questionnaire.question }}</h5>
+        <div class="text-muted mb-2">
+          {{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}
+        </div>
 
-  <button (click)="openEventPopup()">Start Event</button>
-  <button (click)="openSurveyPopup()">Start Survey</button>
+        <div *ngFor="let answer of questionnaire.answers">
+          <p class="mb-1">{{ answer.answer }}</p>
+          <div class="custom-progress-container">
+            <div
+              class="custom-progress-bar"
+              [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
+            ></div>
+          </div>
+        </div>
 
+        <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
+        <div *ngIf="!questionnaire.isLive">
+          <strong>Winner:</strong> {{ getWinner(questionnaire.answers) }}
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-3" *ngIf="surveys.length > maxVisibleSurveys">
+      <button class="custom-btn" (click)="toggleShowAll()">
+        {{ showAllSurveys ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
+      </button>
+    </div>
+
+  </div>
+
+  <!-- 🖥️ Desktop: Carousel -->
+  <div *ngIf="isLargeScreen" class="carousel-flex-wrapper d-flex align-items-center justify-content-between mb-5">
+    <button class="carousel-arrow" type="button" data-bs-target="#surveyCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Vorherige</span>
+    </button>
+
+    <div id="surveyCarousel" class="carousel slide w-100 mx-3" data-bs-ride="false">
+      <div class="carousel-inner">
+        <div class="carousel-item" *ngFor="let chunk of surveyChunks; let i = index" [class.active]="i === 0">
+          <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            <div class="col" *ngFor="let questionnaire of chunk">
+              <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between">
+                <h5 class="custom-dashboard-title">{{ questionnaire.question }}</h5>
+                <div class="text-muted mb-2">
+                  {{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}
+                </div>
+
+                <div *ngFor="let answer of questionnaire.answers">
+                  <p class="mb-1">{{ answer.answer }}</p>
+                  <div class="custom-progress-container">
+                    <div
+                      class="custom-progress-bar"
+                      [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
+                    ></div>
+                  </div>
+                </div>
+
+                <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
+                <div *ngIf="!questionnaire.isLive">
+                  <strong>Winner:</strong> {{ getWinner(questionnaire.answers) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="carousel-arrow" type="button" data-bs-target="#surveyCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Nächste</span>
+    </button>
+  </div>
+
+
+
+
+  <!-- Event-Liste -->
+  <!-- 📱 Mobile: normale Eventliste mit Mehr-Anzeigen-Button -->
+  <div *ngIf="!isLargeScreen" class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col" *ngFor="let event of visibleEvents">
+      <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
+        <div>
+          <h5 class="custom-dashboard-title">
+            {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
+          </h5>
+          <p *ngIf="event.levels?.length"><strong>Levels:</strong> {{ getLevelNames(event) }}</p>
+          <p>
+            <strong>Enemies:</strong>
+            <span *ngFor="let enemy of event.enemies">
+            {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
+          </span>
+          </p>
+          <div *ngIf="event.isLive" class="status-live">Live</div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-3" *ngIf="events.length > maxVisibleEvents">
+      <button class="custom-btn" (click)="toggleShowAllEvents()">
+        {{ showAllEvents ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- 🖥️ Desktop: Carousel für Events -->
+  <div *ngIf="isLargeScreen" class="carousel-flex-wrapper d-flex align-items-center justify-content-between mb-5">
+    <button class="carousel-arrow" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Vorherige</span>
+    </button>
+
+    <div id="eventCarousel" class="carousel slide w-100 mx-3" data-bs-ride="false">
+      <div class="carousel-inner">
+        <div class="carousel-item" *ngFor="let chunk of eventChunks; let i = index" [class.active]="i === 0">
+          <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            <div class="col" *ngFor="let event of chunk">
+              <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
+                <div>
+                  <h5 class="custom-dashboard-title">
+                    {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
+                  </h5>
+                  <p *ngIf="event.levels?.length"><strong>Levels:</strong> {{ getLevelNames(event) }}</p>
+                  <p>
+                    <strong>Enemies:</strong>
+                    <span *ngFor="let enemy of event.enemies">
+                    {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
+                  </span>
+                  </p>
+                  <div *ngIf="event.isLive" class="status-live">Live</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="carousel-arrow" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Nächste</span>
+    </button>
+  </div>
+
+
+
+
+  <!-- Popups -->
   <app-event-popup *ngIf="showEventPopup" (close)="closeEventPopup()"></app-event-popup>
-  <app-survey-popup *ngIf="showSurveyPopup" (close)="closeSurveyPopup()"></app-survey-popup>
+  <!--  <app-survey-popup *ngIf="showSurveyPopup" (close)="closeSurveyPopup()"></app-survey-popup>-->
 </div>

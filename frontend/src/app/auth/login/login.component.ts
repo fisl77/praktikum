@@ -18,7 +18,7 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  onSubmit(): void {
+  Login(): void {
     console.log(this.username, this.password);
     if (!this.username || !this.password) {
       this.errorMessage = 'Bitte Username und Passwort eingeben.';
