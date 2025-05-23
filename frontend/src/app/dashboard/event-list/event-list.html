@@ -1,17 +1,66 @@
-<div class="event-section">
-  <h2>Zeitdauer des Events</h2>
-  <div class="event-cards">
-    <div *ngFor="let event of events" class="event-card">
-      <p>{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} - {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</p>
-      <p><strong>Map:</strong></p>
-      <ul>
-        <li *ngFor="let level of event.levels">{{ level.name }}</li>
-      </ul>
-      <p><strong>Enemies:</strong></p>
-      <ul>
-        <li *ngFor="let enemy of event.enemies">{{ enemy.name }}: {{ enemy.type }}</li>
-      </ul>
-      <span *ngIf="event.isLive" class="live-badge">LIVE</span>
+<!-- Event-Liste -->
+<!-- 📱 Mobile: normale Eventliste mit Mehr-Anzeigen-Button -->
+<div *ngIf="!isLargeScreen" class="row row-cols-1 row-cols-md-2 g-4">
+  <div class="col" *ngFor="let event of visibleEvents">
+    <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
+      <div>
+        <h5 class="custom-dashboard-title">
+          {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
+        </h5>
+        <p *ngIf="event.levels?.length"><strong>Levels:</strong> {{ getLevelNames(event) }}</p>
+        <p>
+          <strong>Enemies:</strong>
+          <span *ngFor="let enemy of event.enemies">
+            {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
+          </span>
+        </p>
+        <div *ngIf="event.isLive" class="status-live">Live</div>
+      </div>
     </div>
   </div>
+  <div class="text-center mt-3" *ngIf="events.length > maxVisibleEvents">
+    <button class="custom-btn" (click)="toggleShowAllEvents()">
+      {{ showAllEvents ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
+    </button>
+  </div>
 </div>
+
+<!-- 🖥️ Desktop: Carousel für Events -->
+<div *ngIf="isLargeScreen" class="carousel-flex-wrapper d-flex align-items-center justify-content-between mb-5">
+  <button class="carousel-arrow" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Vorherige</span>
+  </button>
+
+  <div id="eventCarousel" class="carousel slide w-100 mx-3" data-bs-ride="false">
+    <div class="carousel-inner">
+      <div class="carousel-item" *ngFor="let chunk of eventChunks; let i = index" [class.active]="i === 0">
+        <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+          <div class="col" *ngFor="let event of chunk">
+            <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
+              <div>
+                <h5 class="custom-dashboard-title">
+                  {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
+                </h5>
+                <p *ngIf="event.levels?.length"><strong>Levels:</strong> {{ getLevelNames(event) }}</p>
+                <p>
+                  <strong>Enemies:</strong>
+                  <span *ngFor="let enemy of event.enemies">
+                    {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
+                  </span>
+                </p>
+                <div *ngIf="event.isLive" class="status-live">Live</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="carousel-arrow" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Nächste</span>
+  </button>
+</div>
+

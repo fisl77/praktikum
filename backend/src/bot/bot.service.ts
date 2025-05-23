@@ -281,7 +281,6 @@ export class BotService implements OnModuleInit {
         where: { isLive: true },
         relations: ['answers'],
       });
-
       for (const questionnaire of liveQuestionnaires) {
         if (!questionnaire.messageId || !questionnaire.channelId) {
           this.logger.warn(

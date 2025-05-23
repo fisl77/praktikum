@@ -11,8 +11,12 @@ export class SurveyService {
     return this.http.post(ApiEndpoints.START_SURVEY, payload, { withCredentials: true });
   }
 
-  endSurvey(payload: any): Observable<any> {
-    return this.http.post(ApiEndpoints.END_SURVEY, payload, { withCredentials: true });
+  endQuestionnaire(questionnaireID: string): Observable<any> {
+    return this.http.post(
+      ApiEndpoints.END_SURVEY,
+      { questionnaireID },
+      { withCredentials: true }
+    );
   }
 
   getAllSurveys(): Observable<any[]> {
@@ -23,3 +27,4 @@ export class SurveyService {
     return this.http.get(ApiEndpoints.SURVEY_RESULTS(questionnaireID), { withCredentials: true });
   }
 }
+

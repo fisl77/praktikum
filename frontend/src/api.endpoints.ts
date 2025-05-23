@@ -18,7 +18,7 @@ export const ApiEndpoints = {
 
   // Discord Bot (Umfragen)
   START_SURVEY: '/api/discord-bot/startQuestionnaire',   // POST
-  END_SURVEY: '/api/discord-bot/endQuestionnaire',       // POST
+  END_SURVEY: '/api/discord-bot/endQuestionnaire',      // POST
   ALL_SURVEYS: '/api/discord-bot/allQuestionnaires',     // GET
   SURVEY_RESULTS: (questionnaireID: number) => `/api/discord-bot/results/${questionnaireID}`, // GET
 };

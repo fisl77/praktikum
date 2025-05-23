@@ -54,8 +54,6 @@ export class DashboardComponent implements OnInit {
     return result;
   }
 
-  isLargeScreen = window.innerWidth >= 992;
-
   ngOnInit(): void {
     this.loadData();
   }
@@ -118,11 +116,6 @@ export class DashboardComponent implements OnInit {
   getLevelNames(event: any): string {
     if (!event || !Array.isArray(event.levels)) return '';
     return event.levels.map((l: any) => l.name).join(', ');
-  }
-
-  @HostListener('window:resize')
-  onResize() {
-    this.isLargeScreen = window.innerWidth >= 992;
   }
 
   maxVisibleSurveys = 3;
