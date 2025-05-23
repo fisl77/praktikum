@@ -91,8 +91,10 @@ export class DashboardComponent implements OnInit {
   }
 
   openSurveyPopup(): void {
+    console.log('[DEBUG] openSurveyPopup() aufgerufen');
     this.showSurveyPopup = true;
-  }
+    console.log('[DEBUG] showSurveyPopup ist jetzt:', this.showSurveyPopup);
+    }
 
   closeSurveyPopup(): void {
     this.showSurveyPopup = false;

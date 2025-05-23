@@ -17,6 +17,10 @@ import { HttpService } from '@nestjs/axios';
 import { MarkQuestionnaireEndedRequestDto } from '../Questionnaire/dto/MarkQuestionnaireEndedRequestDto';
 import { GetAllQuestionnairesResponseDto } from '../Questionnaire/dto/get-all-questionnaires-response';
 
+let isPosting = false;
+let isSyncingReactions = false;
+let isEnding = false;
+
 @Injectable()
 export class BotService implements OnModuleInit {
   private readonly logger = new Logger(BotService.name);
@@ -85,6 +89,7 @@ export class BotService implements OnModuleInit {
       isLive: true,
       channelId: dto.channelId,
       wasPostedToDiscord: false,
+      messageId: null,
     });
 
     const answers = dto.answers.map((a) =>
@@ -93,7 +98,7 @@ export class BotService implements OnModuleInit {
     await this.answerRepo.save(answers);
 
     this.logger.log(
-      `Umfrage ${questionnaire.questionnaireID} in DB gespeichert, aber noch nicht gepostet.`,
+      `Umfrage ${questionnaire.questionnaireID} gespeichert – wird später gepostet.`,
     );
 
     return {
@@ -101,7 +106,6 @@ export class BotService implements OnModuleInit {
       id: questionnaire.questionnaireID,
     };
   }
-
   async getResults(questionnaireID: number) {
     const votes = await this.votingRepo.find({
       where: { questionnaireID },
@@ -122,72 +126,95 @@ export class BotService implements OnModuleInit {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async checkForEndedQuestionnaires() {
-    this.logger.log('Cronjob gestartet: Überprüfe auf beendete Umfragen...');
-
-    const now = new Date();
-    this.logger.log(`Aktuelles Datum/Zeit (UTC): ${now.toISOString()}`);
-
-    // Hole alle Umfragen, die noch live sind
-    const liveVotes = await this.questionnaireRepo.find({
-      where: { isLive: true },
-    });
-
-    // Finde alle, deren Endzeit abgelaufen ist
-    const expiredVotes = liveVotes.filter((vote) => {
-      const endTime = new Date(vote.endTime);
-      const isExpired = endTime.getTime() <= now.getTime();
-
-      this.logger.log(
-        `Umfrage ${vote.questionnaireID}: endTime=${endTime.toISOString()}, now=${now.toISOString()}, abgelaufen=${isExpired}`,
+    if (isEnding) {
+      this.logger.warn(
+        'checkForEndedQuestionnaires läuft bereits – überspringe...',
       );
+      return;
+    }
 
-      return isExpired;
-    });
+    isEnding = true;
+    this.logger.log('🔚 Cronjob gestartet: Überprüfe auf beendete Umfragen...');
 
-    this.logger.log(
-      `Insgesamt ${expiredVotes.length} Umfragen sind abgelaufen und werden beendet...`,
-    );
+    try {
+      const now = new Date();
+      this.logger.log(`Aktuelles Datum/Zeit (UTC): ${now.toISOString()}`);
 
-    for (const vote of expiredVotes) {
-      this.logger.log(`Beende Umfrage ${vote.questionnaireID}...`);
-
-      const result = await this.handleQuestionnaireEnd({
-        questionnaireID: vote.questionnaireID,
+      const liveVotes = await this.questionnaireRepo.find({
+        where: { isLive: true },
       });
 
-      if (result.success) {
-        this.logger.log(`Umfrage ${vote.questionnaireID} erfolgreich beendet.`);
-      } else {
-        this.logger.warn(
-          `Fehler beim Beenden von Umfrage ${vote.questionnaireID}: ${result.message}`,
+      const expiredVotes = liveVotes.filter((vote) => {
+        const endTime = new Date(vote.endTime);
+        const isExpired = endTime.getTime() <= now.getTime();
+
+        this.logger.log(
+          `Umfrage ${vote.questionnaireID}: endTime=${endTime.toISOString()}, now=${now.toISOString()}, abgelaufen=${isExpired}`,
         );
+
+        return isExpired;
+      });
+
+      this.logger.log(
+        `Insgesamt ${expiredVotes.length} Umfragen sind abgelaufen und werden beendet...`,
+      );
+
+      for (const vote of expiredVotes) {
+        this.logger.log(`Beende Umfrage ${vote.questionnaireID}...`);
+
+        const result = await this.handleQuestionnaireEnd({
+          questionnaireID: vote.questionnaireID,
+        });
+
+        if (result.success) {
+          this.logger.log(
+            `Umfrage ${vote.questionnaireID} erfolgreich beendet.`,
+          );
+        } else {
+          this.logger.warn(
+            `Fehler beim Beenden von Umfrage ${vote.questionnaireID}: ${result.message}`,
+          );
+        }
       }
+    } catch (err) {
+      this.logger.error('Fehler in checkForEndedQuestionnaires():', err);
+    } finally {
+      isEnding = false;
     }
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async checkForPostingQuestionnaire() {
+    if (isPosting) {
+      this.logger.warn(
+        'checkForPostingQuestionnaire wird bereits ausgeführt – überspringe...',
+      );
+      return;
+    }
+
+    isPosting = true;
     this.logger.log('Cronjob gestartet: Überprüfe auf zu postende Umfragen...');
     const now = new Date();
 
-    const pendingQuestionnaire = await this.questionnaireRepo.find({
+    const pendingQuestionnaires = await this.questionnaireRepo.find({
       where: {
         isLive: true,
         wasPostedToDiscord: false,
+        messageId: null,
         startTime: LessThanOrEqual(now),
       },
       relations: ['answers'],
     });
 
-    this.logger.log(
-      `Gefundene Umfragen zum Posten: ${pendingQuestionnaire.length}`,
-    );
+    this.logger.log(`Zu postende Umfragen: ${pendingQuestionnaires.length}`);
 
-    for (const vote of pendingQuestionnaire) {
+    for (const vote of pendingQuestionnaires) {
       try {
         const channel = await this.client.channels.fetch(vote.channelId);
         if (!channel || !channel.isTextBased()) {
-          this.logger.warn(`📭 Channel ${vote.channelId} ungültig.`);
+          this.logger.warn(
+            `Umfrage ${vote.questionnaireID} ohne gültige channelId übersprungen.`,
+          );
           continue;
         }
 
@@ -208,98 +235,119 @@ export class BotService implements OnModuleInit {
           .join('\n');
 
         const message = await (channel as TextChannel).send(
-          `**${vote.question}**\n\n${optionsText}\n\n⏰ Abstimmung endet am **${endTimeFormatted}**`,
+          `**${vote.question}**\n\n${optionsText}\n\nAbstimmung endet am **${endTimeFormatted}**`,
         );
 
         for (let i = 0; i < vote.answers.length; i++) {
           await message.react(String.fromCodePoint(0x1f1e6 + i));
         }
 
+        // Speichere atomar
         vote.messageId = message.id;
         vote.wasPostedToDiscord = true;
-        await this.questionnaireRepo.save(vote);
+        await this.questionnaireRepo.update(vote.questionnaireID, {
+          messageId: vote.messageId,
+          wasPostedToDiscord: true,
+        });
 
         this.logger.log(
-          `Umfrage ${vote.questionnaireID} wurde jetzt gepostet.`,
+          `Umfrage ${vote.questionnaireID} wurde gepostet und gespeichert.`,
         );
-      } catch (error) {
+      } catch (err) {
         this.logger.error(
-          `Fehler beim Posten der Umfrage ${vote.questionnaireID}: ${error.message}`,
+          `Fehler beim Posten der Umfrage ${vote.questionnaireID}: ${err.message}`,
         );
       }
     }
+    isPosting = false;
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async syncReactionsWithDatabase() {
+    if (isSyncingReactions) {
+      this.logger.warn(
+        'Reaktionen werden bereits synchronisiert – überspringe...',
+      );
+      return;
+    }
+
+    isSyncingReactions = true;
     this.logger.log(
       'Cronjob: Synchronisiere Reaktionsanzahl mit der Datenbank...',
     );
 
-    const liveQuestionnaires = await this.questionnaireRepo.find({
-      where: { isLive: true },
-      relations: ['answers'],
-    });
+    try {
+      const liveQuestionnaires = await this.questionnaireRepo.find({
+        where: { isLive: true },
+        relations: ['answers'],
+      });
 
-    for (const questionnaire of liveQuestionnaires) {
-      if (!questionnaire.messageId || !questionnaire.channelId) {
-        this.logger.warn(
-          `Umfrage ${questionnaire.questionnaireID} ohne gültige messageId oder channelId übersprungen.`,
-        );
-        continue;
-      }
+      for (const questionnaire of liveQuestionnaires) {
+        if (!questionnaire.messageId || !questionnaire.channelId) {
+          this.logger.warn(
+            `Umfrage ${questionnaire.questionnaireID} ohne gültige messageId oder channelId übersprungen.`,
+          );
+          continue;
+        }
 
-      try {
-        const channel = await this.client.channels.fetch(
-          questionnaire.channelId,
-        );
-        if (!channel || !channel.isTextBased()) continue;
+        try {
+          const channel = await this.client.channels.fetch(
+            questionnaire.channelId,
+          );
+          if (!channel || !channel.isTextBased()) continue;
 
-        const message = await (channel as TextChannel).messages.fetch(
-          questionnaire.messageId,
-        );
-        const reactions = message.reactions.cache;
+          const message = await (channel as TextChannel).messages.fetch(
+            questionnaire.messageId,
+          );
+          const reactions = message.reactions.cache;
 
-        for (let i = 0; i < questionnaire.answers.length; i++) {
-          const answer = questionnaire.answers[i];
-          const emoji = String.fromCodePoint(0x1f1e6 + i);
+          for (let i = 0; i < questionnaire.answers.length; i++) {
+            const answer = questionnaire.answers[i];
+            const emoji = String.fromCodePoint(0x1f1e6 + i);
+            const reaction = reactions.get(emoji);
+            const currentCount = reaction?.count ?? 0;
 
-          const reaction = reactions.get(emoji);
-          const currentCount = reaction?.count ?? 0;
+            if (answer.lastSyncedCount == null) {
+              answer.lastSyncedCount = 0;
+            }
 
-          const lastSynced = answer.lastSyncedCount ?? 0;
-          const delta = currentCount - lastSynced;
+            const delta = currentCount - answer.lastSyncedCount;
 
-          if (delta <= 0) continue;
+            if (delta <= 0) {
+              this.logger.log(
+                `Keine neuen Stimmen für "${answer.answer}" (aktuell: ${currentCount}, bereits gespeichert: ${answer.lastSyncedCount})`,
+              );
+              continue;
+            }
 
-          for (let j = 0; j < delta; j++) {
-            await this.votingRepo.save({
-              questionnaire,
-              answer,
-            });
+            for (let j = 0; j < delta; j++) {
+              await this.votingRepo.save({ questionnaire, answer });
+            }
+
+            answer.lastSyncedCount = currentCount;
+            await this.answerRepo.save(answer);
+
+            this.logger.log(
+              `${delta} neue Stimme(n) für "${answer.answer}" gespeichert (gesamt: ${currentCount}).`,
+            );
           }
-
-          answer.lastSyncedCount = currentCount;
-          await this.answerRepo.save(answer);
-
-          this.logger.log(
-            `${delta} neue Stimme(n) für "${answer.answer}" gespeichert (gesamt: ${currentCount}).`,
+        } catch (err) {
+          this.logger.error(
+            `Fehler beim Synchronisieren von Umfrage ${questionnaire.questionnaireID}: ${err.message}`,
           );
         }
-      } catch (err) {
-        this.logger.error(
-          `Fehler beim Synchronisieren von Umfrage ${questionnaire.questionnaireID}: ${err.message}`,
-        );
       }
+    } catch (err) {
+      this.logger.error('Fehler in syncReactionsWithDatabase():', err);
+    } finally {
+      isSyncingReactions = false;
     }
   }
 
   async handleQuestionnaireEnd(dto: MarkQuestionnaireEndedRequestDto) {
     const { questionnaireID } = dto;
 
-    this.logger.log(
-      `handleVoteEnd aufgerufen für QuestionnaireID: ${questionnaireID}`,
-    );
+    this.logger.log(`🔚 handleVoteEnd für QuestionnaireID: ${questionnaireID}`);
 
     const questionnaire = await this.questionnaireRepo.findOne({
       where: { questionnaireID },
@@ -310,14 +358,14 @@ export class BotService implements OnModuleInit {
       return { success: false, message: 'Questionnaire not found' };
     }
 
-    this.logger.log(
-      `handleVoteEnd gestartet – ID: ${questionnaireID}, channelId: ${questionnaire.channelId}`,
-    );
+    if (!questionnaire.isLive) {
+      this.logger.warn(`Umfrage ${questionnaireID} ist bereits beendet.`);
+      return { success: false, message: 'Questionnaire already ended' };
+    }
 
+    // Setze isLive sofort auf false, um Doppelaktionen zu verhindern
     await this.questionnaireRepo.update({ questionnaireID }, { isLive: false });
-    this.logger.log(
-      `Fragebogen ${questionnaireID} in DB auf isLive = false gesetzt.`,
-    );
+    this.logger.log(`isLive für Umfrage ${questionnaireID} auf false gesetzt.`);
 
     try {
       const channel = await this.client.channels.fetch(questionnaire.channelId);
@@ -325,22 +373,19 @@ export class BotService implements OnModuleInit {
         await (channel as TextChannel).send(
           `Die Umfrage **${questionnaire.question}** ist nun beendet. Vielen Dank fürs Mitmachen!`,
         );
-        this.logger.log(
-          `Benachrichtigung im Channel ${questionnaire.channelId} gesendet.`,
-        );
+        this.logger.log(`Abschlussnachricht für ${questionnaireID} gesendet.`);
       } else {
         this.logger.warn(
-          `Channel ${questionnaire.channelId} ist nicht textbasiert oder nicht gefunden.`,
+          `Channel ${questionnaire.channelId} ist ungültig oder nicht textbasiert.`,
         );
       }
     } catch (err) {
       this.logger.error(
-        `Fehler beim Senden der Discord-Nachricht für ${questionnaireID}:`,
+        `Fehler beim Senden der Abschlussnachricht für Umfrage ${questionnaireID}:`,
         err,
       );
     }
 
-    this.logger.log(`Umfrage ${questionnaireID} wurde manuell beendet.`);
     return { success: true };
   }
 
