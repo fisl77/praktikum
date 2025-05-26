@@ -323,4 +323,12 @@ export class AdminService {
       }
     }
   }
+
+  async getEnemyTypes() {
+    return await this.enemyTypeRepository.find(); // gibt typeID + type
+  }
+
+  async getEnemyNames() {
+    return await this.enemyNameRepository.find(); // gibt nameID + name + path
+  }
 }

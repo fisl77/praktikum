@@ -1,66 +1,100 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {NgForOf, NgIf} from '@angular/common';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { NgIf, NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EventService } from '../../services/event.service'; // <-- Service benutzen
+import { EventService } from '../../services/event.service';
 
 @Component({
   selector: 'app-event-popup',
   standalone: true,
-  imports: [NgForOf, FormsModule],
+  imports: [ NgForOf, FormsModule],
   templateUrl: './event-popup.html',
   styleUrls: ['./event-popup.css'],
 })
 export class EventPopupComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
 
-  enemies: any[] = [];
-  selectedEnemyId: number | null = null;
-  selectedType = '';
-  scale = 1.0;
-  maxCount = 1;
-  startTime = '';
-  endTime = '';
+  nameID: number | null = null;
+  typeID: number | null = null;
+  scale: number = 1.0;
+  maxCount: number = 1;
+  startTime: string = '';
+  endTime: string = '';
 
-  constructor(private eventService: EventService) {} // <-- nur Service benutzen!
+  nameOptions: { nameID: number; name: string }[] = [];
+  typeOptions: { typeID: number; type: string }[] = [];
 
-  ngOnInit() {
-    this.loadEnemies();
+  constructor(private eventService: EventService) {}
+
+  ngOnInit(): void {
+    this.loadEnemyNames();
+    this.loadEnemyTypes();
   }
 
-  loadEnemies() {
-    this.eventService.getEvents().subscribe({
-      next: (data) => {
-        this.enemies = data;
+  loadEnemyNames(): void {
+    this.eventService.getEnemyNames().subscribe({
+      next: (res: any[]) => {
+        this.nameOptions = res.map(n => ({ nameID: n.nameID, name: n.name }));
       },
-      error: (err) => {
-        console.error('Fehler beim Laden der Gegner:', err);
-      },
+      error: (err) => console.error('Fehler beim Laden der Namen:', err),
     });
   }
 
-  createEvent() {
-    const payload = {
-      startTime: new Date(this.startTime).toISOString(),
-      endTime: new Date(this.endTime).toISOString(),
-      levelIDs: [1],
-      enemies: [
-        {
-          enemyID: this.selectedEnemyId,
-          quantity: 1,
-        },
-      ],
+  loadEnemyTypes(): void {
+    this.eventService.getEnemyTypes().subscribe({
+      next: (res: any[]) => {
+        this.typeOptions = res.map(t => ({ typeID: t.typeID, type: t.type }));
+      },
+      error: (err) => console.error('Fehler beim Laden der Typen:', err),
+    });
+  }
+
+  createEnemyAndEvent(): void {
+    console.log('NameID:', this.nameID, 'TypeID:', this.typeID);
+    if (!this.nameID || !this.typeID) {
+      alert('Bitte Name und Typ auswählen.');
+      return;
+    }
+
+    if (!this.startTime || !this.endTime) {
+      alert('Bitte Start- und Endzeit angeben.');
+      return;
+    }
+
+    const enemyPayload = {
+      nameID: this.nameID,
+      typeID: this.typeID,
+      new_scale: this.scale,
+      max_count: this.maxCount,
     };
 
-    console.log('POST Event:', payload);
+    this.eventService.createEnemy(enemyPayload).subscribe({
+      next: (enemyRes) => {
+        const eventPayload = {
+          startTime: new Date(this.startTime).toISOString(),
+          endTime: new Date(this.endTime).toISOString(),
+          levelIDs: [1],
+          enemies: [
+            {
+              enemyID: enemyRes.enemyID,
+              quantity: this.maxCount,
+            },
+          ],
+        };
 
-    this.eventService.createEvent(payload).subscribe({
-      next: (response) => {
-        console.log('Event erfolgreich gestartet!', response);
-        this.close.emit();
+        this.eventService.createEvent(eventPayload).subscribe({
+          next: () => {
+            console.log('Enemy & Event erfolgreich erstellt!');
+            this.close.emit();
+          },
+          error: (err) => {
+            console.error('Fehler beim Erstellen des Events:', err);
+            alert('Fehler beim Erstellen des Events');
+          },
+        });
       },
       error: (err) => {
-        console.error('Fehler beim Erstellen des Events:', err);
-        alert('Fehler beim Erstellen des Events');
+        console.error('Fehler beim Erstellen des Enemys:', err);
+        alert('Fehler beim Erstellen des Enemys');
       },
     });
   }

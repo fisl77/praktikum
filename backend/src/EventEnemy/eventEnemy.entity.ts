@@ -13,12 +13,13 @@ export class EventEnemy {
   @Column()
   quantity: number;
 
-  @ManyToOne(() => Event, (event) => event.eventEnemies, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Event, (event) => event.eventEnemies, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'eventID' })
   event: Event;
 
   @ManyToOne(() => Enemy, (enemy) => enemy.eventEnemies)
   @JoinColumn({ name: 'enemyID' })
   enemy: Enemy;
-
 }

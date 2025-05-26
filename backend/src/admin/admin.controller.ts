@@ -57,4 +57,15 @@ export class AdminController {
   getEnemybyId(@Param('id') id: number) {
     return this.adminService.getEnemyById(id);
   }
+  @Get('enemy-types')
+  @ApiOkResponse({ description: 'Gibt alle Enemy-Typen zurück' })
+  getEnemyTypes() {
+    return this.adminService.getEnemyTypes();
+  }
+
+  @Get('enemy-names')
+  @ApiOkResponse({ description: 'Gibt alle Enemy-Namen zurück' })
+  getEnemyNames() {
+    return this.adminService.getEnemyNames();
+  }
 }

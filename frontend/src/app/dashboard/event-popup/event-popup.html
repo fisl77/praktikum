@@ -1,40 +1,60 @@
-<div class="overlay">
-  <div class="popup">
-    <button class="close" (click)="close.emit()">X</button>
-    <h2>Event</h2>
+<div class="popup-overlay">
+  <div class="popup-content">
+    <button class="close-button" (click)="close.emit()">X</button>
+    <h2>Enemy + Event erstellen</h2>
 
-    <h3>Enemies:</h3>
-    <div *ngFor="let enemy of enemies">
-      <label>
-        <input
-          type="radio"
-          name="enemy"
-          [value]="enemy.id"
-          [(ngModel)]="selectedEnemyId"
+    <div class="form-group">
+      <label for="nameID">NameID:</label>
+      <select [(ngModel)]="nameID">
+        <option *ngFor="let name of nameOptions" [value]="name.nameID">
+          {{ name.name }} (ID: {{ name.nameID }})
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Typ:</label>
+      <div class="radio-options">
+        <label
+          class="radio-option"
+          *ngFor="let type of typeOptions"
         >
-        {{ enemy.name }}
-      </label>
+          <input
+            type="radio"
+            name="typeID"
+            [value]="type.typeID"
+            [(ngModel)]="typeID"
+          />
+          <span>{{ type.type }} (ID: {{ type.typeID }})</span>
+        </label>
+      </div>
     </div>
 
-    <h3>Type:</h3>
-    <div>
-      <label><input type="radio" name="type" value="default" [(ngModel)]="selectedType"> default</label>
-      <label><input type="radio" name="type" value="strong" [(ngModel)]="selectedType"> strong</label>
-      <label><input type="radio" name="type" value="weak" [(ngModel)]="selectedType"> weak</label>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Scale:</label>
+        <input type="number" step="0.1" [(ngModel)]="scale" />
+      </div>
+      <div class="form-group">
+        <label>Max Count:</label>
+        <input type="number" [(ngModel)]="maxCount" />
+      </div>
     </div>
 
-    <h3>Scale:</h3>
-    <input type="number" [(ngModel)]="scale" step="0.1">
+    <hr />
 
-    <h3>Max Count:</h3>
-    <input type="number" [(ngModel)]="maxCount">
+    <h3>Event anlegen:</h3>
 
-    <h3>Start Time:</h3>
-    <input type="datetime-local" [(ngModel)]="startTime">
+    <div class="form-group">
+      <label>Start Time:</label>
+      <input type="datetime-local" [(ngModel)]="startTime" />
+    </div>
 
-    <h3>End Time:</h3>
-    <input type="datetime-local" [(ngModel)]="endTime">
+    <div class="form-group">
+      <label>End Time:</label>
+      <input type="datetime-local" [(ngModel)]="endTime" />
+    </div>
 
-    <button (click)="createEvent()">Create Event</button>
+    <button class="submit-button" (click)="createEnemyAndEvent()">Erstellen ✅</button>
   </div>
 </div>

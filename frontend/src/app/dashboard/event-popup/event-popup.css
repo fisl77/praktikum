@@ -1,32 +1,96 @@
-.overlay {
+.popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
-.popup {
-  background: #fefefe;
-  padding: 20px;
-  border-radius: 10px;
-  width: 600px;
-  max-width: 90%;
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.2rem;
+  width: 90%;
+  max-width: 500px;
+  border: 3px solid #ca6333;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  font-family: sans-serif;
   position: relative;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.close {
+.close-button {
   position: absolute;
-  right: 10px;
-  top: 10px;
-  background: none;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: 1.4rem;
+  font-weight: bold;
   cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.radio-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.radio-option {
+  background-color: #f5f5f5;
+  border-radius: 1.2rem;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.radio-option:hover {
+  border-color: #ca6333;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='datetime-local'],
+select {
+  padding: 0.4rem;
+  border: 2px solid #ca6333;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.submit-button {
+  background-color: #453075;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  width: 100%;
+  margin-top: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.submit-button:hover {
+  background-color: #5d3f9b;
 }
