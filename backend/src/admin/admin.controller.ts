@@ -68,4 +68,10 @@ export class AdminController {
   getEnemyNames() {
     return this.adminService.getEnemyNames();
   }
+
+  @Get('levels')
+  @ApiOkResponse({ description: 'Gibt alle Level-IDs und Namen zurück' })
+  getLevels() {
+    return this.adminService.getLevels();
+  }
 }
