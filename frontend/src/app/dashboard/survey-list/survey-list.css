@@ -114,3 +114,9 @@
   width: 2rem;
   height: 2rem;
 }
+
+.percentage-label {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #453075;
+}

@@ -40,8 +40,13 @@ export class SurveyListComponent {
 
   getWinner(answers: any[]): string {
     if (!answers?.length) return '';
-    return answers.reduce((a, b) => (a.totalVotes > b.totalVotes ? a : b)).answer;
+
+    const maxVotes = Math.max(...answers.map(a => a.totalVotes));
+    const winners = answers.filter(a => a.totalVotes === maxVotes);
+
+    return winners.map(w => w.answer).join(', ');
   }
+
 
   private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
     const result = [];

@@ -16,6 +16,9 @@
             [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
           ></div>
         </div>
+        <p class="percentage-label text-end small">
+          {{ calculatePercentage(answer.totalVotes, questionnaire.answers) }} %
+        </p>
       </div>
 
       <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
@@ -63,6 +66,9 @@
                     [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
                   ></div>
                 </div>
+                <p class="percentage-label text-end small">
+                  {{ calculatePercentage(answer.totalVotes, questionnaire.answers) }} %
+                </p>
               </div>
 
               <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
