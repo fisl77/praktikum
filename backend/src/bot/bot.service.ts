@@ -362,9 +362,13 @@ export class BotService implements OnModuleInit {
       return { success: false, message: 'Questionnaire already ended' };
     }
 
-    // Setze isLive sofort auf false, um Doppelaktionen zu verhindern
-    await this.questionnaireRepo.update({ questionnaireID }, { isLive: false });
-    this.logger.log(`isLive für Umfrage ${questionnaireID} auf false gesetzt.`);
+    await this.syncReactionsForQuestionnaire(questionnaire);
+
+    await this.questionnaireRepo.update(
+        { questionnaireID },
+        { isLive: false }
+    );
+    this.logger.log(`Umfrage ${questionnaireID} wurde korrekt beendet und deaktiviert.`);
 
     try {
       const channel = await this.client.channels.fetch(questionnaire.channelId);
@@ -411,4 +415,47 @@ export class BotService implements OnModuleInit {
       })),
     }));
   }
+
+  private async syncReactionsForQuestionnaire(questionnaire: Questionnaire) {
+    if (!questionnaire.messageId || !questionnaire.channelId) {
+      this.logger.warn(`Umfrage ${questionnaire.questionnaireID} hat keine messageId oder channelId`);
+      return;
+    }
+
+    const channel = await this.client.channels.fetch(questionnaire.channelId);
+    if (!channel?.isTextBased()) return;
+
+    const message = await (channel as TextChannel).messages.fetch(questionnaire.messageId);
+    const reactions = message.reactions.cache;
+
+    const answers = (await this.answerRepo.find({
+      where: { questionnaire: { questionnaireID: questionnaire.questionnaireID } },
+      relations: ['questionnaire'],
+    })).sort((a, b) => a.answerID - b.answerID);
+
+    for (let i = 0; i < answers.length; i++) {
+      const answer = answers[i];
+      const emoji = String.fromCodePoint(0x1f1e6 + i);
+      const reaction = reactions.get(emoji);
+      const currentCount = reaction?.count ?? 0;
+
+      const lastSynced = answer.lastSyncedCount ?? 0;
+      const delta = currentCount - lastSynced;
+
+      this.logger.log(`${delta} neue Stimme(n) für "${answer.answer}" gespeichert (gesamt: ${currentCount}).`);
+
+      if (delta <= 0) continue;
+
+      for (let j = 0; j < delta; j++) {
+        await this.votingRepo.save({
+          questionnaire: { questionnaireID: questionnaire.questionnaireID },
+          answer: { answerID: answer.answerID },
+        });
+      }
+
+      answer.lastSyncedCount = currentCount;
+      await this.answerRepo.save(answer);
+    }
+  }
+
 }
