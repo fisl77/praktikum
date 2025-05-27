@@ -6,7 +6,7 @@ import { EventService } from '../../services/event.service';
 @Component({
   selector: 'app-event-popup',
   standalone: true,
-  imports: [ NgForOf, FormsModule],
+  imports: [NgForOf, FormsModule],
   templateUrl: './event-popup.html',
   styleUrls: ['./event-popup.css'],
 })
@@ -15,6 +15,7 @@ export class EventPopupComponent implements OnInit {
 
   nameID: number | null = null;
   typeID: number | null = null;
+  levelID: number | null = null;
   scale: number = 1.0;
   maxCount: number = 1;
   startTime: string = '';
@@ -22,12 +23,14 @@ export class EventPopupComponent implements OnInit {
 
   nameOptions: { nameID: number; name: string }[] = [];
   typeOptions: { typeID: number; type: string }[] = [];
+  levelOptions: { levelID: number; name: string }[] = [];
 
   constructor(private eventService: EventService) {}
 
   ngOnInit(): void {
     this.loadEnemyNames();
     this.loadEnemyTypes();
+    this.loadLevels();
   }
 
   loadEnemyNames(): void {
@@ -48,10 +51,19 @@ export class EventPopupComponent implements OnInit {
     });
   }
 
+  loadLevels(): void {
+    this.eventService.getLevels().subscribe({
+      next: (res: any[]) => {
+        this.levelOptions = res.map(l => ({ levelID: l.levelID, name: l.name }));
+      },
+      error: (err) => console.error('Fehler beim Laden der Levels:', err),
+    });
+  }
+
   createEnemyAndEvent(): void {
     console.log('NameID:', this.nameID, 'TypeID:', this.typeID);
-    if (!this.nameID || !this.typeID) {
-      alert('Bitte Name und Typ auswählen.');
+    if (!this.nameID || !this.typeID || !this.levelID) {
+      alert('Bitte Name, Typ und Level auswählen.');
       return;
     }
 
@@ -72,7 +84,7 @@ export class EventPopupComponent implements OnInit {
         const eventPayload = {
           startTime: new Date(this.startTime).toISOString(),
           endTime: new Date(this.endTime).toISOString(),
-          levelIDs: [1],
+          levelIDs: [this.levelID!],
           enemies: [
             {
               enemyID: enemyRes.enemyID,

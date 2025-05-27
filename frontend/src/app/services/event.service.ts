@@ -39,4 +39,7 @@ export class EventService {
   getEnemyTypes(): Observable<any[]> {
     return this.http.get<any[]>(ApiEndpoints.ADMIN_ENEMY_TYPES, { withCredentials: true });
   }
+
+  getLevels(): Observable<any[]> {
+    return this.http.get<any[]>(ApiEndpoints.ADMIN_LEVELS, { withCredentials: true });}
 }

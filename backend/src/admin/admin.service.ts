@@ -331,4 +331,12 @@ export class AdminService {
   async getEnemyNames() {
     return await this.enemyNameRepository.find(); // gibt nameID + name + path
   }
+
+  async getLevels() {
+    const levels = await this.levelRepo.find();
+    return levels.map((level) => ({
+      levelID: level.levelID,
+      name: level.name,
+    }));
+  }
 }
