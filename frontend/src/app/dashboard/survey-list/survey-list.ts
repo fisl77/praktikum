@@ -47,6 +47,15 @@ export class SurveyListComponent {
     return winners.map(w => w.answer).join(', ');
   }
 
+  isDraw(answers: any[]): boolean {
+    if (!answers?.length) return false;
+
+    const maxVotes = Math.max(...answers.map(a => a.totalVotes));
+    const winners = answers.filter(a => a.totalVotes === maxVotes);
+
+    return winners.length > 1;
+  }
+
 
   private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
     const result = [];

@@ -53,22 +53,27 @@
         <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
           <div class="col" *ngFor="let questionnaire of chunk">
             <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between">
-              <h5 class="custom-dashboard-title">{{ questionnaire.question }}</h5>
+              <h5 class="question-header" [title]="questionnaire.question">
+                {{ questionnaire.question }}
+              </h5>
               <div class="text-muted mb-2">
                 {{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}
               </div>
 
-              <div *ngFor="let answer of questionnaire.answers">
-                <p class="mb-1">{{ answer.answer }}</p>
-                <div class="custom-progress-container">
-                  <div
-                    class="custom-progress-bar"
-                    [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
-                  ></div>
+
+              <div class="answers-scrollbox">
+                <div *ngFor="let answer of questionnaire.answers">
+                  <p class="mb-1">{{ answer.answer }}</p>
+                  <div class="custom-progress-container">
+                    <div
+                      class="custom-progress-bar"
+                      [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
+                    ></div>
+                  </div>
+                  <p class="percentage-label text-end small">
+                    {{ calculatePercentage(answer.totalVotes, questionnaire.answers) }} %
+                  </p>
                 </div>
-                <p class="percentage-label text-end small">
-                  {{ calculatePercentage(answer.totalVotes, questionnaire.answers) }} %
-                </p>
               </div>
 
               <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
@@ -77,8 +82,9 @@
                   STOP Questionnaire
                 </button>
               </div>
-              <div *ngIf="!questionnaire.isLive">
-                <strong>Winner:</strong> {{ getWinner(questionnaire.answers) }}
+              <div *ngIf="!questionnaire.isLive" class="winner-line" [title]="getWinner(questionnaire.answers)">
+                <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong>
+                {{ getWinner(questionnaire.answers) }}
               </div>
             </div>
           </div>

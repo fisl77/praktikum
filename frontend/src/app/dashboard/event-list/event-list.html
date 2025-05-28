@@ -7,9 +7,9 @@
         <h5 class="custom-dashboard-title">
           {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
         </h5>
-        <p *ngIf="event.levels?.length"><strong>Levels:</strong> {{ getLevelNames(event) }}</p>
+        <p *ngIf="event.levels?.length"><strong>Level:</strong> {{ getLevelNames(event) }}</p>
         <p>
-          <strong>Enemies:</strong>
+          <strong>Enemy:</strong>
           <span *ngFor="let enemy of event.enemies">
             {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
           </span>
@@ -42,9 +42,9 @@
                 <h5 class="custom-dashboard-title">
                   {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
                 </h5>
-                <p *ngIf="event.levels?.length"><strong>Levels:</strong> {{ getLevelNames(event) }}</p>
+                <p *ngIf="event.levels?.length"><strong>Level:</strong> {{ getLevelNames(event) }}</p>
                 <p>
-                  <strong>Enemies:</strong>
+                  <strong>Enemy:</strong>
                   <span *ngFor="let enemy of event.enemies">
                     {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
                   </span>

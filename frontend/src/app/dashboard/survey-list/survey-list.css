@@ -120,3 +120,27 @@
   font-size: 0.85rem;
   color: #453075;
 }
+
+.answers-scrollbox {
+  max-height: 200px; /* je nach Bedarf anpassen */
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding-right: 4px;
+}
+
+.answers-scrollbox::-webkit-scrollbar {
+  width: 3px;
+}
+.answers-scrollbox::-webkit-scrollbar-thumb {
+  background-color: #453075;
+  border-radius: 4px;
+}
+
+.question-header, .winner-line {
+  max-height: 2.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
