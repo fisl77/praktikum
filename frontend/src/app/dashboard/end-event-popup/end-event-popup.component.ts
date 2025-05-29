@@ -1,0 +1,54 @@
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { EventService } from '../../services/event.service';
+
+@Component({
+  selector: 'app-end-event-popup',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './end-event-popup.component.html',
+  styleUrls: ['./end-event-popup.component.css'],
+})
+export class EndEventPopupComponent {
+  @Input() eventIDToEnd: number | null = null;
+  @Input() eventEndTime: string | null = null;
+  @Output() close = new EventEmitter<void>();
+
+  showEndConfirm = true; // direkt anzeigen
+  originalEndTime: string | null = null;
+
+  constructor(private eventService: EventService) {}
+
+  ngOnInit(): void {
+    if (this.eventEndTime) {
+      this.originalEndTime = new Date(this.eventEndTime).toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+  }
+
+  cancelEnd() {
+    this.showEndConfirm = false;
+    this.originalEndTime = null;
+    this.close.emit();
+  }
+
+  confirmEndNow() {
+    if (!this.eventIDToEnd) return;
+
+    this.eventService.endEvent(this.eventIDToEnd).subscribe({
+      next: () => {
+        alert('Event wurde erfolgreich beendet!');
+        this.close.emit();
+      },
+      error: (err) => {
+        console.error('Fehler beim Beenden des Events:', err);
+        alert('Fehler beim Beenden');
+      },
+    });
+  }
+}

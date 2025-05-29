@@ -114,3 +114,17 @@
   width: 2rem;
   height: 2rem;
 }
+.custom-outline-btn {
+  border: 2px solid #453075;
+  background: white;
+  color: #453075;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.custom-outline-btn:hover {
+  background: #453075;
+  color: white;
+}

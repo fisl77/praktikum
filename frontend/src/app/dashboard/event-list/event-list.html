@@ -1,4 +1,3 @@
-<!-- Event-Liste -->
 <!-- 📱 Mobile: normale Eventliste mit Mehr-Anzeigen-Button -->
 <div *ngIf="!isLargeScreen" class="row row-cols-1 row-cols-md-2 g-4">
   <div class="col" *ngFor="let event of visibleEvents">
@@ -16,8 +15,16 @@
         </p>
         <div *ngIf="event.isLive" class="status-live">Live</div>
       </div>
+
+      <!-- 🛑 Nur bei Live -->
+      <div *ngIf="event.isLive" class="mt-2 text-end">
+        <button class="custom-outline-btn" (click)="openEndPopup(event.eventID, event.endTime)">
+          Sofort beenden
+        </button>
+      </div>
     </div>
   </div>
+
   <div class="text-center mt-3" *ngIf="events.length > maxVisibleEvents">
     <button class="custom-btn" (click)="toggleShowAllEvents()">
       {{ showAllEvents ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
@@ -51,6 +58,13 @@
                 </p>
                 <div *ngIf="event.isLive" class="status-live">Live</div>
               </div>
+
+              <!-- 🛑 Nur bei Live -->
+              <div *ngIf="event.isLive" class="mt-2 text-end">
+                <button class="btn btn-sm btn-outline-danger" (click)="openEndPopup(event.eventID, event.endTime)">
+                  🛑 Sofort beenden
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -64,3 +78,10 @@
   </button>
 </div>
 
+<!-- 🧱 Pop-up für Event-Ende -->
+<app-end-event-popup
+  *ngIf="showEndEventPopup"
+  [eventIDToEnd]="selectedEventID"
+  [eventEndTime]="selectedEndTime"
+  (close)="closeEndPopup()"
+></app-end-event-popup>

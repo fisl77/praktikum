@@ -74,4 +74,9 @@ export class AdminController {
   getLevels() {
     return this.adminService.getLevels();
   }
+
+  @Patch('event/:id/end')
+  endEvent(@Param('id') eventID: number) {
+    return this.adminService.endEvent(eventID);
+  }
 }

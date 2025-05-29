@@ -339,4 +339,20 @@ export class AdminService {
       name: level.name,
     }));
   }
+
+  async endEvent(eventID: number): Promise<{ ok: boolean; message: string }> {
+    const event = await this.eventRepo.findOne({ where: { eventID } });
+    if (!event) {
+      throw new BadRequestException(`Event mit ID ${eventID} nicht gefunden.`);
+    }
+
+    event.endTime = new Date(); // ✅ Jetzt ist es wirklich ein Date-Objekt
+    event.isLive = false;
+    await this.eventRepo.save(event);
+
+    return {
+      ok: true,
+      message: `Event ${eventID} wurde erfolgreich beendet.`,
+    };
+  }
 }

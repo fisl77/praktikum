@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {EndEventPopupComponent} from '../end-event-popup/end-event-popup.component';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EndEventPopupComponent],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
@@ -15,6 +16,10 @@ export class EventListComponent {
 
   eventChunks: any[][] = [];
   isLargeScreen = window.innerWidth >= 992;
+
+  showEndEventPopup = false;
+  selectedEventID: number | null = null;
+  selectedEndTime: string | null = null;
 
   ngOnChanges() {
     if (this.events) {
@@ -45,5 +50,16 @@ export class EventListComponent {
       result.push(array.slice(i, i + chunkSize));
     }
     return result;
+  }
+  openEndPopup(eventID: number, endTime: string): void {
+    this.selectedEventID = eventID;
+    this.selectedEndTime = endTime;
+    this.showEndEventPopup = true;
+  }
+
+  closeEndPopup(): void {
+    this.showEndEventPopup = false;
+    this.selectedEventID = null;
+    this.selectedEndTime = null;
   }
 }

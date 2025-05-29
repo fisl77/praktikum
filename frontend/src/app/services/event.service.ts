@@ -42,4 +42,9 @@ export class EventService {
 
   getLevels(): Observable<any[]> {
     return this.http.get<any[]>(ApiEndpoints.ADMIN_LEVELS, { withCredentials: true });}
+
+  endEvent(eventID: number): Observable<any> {
+    return this.http.patch(ApiEndpoints.ADMIN_END_EVENT(eventID), {}, { withCredentials: true });
+  }
+
 }

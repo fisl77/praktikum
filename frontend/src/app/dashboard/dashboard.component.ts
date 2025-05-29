@@ -9,20 +9,19 @@ import { EventService } from '../services/event.service';
 import { SurveyService } from '../services/survey.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import {EndEventPopupComponent} from './end-event-popup/end-event-popup.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    NavComponent,
     EventListComponent,
     SurveyListComponent,
     EventPopupComponent,
     SurveyPopupComponent,
     NgIf,
-    NgForOf,
-    DatePipe
+    EndEventPopupComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -45,6 +44,10 @@ export class DashboardComponent implements OnInit {
   eventChunks: any[][] = [];
   maxVisibleEvents = 3;
   showAllEvents = false;
+  selectedEventID: number | null = null;
+  selectedEndTime: string | null = null;
+  showEndEventPopup = false;
+
 
   groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
     const result = [];
@@ -135,5 +138,16 @@ export class DashboardComponent implements OnInit {
 
   toggleShowAllEvents() {
     this.showAllEvents = !this.showAllEvents;
+  }
+  openEndPopup(eventID: number, endTime: string) {
+    this.selectedEventID = eventID;
+    this.selectedEndTime = endTime;
+    this.showEndEventPopup = true;
+  }
+
+  closeEndPopup() {
+    this.showEndEventPopup = false;
+    this.selectedEventID = null;
+    this.selectedEndTime = null;
   }
 }

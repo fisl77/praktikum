@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgIf, NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventService } from '../../services/event.service';
@@ -61,7 +61,6 @@ export class EventPopupComponent implements OnInit {
   }
 
   createEnemyAndEvent(): void {
-    console.log('NameID:', this.nameID, 'TypeID:', this.typeID);
     if (!this.nameID || !this.typeID || !this.levelID) {
       alert('Bitte Name, Typ und Level auswählen.');
       return;
@@ -95,7 +94,6 @@ export class EventPopupComponent implements OnInit {
 
         this.eventService.createEvent(eventPayload).subscribe({
           next: () => {
-            console.log('Enemy & Event erfolgreich erstellt!');
             this.close.emit();
           },
           error: (err) => {
