@@ -128,3 +128,13 @@
   background: #453075;
   color: white;
 }
+
+.stop-btn {
+  border: 2px solid #ca6333;
+  font-weight: bold;
+}
+
+.stop-btn:hover {
+  background: #b5552b;
+  color: white;
+}

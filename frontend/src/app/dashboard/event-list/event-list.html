@@ -16,10 +16,9 @@
         <div *ngIf="event.isLive" class="status-live">Live</div>
       </div>
 
-      <!-- 🛑 Nur bei Live -->
       <div *ngIf="event.isLive" class="mt-2 text-end">
-        <button class="custom-outline-btn" (click)="openEndPopup(event.eventID, event.endTime)">
-          Sofort beenden
+        <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">
+          Stop Event
         </button>
       </div>
     </div>
@@ -59,10 +58,9 @@
                 <div *ngIf="event.isLive" class="status-live">Live</div>
               </div>
 
-              <!-- 🛑 Nur bei Live -->
               <div *ngIf="event.isLive" class="mt-2 text-end">
-                <button class="btn btn-sm btn-outline-danger" (click)="openEndPopup(event.eventID, event.endTime)">
-                  🛑 Sofort beenden
+                <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">
+                  Stop Event
                 </button>
               </div>
             </div>

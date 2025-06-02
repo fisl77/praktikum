@@ -102,25 +102,6 @@ export class DashboardComponent implements OnInit {
     this.loadData();
   }
 
-  calculatePercentage(votes: number, answers: any[]): number {
-    const total = answers.reduce((sum, a) => sum + a.totalVotes, 0);
-    return total > 0 ? Math.round((votes / total) * 100) : 0;
-  }
-
-  getWinner(answers: any[]): string {
-    if (!answers?.length) return '';
-    return answers.reduce((a, b) => (a.totalVotes > b.totalVotes ? a : b)).answer;
-  }
-
-  isLastEnemy(enemy: any, enemies: any[]): boolean {
-    return enemies.indexOf(enemy) === enemies.length - 1;
-  }
-
-  getLevelNames(event: any): string {
-    if (!event || !Array.isArray(event.levels)) return '';
-    return event.levels.map((l: any) => l.name).join(', ');
-  }
-
   maxVisibleSurveys = 3;
   showAllSurveys = false;
 
