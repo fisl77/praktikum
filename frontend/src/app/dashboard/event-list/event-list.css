@@ -130,11 +130,15 @@
 }
 
 .stop-btn {
-  border: 2px solid #ca6333;
+  color: #453075;
+  background-color: white;
+  border: 2px solid #453075;
+  border-radius: 10px;
+  font-size: 1rem;
   font-weight: bold;
 }
 
 .stop-btn:hover {
-  background: #b5552b;
+  background-color: #5e2ca5;
   color: white;
 }

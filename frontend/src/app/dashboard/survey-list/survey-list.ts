@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService} from '../../services/survey.service';
+import { EndSurveyPopupComponent } from '../end-survey-popup/end-survey-popup.component';
 
 @Component({
   selector: 'app-survey-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EndSurveyPopupComponent],
   templateUrl: './survey-list.html',
   styleUrls: ['./survey-list.css']
 })
@@ -14,6 +15,22 @@ export class SurveyListComponent {
   @Input() showAllSurveys = false;
   @Input() maxVisibleSurveys = 3;
 
+
+  showEndSurveyPopup = false;
+  selectedSurveyID: string | null = null;
+  selectedSurveyEndTime: string | null = null;
+
+  openEndSurveyPopup(surveyID: string, endTime: string): void {
+    this.selectedSurveyID = surveyID;
+    this.selectedSurveyEndTime = endTime;
+    this.showEndSurveyPopup = true;
+  }
+
+  closeEndSurveyPopup(): void {
+    this.showEndSurveyPopup = false;
+    this.selectedSurveyID = null;
+    this.selectedSurveyEndTime = null;
+  }
   constructor(private surveyService: SurveyService) {}
 
   surveyChunks: any[][] = [];

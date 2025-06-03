@@ -1,4 +1,3 @@
-<!-- Survey-Liste -->
 <!-- 📱 Mobile: normale Liste -->
 <div *ngIf="!isLargeScreen" class="row row-cols-1 row-cols-md-2 g-4 mb-5">
   <div class="col" *ngFor="let questionnaire of visibleSurveys">
@@ -23,7 +22,7 @@
 
       <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
       <div *ngIf="questionnaire.isLive">
-        <button class="custom-btn" (click)="endQuestionnaire(questionnaire.questionnaireID)">
+        <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
           STOP Questionnaire
         </button>
       </div>
@@ -32,12 +31,12 @@
       </div>
     </div>
   </div>
+
   <div class="text-center mt-3" *ngIf="surveys.length > maxVisibleSurveys">
     <button class="custom-btn" (click)="toggleShowAll()">
       {{ showAllSurveys ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
     </button>
   </div>
-
 </div>
 
 <!-- 🖥️ Desktop: Carousel -->
@@ -60,7 +59,6 @@
                 {{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}
               </div>
 
-
               <div class="answers-scrollbox">
                 <div *ngFor="let answer of questionnaire.answers">
                   <p class="mb-1">{{ answer.answer }}</p>
@@ -78,7 +76,7 @@
 
               <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
               <div *ngIf="questionnaire.isLive">
-                <button class="custom-btn" (click)="endQuestionnaire(questionnaire.questionnaireID)">
+                <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
                   STOP Questionnaire
                 </button>
               </div>
@@ -98,3 +96,11 @@
     <span class="visually-hidden">Nächste</span>
   </button>
 </div>
+
+<!-- 🧱 Pop-up für Survey-Ende -->
+<app-end-survey-popup
+  *ngIf="showEndSurveyPopup"
+  [surveyIDToEnd]="selectedSurveyID"
+  [surveyEndTime]="selectedSurveyEndTime"
+  (close)="closeEndSurveyPopup()"
+></app-end-survey-popup>
