@@ -144,3 +144,7 @@
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
+
+.custom-title {
+  color: #453075;
+}
