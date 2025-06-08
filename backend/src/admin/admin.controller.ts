@@ -79,4 +79,11 @@ export class AdminController {
   endEvent(@Param('id') eventID: number) {
     return this.adminService.endEvent(eventID);
   }
+  @Get('event/:id')
+  @ApiOkResponse({
+    description: 'Gibt ein einzelnes Event inkl. Level + Enemies zurück',
+  })
+  getEventByID(@Param('id') id: number) {
+    return this.adminService.getEventByID(id);
+  }
 }

@@ -1,0 +1,49 @@
+<div class="popup-overlay">
+  <div class="popup-content">
+    <button class="close-button" (click)="close.emit()">X</button>
+    <h2>Update Event</h2>
+
+    <div class="form-group">
+      <label>Level:</label>
+      <select [(ngModel)]="levelID">
+        <option *ngFor="let level of levelOptions" [value]="level.levelID">
+          {{ level.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Enemy:</label>
+      <select [(ngModel)]="enemyID">
+        <option *ngFor="let enemy of enemyOptions" [value]="enemy.id">
+          {{ enemy.name }} ({{ enemy.type }})
+        </option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Scale:</label>
+        <input type="number" step="0.1" [(ngModel)]="scale" />
+      </div>
+      <div class="form-group">
+        <label>Max Count:</label>
+        <input type="number" [(ngModel)]="maxCount" />
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="form-group">
+      <label>Start Time:</label>
+      <input type="datetime-local" [(ngModel)]="startTime" [min]="currentDateTime" />
+    </div>
+
+    <div class="form-group">
+      <label>End Time:</label>
+      <input type="datetime-local" [(ngModel)]="endTime" [min]="currentDateTime" />
+    </div>
+
+    <button class="submit-button" (click)="submitUpdate()">Update</button>
+  </div>
+</div>
