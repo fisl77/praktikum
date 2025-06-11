@@ -346,13 +346,48 @@ export class AdminService {
       throw new BadRequestException(`Event mit ID ${eventID} nicht gefunden.`);
     }
 
-    event.endTime = new Date(); // ✅ Jetzt ist es wirklich ein Date-Objekt
+    event.endTime = new Date();
     event.isLive = false;
     await this.eventRepo.save(event);
 
     return {
       ok: true,
       message: `Event ${eventID} wurde erfolgreich beendet.`,
+    };
+  }
+
+  async getEventByID(eventID: number) {
+    const event = await this.eventRepo.findOne({
+      where: { eventID },
+      relations: [
+        'eventLevels',
+        'eventLevels.level',
+        'eventEnemies',
+        'eventEnemies.enemy',
+        'eventEnemies.enemy.name',
+        'eventEnemies.enemy.type',
+      ],
+    });
+
+    if (!event) {
+      throw new BadRequestException(`Event mit ID ${eventID} nicht gefunden.`);
+    }
+
+    return {
+      eventID: event.eventID,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      levels: event.eventLevels.map((el) => ({
+        levelID: el.level.levelID,
+        name: el.level.name,
+      })),
+      enemies: event.eventEnemies.map((ee) => ({
+        enemyID: ee.enemy.enemyID,
+        name: ee.enemy.name.name,
+        type: ee.enemy.type.type,
+        quantity: ee.quantity,
+        new_scale: ee.enemy.new_scale,
+      })),
     };
   }
 }

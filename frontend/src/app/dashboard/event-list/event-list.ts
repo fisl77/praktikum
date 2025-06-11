@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import {EndEventPopupComponent} from '../end-event-popup/end-event-popup.component';
 import {EventStore} from '../../stores/events.store';
 import {computed, signal} from '@angular/core';
+import { UpdateEventPopupComponent } from '../update-event-popup/update-event-popup.component';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, EndEventPopupComponent],
+  imports: [CommonModule, EndEventPopupComponent, UpdateEventPopupComponent],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
@@ -25,6 +26,8 @@ export class EventListComponent {
   showEndEventPopup = false;
   selectedEventID: number | null = null;
   selectedEndTime: string | null = null;
+  showUpdatePopup = false;
+  eventToUpdate: any = null;
 
   showAllEvents = signal(false);
   maxVisibleEvents = signal(3);
@@ -63,5 +66,15 @@ export class EventListComponent {
     this.showEndEventPopup = false;
     this.selectedEventID = null;
     this.selectedEndTime = null;
+  }
+
+  openUpdatePopup(event: any): void {
+    this.eventToUpdate = event;
+    this.showUpdatePopup = true;
+  }
+
+  closeUpdatePopup(): void {
+    this.showUpdatePopup = false;
+    this.eventToUpdate = null;
   }
 }

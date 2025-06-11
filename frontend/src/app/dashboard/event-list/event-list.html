@@ -64,6 +64,9 @@
                   Stop Event
                 </button>
               </div>
+              <button class="btn btn-sm btn-secondary" (click)="openUpdatePopup(event)">
+                Update
+              </button>
             </div>
           </div>
         </div>
@@ -77,10 +80,18 @@
   </button>
 </div>
 
-<!-- 🧱 Pop-up für Event-Ende -->
+<!-- Pop-up für Event-Ende -->
 <app-end-event-popup
   *ngIf="showEndEventPopup"
   [eventIDToEnd]="selectedEventID"
   [eventEndTime]="selectedEndTime"
   (close)="closeEndPopup()"
 ></app-end-event-popup>
+
+<!-- Pop-up für Event-Update -->
+<app-update-event-popup
+  *ngIf="showUpdatePopup"
+  [eventToUpdate]="eventToUpdate"
+  (close)="closeUpdatePopup()"
+  (updated)="closeUpdatePopup();"
+></app-update-event-popup>

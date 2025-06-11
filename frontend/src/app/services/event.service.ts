@@ -23,7 +23,9 @@ export class EventService {
   updateEvent(eventData: any): Observable<any> {
     return this.http.patch(ApiEndpoints.ADMIN_UPDATE_EVENT, eventData, {withCredentials: true});
   }
-
+  getEventByID(eventID: number): Observable<any> {
+    return this.http.get<any>(ApiEndpoints.ADMIN_EVENT_BY_ID(eventID), { withCredentials: true });
+  }
 
   getEnemies() {
     return this.http.get<any>(ApiEndpoints.ADMIN_ENEMIES, {withCredentials: true});
