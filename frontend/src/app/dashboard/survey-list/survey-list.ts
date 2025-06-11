@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService} from '../../services/survey.service';
 import { EndSurveyPopupComponent } from '../end-survey-popup/end-survey-popup.component';
+import { SurveyStore } from '../../stores/survey.store';
 
 @Component({
   selector: 'app-survey-list',
@@ -11,10 +12,19 @@ import { EndSurveyPopupComponent } from '../end-survey-popup/end-survey-popup.co
   styleUrls: ['./survey-list.css']
 })
 export class SurveyListComponent {
-  @Input() surveys: any[] = [];
-  @Input() showAllSurveys = false;
-  @Input() maxVisibleSurveys = 3;
+  private store = inject(SurveyStore);
+  surveys = this.store.surveys;
 
+  visibleSurveys = computed(() =>
+    this.showAllSurveys() ? this.surveys() : this.surveys().slice(0, this.maxVisibleSurveys())
+  );
+
+  showAllSurveys = signal(false);
+  maxVisibleSurveys = signal(3);
+
+  toggleShowAll() {
+    this.showAllSurveys.set(!this.showAllSurveys());
+  }
 
   showEndSurveyPopup = false;
   selectedSurveyID: string | null = null;
@@ -31,24 +41,9 @@ export class SurveyListComponent {
     this.selectedSurveyID = null;
     this.selectedSurveyEndTime = null;
   }
-  constructor(private surveyService: SurveyService) {}
 
-  surveyChunks: any[][] = [];
+  surveyChunks = computed(() => this.groupIntoChunks(this.surveys(), 3));
   isLargeScreen = window.innerWidth >= 992;
-
-  ngOnChanges() {
-    if (this.surveys) {
-      this.surveyChunks = this.groupIntoChunks(this.surveys, 3);
-    }
-  }
-
-  get visibleSurveys() {
-    return this.showAllSurveys ? this.surveys : this.surveys.slice(0, this.maxVisibleSurveys);
-  }
-
-  toggleShowAll() {
-    this.showAllSurveys = !this.showAllSurveys;
-  }
 
   calculatePercentage(votes: number, answers: any[]): number {
     const total = answers.reduce((sum, a) => sum + a.totalVotes, 0);
@@ -88,23 +83,6 @@ export class SurveyListComponent {
       console.error('Keine gültige ID übergeben!');
       return;
     }
-    this.surveyService.endQuestionnaire(questionnaireID).subscribe({
-      next: () => {
-        console.log('Umfrage wurde erfolgreich beendet');
-        this.loadData();
-      },
-      error: (err) => console.error('Fehler beim Beenden der Umfrage:', err),
-    });
-  }
-
-  private loadData() {
-    this.surveyService.getAllSurveys().subscribe({
-      next: (surveys) => {
-        console.log('Geladene Surveys:', surveys);
-        this.surveys = surveys;
-        this.surveyChunks = this.groupIntoChunks(this.surveys, 3);
-      },
-      error: (err) => console.error('Fehler beim Laden der Surveys:', err),
-    });
+    this.store.endQuestionnaire(questionnaireID);
   }
 }

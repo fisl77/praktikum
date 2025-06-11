@@ -1,6 +1,8 @@
-import { Component, Input } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {EndEventPopupComponent} from '../end-event-popup/end-event-popup.component';
+import {EventStore} from '../../stores/events.store';
+import {computed, signal} from '@angular/core';
 
 @Component({
   selector: 'app-event-list',
@@ -10,29 +12,29 @@ import {EndEventPopupComponent} from '../end-event-popup/end-event-popup.compone
   styleUrls: ['./event-list.css']
 })
 export class EventListComponent {
-  @Input() events: any[] = [];
-  @Input() showAllEvents = false;
-  @Input() maxVisibleEvents = 3;
+  private store = inject(EventStore);
+  events = this.store.events;
 
-  eventChunks: any[][] = [];
+  endEvent(id: number): void {
+    this.store.endEvent(id);
+  }
+
+  eventChunks = computed(() => this.groupIntoChunks(this.events(), 3));
   isLargeScreen = window.innerWidth >= 992;
 
   showEndEventPopup = false;
   selectedEventID: number | null = null;
   selectedEndTime: string | null = null;
 
-  ngOnChanges() {
-    if (this.events) {
-      this.eventChunks = this.groupIntoChunks(this.events, 3);
-    }
-  }
+  showAllEvents = signal(false);
+  maxVisibleEvents = signal(3);
 
-  get visibleEvents() {
-    return this.showAllEvents ? this.events : this.events.slice(0, this.maxVisibleEvents);
-  }
+  visibleEvents = computed(() =>
+    this.showAllEvents() ? this.events() : this.events().slice(0, this.maxVisibleEvents())
+  );
 
   toggleShowAllEvents() {
-    this.showAllEvents = !this.showAllEvents;
+    this.showAllEvents.set(!this.showAllEvents());
   }
 
   isLastEnemy(enemy: any, enemies: any[]): boolean {

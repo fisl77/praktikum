@@ -2,7 +2,7 @@
 
 <!-- 📱 Mobile: normale Liste -->
 <div *ngIf="!isLargeScreen" class="row row-cols-1 row-cols-md-2 g-4 mb-5">
-  <div class="col" *ngFor="let questionnaire of visibleSurveys">
+  <div class="col" *ngFor="let questionnaire of visibleSurveys()">
     <div class="custom-dashboard-card">
       <h5 class="custom-dashboard-title">{{ questionnaire.question }}</h5>
       <div class="text-muted mb-2">
@@ -34,9 +34,9 @@
     </div>
   </div>
 
-  <div class="text-center mt-3" *ngIf="surveys.length > maxVisibleSurveys">
+  <div class="text-center mt-3" *ngIf="surveys().length > maxVisibleSurveys()">
     <button class="custom-btn" (click)="toggleShowAll()">
-      {{ showAllSurveys ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
+      {{ showAllSurveys() ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
     </button>
   </div>
 </div>
@@ -50,7 +50,7 @@
 
   <div id="surveyCarousel" class="carousel slide w-100 mx-3" data-bs-ride="false">
     <div class="carousel-inner">
-      <div class="carousel-item" *ngFor="let chunk of surveyChunks; let i = index" [class.active]="i === 0">
+      <div class="carousel-item" *ngFor="let chunk of surveyChunks(); let i = index" [class.active]="i === 0">
         <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
           <div class="col" *ngFor="let questionnaire of chunk">
             <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between">
