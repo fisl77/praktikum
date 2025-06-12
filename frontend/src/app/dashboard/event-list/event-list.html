@@ -59,14 +59,14 @@
                 <div *ngIf="event.isLive" class="status-live">Live</div>
               </div>
 
-              <div *ngIf="event.isLive" class="mt-2 text-end">
+              <div *ngIf="isBeforeEnd(event.endTime)" class="mt-2 d-flex justify-content-center gap-3">
                 <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">
                   Stop Event
                 </button>
+                <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">
+                  Update Event
+                </button>
               </div>
-              <button class="btn btn-sm btn-secondary" (click)="openUpdatePopup(event)">
-                Update
-              </button>
             </div>
           </div>
         </div>

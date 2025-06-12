@@ -77,4 +77,8 @@ export class EventListComponent {
     this.showUpdatePopup = false;
     this.eventToUpdate = null;
   }
+
+  isBeforeEnd(endTime: string): boolean {
+    return new Date(endTime).getTime() > Date.now();
+  }
 }

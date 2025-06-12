@@ -130,6 +130,20 @@
 }
 
 .stop-btn {
+  color: #ca6333;
+  background-color: white;
+  border: 2px solid #ca6333;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.stop-btn:hover {
+  background-color: #b5552b;
+  color: white;
+}
+
+.update-btn {
   color: #453075;
   background-color: white;
   border: 2px solid #453075;
@@ -138,8 +152,8 @@
   font-weight: bold;
 }
 
-.stop-btn:hover {
-  background-color: #5e2ca5;
+.update-btn:hover {
+  background-color: #4b0082;
   color: white;
 }
 
