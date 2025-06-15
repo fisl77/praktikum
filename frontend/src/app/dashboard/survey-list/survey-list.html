@@ -1,6 +1,6 @@
 <h2 class="custom-title">Questionnaires</h2>
 
-<!-- 📱 Mobile: normale Liste -->
+<!-- 📱 Mobile View -->
 <div *ngIf="!isLargeScreen" class="row row-cols-1 row-cols-md-2 g-4 mb-5">
   <div class="col" *ngFor="let questionnaire of visibleSurveys()">
     <div class="custom-dashboard-card">
@@ -10,7 +10,7 @@
       </div>
 
       <div *ngFor="let answer of questionnaire.answers">
-        <p class="mb-1">{{ answer.answer }}</p>
+        <p class="mb-1" *ngIf="answer.answer">{{ answer.answer }}</p>
         <div class="custom-progress-container">
           <div
             class="custom-progress-bar"
@@ -22,30 +22,46 @@
         </p>
       </div>
 
-      <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
-      <div *ngIf="questionnaire.isLive">
-        <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
-          STOP Questionnaire
-        </button>
+      <!-- Live -->
+      <div *ngIf="isCurrentlyLive(questionnaire)" class="text-center">
+        <span class="live-label" style="display: inline;">Live</span>
+        <span class="live-time" style="display: inline;">
+    ends at <strong>{{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+  </span>
+        <div style="margin-top: 0.5rem;">
+          <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
+            Stop Questionnaire
+          </button>
+        </div>
       </div>
-      <div *ngIf="!questionnaire.isLive">
-        <strong>Winner:</strong> {{ getWinner(questionnaire.answers) }}
+
+      <!-- Starts at -->
+      <div *ngIf="isUpcoming(questionnaire)" class="text-center">
+        <span class="live-label" style="display: inline;">Starts at</span>
+        <span class="live-time" style="display: inline;">
+    <strong>{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+  </span>
+      </div>
+
+      <!-- Is closed -->
+      <div *ngIf="isFinished(questionnaire)" class="status-closed text-center">
+        <strong>Is closed</strong>
       </div>
     </div>
   </div>
 
   <div class="text-center mt-3" *ngIf="surveys().length > maxVisibleSurveys()">
     <button class="custom-btn" (click)="toggleShowAll()">
-      {{ showAllSurveys() ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
+      {{ showAllSurveys() ? 'Show less' : 'Show more' }}
     </button>
   </div>
 </div>
 
-<!-- 🖥️ Desktop: Carousel -->
+<!-- 🖥️ Desktop View -->
 <div *ngIf="isLargeScreen" class="carousel-flex-wrapper d-flex align-items-center justify-content-between mb-5">
   <button class="carousel-arrow" type="button" data-bs-target="#surveyCarousel" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Vorherige</span>
+    <span class="visually-hidden">Previous</span>
   </button>
 
   <div id="surveyCarousel" class="carousel slide w-100 mx-3" data-bs-ride="false">
@@ -63,7 +79,7 @@
 
               <div class="answers-scrollbox">
                 <div *ngFor="let answer of questionnaire.answers">
-                  <p class="mb-1">{{ answer.answer }}</p>
+                  <p class="mb-1" *ngIf="answer.answer">{{ answer.answer }}</p>
                   <div class="custom-progress-container">
                     <div
                       class="custom-progress-bar"
@@ -76,15 +92,30 @@
                 </div>
               </div>
 
-              <div *ngIf="questionnaire.isLive" class="status-live">Live</div>
-              <div *ngIf="questionnaire.isLive">
-                <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
-                  STOP Questionnaire
-                </button>
+              <!-- Live -->
+              <div *ngIf="isCurrentlyLive(questionnaire)" class="text-center">
+                <span class="live-label">Live</span>
+                <span class="live-time">
+    ends at <strong>{{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+  </span>
+                <div style="margin-top: 0.5rem;">
+                  <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
+                    Stop Questionnaire
+                  </button>
+                </div>
               </div>
-              <div *ngIf="!questionnaire.isLive" class="winner-line" [title]="getWinner(questionnaire.answers)">
-                <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong>
-                {{ getWinner(questionnaire.answers) }}
+
+              <!-- Starts at -->
+              <div *ngIf="isUpcoming(questionnaire)" class="text-center">
+                <span class="live-label">Starts at</span>
+                <span class="live-time">
+    <strong>{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+  </span>
+              </div>
+
+              <!-- Is closed -->
+              <div *ngIf="isFinished(questionnaire)" class="status-closed text-center">
+                <strong>Is closed</strong>
               </div>
             </div>
           </div>
@@ -95,11 +126,11 @@
 
   <button class="carousel-arrow" type="button" data-bs-target="#surveyCarousel" data-bs-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Nächste</span>
+    <span class="visually-hidden">Next</span>
   </button>
 </div>
 
-<!-- 🧱 Pop-up für Survey-Ende -->
+<!-- 🧱 Survey End Popup -->
 <app-end-survey-popup
   *ngIf="showEndSurveyPopup"
   [surveyIDToEnd]="selectedSurveyID"

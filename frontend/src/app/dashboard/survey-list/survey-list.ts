@@ -1,6 +1,6 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SurveyService} from '../../services/survey.service';
+import { SurveyService } from '../../services/survey.service';
 import { EndSurveyPopupComponent } from '../end-survey-popup/end-survey-popup.component';
 import { SurveyStore } from '../../stores/survey.store';
 
@@ -9,18 +9,18 @@ import { SurveyStore } from '../../stores/survey.store';
   standalone: true,
   imports: [CommonModule, EndSurveyPopupComponent],
   templateUrl: './survey-list.html',
-  styleUrls: ['./survey-list.css']
+  styleUrls: ['./survey-list.css'],
 })
 export class SurveyListComponent {
   private store = inject(SurveyStore);
   surveys = this.store.surveys;
 
+  showAllSurveys = signal(false);
+  maxVisibleSurveys = signal(3);
+
   visibleSurveys = computed(() =>
     this.showAllSurveys() ? this.surveys() : this.surveys().slice(0, this.maxVisibleSurveys())
   );
-
-  showAllSurveys = signal(false);
-  maxVisibleSurveys = signal(3);
 
   toggleShowAll() {
     this.showAllSurveys.set(!this.showAllSurveys());
@@ -42,8 +42,30 @@ export class SurveyListComponent {
     this.selectedSurveyEndTime = null;
   }
 
+  isLargeScreen:boolean = window.innerWidth >= 992;
+
   surveyChunks = computed(() => this.groupIntoChunks(this.surveys(), 3));
-  isLargeScreen = window.innerWidth >= 992;
+
+  // Neue Logik
+  isUpcoming(q: any): boolean {
+    const now = new Date();
+    return new Date(q.startTime) > now;
+  }
+
+  isFinished(q: any): boolean {
+    const now = new Date();
+    return new Date(q.endTime) < now;
+  }
+
+  isCurrentlyLive(q: any): boolean {
+    const now = new Date();
+    return new Date(q.startTime) <= now && new Date(q.endTime) > now && q.isLive;
+  }
+
+  isExpiredOrInactive(q: any): boolean {
+    const now = new Date();
+    return new Date(q.endTime) < now || !q.isLive;
+  }
 
   calculatePercentage(votes: number, answers: any[]): number {
     const total = answers.reduce((sum, a) => sum + a.totalVotes, 0);
@@ -52,22 +74,17 @@ export class SurveyListComponent {
 
   getWinner(answers: any[]): string {
     if (!answers?.length) return '';
-
     const maxVotes = Math.max(...answers.map(a => a.totalVotes));
     const winners = answers.filter(a => a.totalVotes === maxVotes);
-
     return winners.map(w => w.answer).join(', ');
   }
 
   isDraw(answers: any[]): boolean {
     if (!answers?.length) return false;
-
     const maxVotes = Math.max(...answers.map(a => a.totalVotes));
     const winners = answers.filter(a => a.totalVotes === maxVotes);
-
     return winners.length > 1;
   }
-
 
   private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
     const result = [];
@@ -78,11 +95,7 @@ export class SurveyListComponent {
   }
 
   endQuestionnaire(questionnaireID: string): void {
-    console.log('Ende Anfrage für Umfrage ID:', questionnaireID); // ← hinzufügen
-    if (!questionnaireID) {
-      console.error('Keine gültige ID übergeben!');
-      return;
-    }
+    if (!questionnaireID) return;
     this.store.endQuestionnaire(questionnaireID);
   }
 }
