@@ -6,7 +6,7 @@
     <form (ngSubmit)="submitSurvey()">
       <div class="form-group">
         <label>Question</label>
-        <input type="text" [(ngModel)]="question" name="question" required />
+        <input #questionInput type="text" [(ngModel)]="question" name="question" required />
       </div>
 
       <div class="form-group">
@@ -14,6 +14,7 @@
         <div class="answers-scrollbox">
           <div *ngFor="let answer of answers; let i = index" class="form-row">
             <input
+              #answerInput
               type="text"
               [(ngModel)]="answer.text"
               [name]="'answer' + i"
