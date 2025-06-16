@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import {Component, ElementRef, EventEmitter, Output, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import { NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SurveyService } from '../../services/survey.service'; // <-- Service benutzen
@@ -13,6 +13,9 @@ import { SurveyService } from '../../services/survey.service'; // <-- Service be
 export class SurveyPopupComponent {
   @Output() close = new EventEmitter<void>();
 
+  @ViewChild('questionInput') questionInput!: ElementRef<HTMLInputElement>;
+  @ViewChildren('answerInput') answerInputs!: QueryList<ElementRef<HTMLInputElement>>;
+
   question: string = '';
   answers: { text: string }[] = [{ text: '' }];
   startTime: string = '';
@@ -21,6 +24,12 @@ export class SurveyPopupComponent {
 
   constructor(private surveyService: SurveyService) {
     this.minDateTime = this.getMinDateTime();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.questionInput?.nativeElement.focus();
+    }, 50);
   }
 
   private getMinDateTime(): string {
@@ -54,7 +63,16 @@ export class SurveyPopupComponent {
 
   addAnswer() {
     this.answers.push({ text: '' });
+    setTimeout(() => {this.focusLastAnswerInput();}, 50);
   }
+
+  private focusLastAnswerInput() {
+    const inputs = this.answerInputs.toArray();
+    if (inputs.length > 0) {
+      inputs[inputs.length - 1].nativeElement.focus();
+    }
+  }
+
 
   removeAnswer(index: number) {
     if (this.answers.length > 1) {
