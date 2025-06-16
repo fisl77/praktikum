@@ -12,22 +12,27 @@
       <div *ngFor="let answer of questionnaire.answers">
         <p class="mb-1" *ngIf="answer.answer">{{ answer.answer }}</p>
         <div class="custom-progress-container">
-          <div
-            class="custom-progress-bar"
-            [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
-          ></div>
+          <div class="custom-progress-bar"
+               [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)">
+          </div>
         </div>
         <p class="percentage-label text-end small">
           {{ calculatePercentage(answer.totalVotes, questionnaire.answers) }} %
         </p>
       </div>
 
+      <!-- Winner / Draw -->
+      <div *ngIf="!questionnaire.isLive" class="winner-line text-center" [title]="getWinner(questionnaire.answers)">
+        <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong>
+        {{ getWinner(questionnaire.answers) }}
+      </div>
+
       <!-- Live -->
       <div *ngIf="isCurrentlyLive(questionnaire)" class="text-center">
-        <span class="live-label" style="display: inline;">Live</span>
-        <span class="live-time" style="display: inline;">
-    ends at <strong>{{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
-  </span>
+        <span class="live-label">Live</span>
+        <span class="live-time">
+          ends at <strong>{{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+        </span>
         <div style="margin-top: 0.5rem;">
           <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
             Stop Questionnaire
@@ -37,10 +42,10 @@
 
       <!-- Starts at -->
       <div *ngIf="isUpcoming(questionnaire)" class="text-center">
-        <span class="live-label" style="display: inline;">Starts at</span>
-        <span class="live-time" style="display: inline;">
-    <strong>{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
-  </span>
+        <span class="live-label">Starts at</span>
+        <span class="live-time">
+          <strong>{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+        </span>
       </div>
 
       <!-- Is closed -->
@@ -81,10 +86,9 @@
                 <div *ngFor="let answer of questionnaire.answers">
                   <p class="mb-1" *ngIf="answer.answer">{{ answer.answer }}</p>
                   <div class="custom-progress-container">
-                    <div
-                      class="custom-progress-bar"
-                      [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"
-                    ></div>
+                    <div class="custom-progress-bar"
+                         [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)">
+                    </div>
                   </div>
                   <p class="percentage-label text-end small">
                     {{ calculatePercentage(answer.totalVotes, questionnaire.answers) }} %
@@ -92,12 +96,18 @@
                 </div>
               </div>
 
+              <!-- Winner / Draw -->
+              <div *ngIf="!questionnaire.isLive" class="winner-line text-center" [title]="getWinner(questionnaire.answers)">
+                <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong>
+                {{ getWinner(questionnaire.answers) }}
+              </div>
+
               <!-- Live -->
               <div *ngIf="isCurrentlyLive(questionnaire)" class="text-center">
                 <span class="live-label">Live</span>
                 <span class="live-time">
-    ends at <strong>{{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
-  </span>
+                  ends at <strong>{{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+                </span>
                 <div style="margin-top: 0.5rem;">
                   <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
                     Stop Questionnaire
@@ -109,8 +119,8 @@
               <div *ngIf="isUpcoming(questionnaire)" class="text-center">
                 <span class="live-label">Starts at</span>
                 <span class="live-time">
-    <strong>{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
-  </span>
+                  <strong>{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</strong>
+                </span>
               </div>
 
               <!-- Is closed -->

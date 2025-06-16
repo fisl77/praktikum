@@ -365,10 +365,15 @@ export class BotService implements OnModuleInit {
     await this.syncReactionsWithDatabase();
 
     await this.questionnaireRepo.update(
-        { questionnaireID },
-        { isLive: false }
+      { questionnaireID },
+      {
+        isLive: false,
+        endTime: new Date(),
+      },
     );
-    this.logger.log(`Umfrage ${questionnaireID} wurde korrekt beendet und deaktiviert.`);
+    this.logger.log(
+      `Umfrage ${questionnaireID} wurde korrekt beendet und deaktiviert.`,
+    );
 
     try {
       const channel = await this.client.channels.fetch(questionnaire.channelId);
