@@ -1,54 +1,43 @@
-/* Overlay */
+/* Popup Overlay */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
-/* Popup */
+/* Popup Container */
 .popup-content {
   background: white;
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 1.2rem;
   width: 90%;
   max-width: 900px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   border: 3px solid #ca6333;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  font-family: sans-serif;
   position: relative;
-  animation: fadeInScale 0.3s ease-out;
 }
 
-/* Animation */
-@keyframes fadeInScale {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Schließen */
+/* X-Schließen Button */
 .close-button {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: bold;
   cursor: pointer;
 }
 
-/* Überschrift */
+/* Überschrift mittig */
 .popup-heading-center {
   text-align: center;
   font-size: 1.8rem;
@@ -56,27 +45,41 @@
   margin-bottom: 1.5rem;
 }
 
-/* Sektionen */
+/* Untertitel pro Sektion */
 .section-title {
   font-size: 1.3rem;
   margin-bottom: 1rem;
 }
 
+/* Zwei-Spalten-Layout */
 .detail-grid {
   display: flex;
   flex-direction: row;
   gap: 2rem;
+  position: relative;
 }
 
+/* Linke Spalte (Enemy) */
 .image-section {
   flex: 1;
   min-width: 250px;
 }
 
-.info-section {
-  flex: 1;
+/* Rechte Spalte (Event Info) */
+.info-section .lore-box {
+  margin-bottom: 1.5rem;
 }
 
+.info-section p:nth-of-type(3) {
+  margin-top: 1.2rem;
+}
+
+.info-section {
+  flex: 1;
+  text-align: left;
+}
+
+/* Bild des Gegners */
 .enemy-image {
   width: 100%;
   border-radius: 8px;
@@ -84,13 +87,16 @@
   margin-bottom: 1rem;
 }
 
+/* Gegnerdaten */
 .enemy-detail {
   margin-bottom: 1.5rem;
   text-align: left;
 }
 
+/* Lore-Box mit scrollbar */
 .lore-box {
-  max-height: 120px;
+  min-height: 180px;
+  max-height: 240px;
   overflow-y: auto;
   background-color: #f8f9fa;
   padding: 0.75rem;
@@ -100,7 +106,7 @@
   white-space: pre-wrap;
 }
 
-/* Scrollbar */
+/* Scrollbar lila wie bei Questionnaire */
 .lore-box::-webkit-scrollbar {
   width: 6px;
 }
@@ -116,7 +122,7 @@
   background-color: #321e65;
 }
 
-/* Mobile */
+/* Responsive Layout */
 @media (max-width: 768px) {
   .detail-grid {
     flex-direction: column;
@@ -141,3 +147,62 @@
     max-width: 95vw;
   }
 }
+.level-box {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.level-image {
+  width: 100%;
+  max-width: 180px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin: 0.5rem auto;
+  display: block;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.level-name {
+  text-align: left;
+  font-weight: bold;
+  margin: 0.5rem 0 0.3rem 0;
+}
+
+.lore-title {
+  text-align: left;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.level-image.large {
+  width: 100%;
+  max-width: 260px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  /* verschiebt Bild nach links */
+  margin-left: 0;
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  position: relative;
+}
+
+/* 🟣 Vertikale Linie */
+.detail-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background-color: #453075;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+

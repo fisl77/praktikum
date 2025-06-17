@@ -30,6 +30,10 @@ async function bootstrap() {
     '/enemy-images',
     express.static(join(__dirname, '..', 'assets', 'enemy-images')),
   );
+  app.use(
+    '/level-images',
+    express.static(join(__dirname, '..', 'assets', 'level-images')),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Community Game Admin API')

@@ -183,6 +183,8 @@ export class AdminService {
           levels: event.eventLevels.map((el) => ({
             levelID: el.level.levelID,
             name: el.level.name,
+            imagePath: el.level.imagePath,
+            lore: el.level.lore,
           })),
           enemies: event.eventEnemies.map((ee) => ({
             enemyID: ee.enemy.enemyID,
@@ -369,6 +371,8 @@ export class AdminService {
     return levels.map((level) => ({
       levelID: level.levelID,
       name: level.name,
+      imagePath: level.imagePath ?? null,
+      lore: level.lore ?? null,
     }));
   }
 
@@ -412,6 +416,8 @@ export class AdminService {
       levels: event.eventLevels.map((el) => ({
         levelID: el.level.levelID,
         name: el.level.name,
+        imagePath: el.level.imagePath,
+        lore: el.level.lore,
       })),
       enemies: event.eventEnemies.map((ee) => ({
         enemyID: ee.enemy.enemyID,

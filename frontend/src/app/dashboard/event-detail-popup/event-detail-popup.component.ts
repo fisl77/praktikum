@@ -13,6 +13,8 @@ export class EventDetailPopupComponent implements OnInit {
   @Input() event: any;
   @Output() close = new EventEmitter<void>();
 
+  levelImages: { name: string; imagePath: string | null; lore: string | null }[] = [];
+
   enemyImageUrl: string = '';
   loreText: string = '';
 
@@ -21,6 +23,13 @@ export class EventDetailPopupComponent implements OnInit {
       const enemy = this.event.enemies[0];
       this.enemyImageUrl = `/enemy-images/${enemy.name.toLowerCase()}.png`;
       this.loreText = enemy.lore || 'No lore available.';
+    }
+    if (this.event?.levels?.length > 0) {
+      this.levelImages = this.event.levels.map((level: any) => ({
+        name: level.name,
+        imagePath: level.imagePath ? `/level-images/${level.imagePath}` : null,
+        lore: level.lore ?? null,
+      }));
     }
   }
 

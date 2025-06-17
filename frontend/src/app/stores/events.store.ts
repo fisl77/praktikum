@@ -1,31 +1,36 @@
-import { Injectable, effect, inject, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { EventService } from '../services/event.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class EventStore {
   private eventService = inject(EventService);
+  private http = inject(HttpClient);
 
   events = signal<any[]>([]);
   currentSlide = signal(0); // 🧠 Aktueller Slide wird gemerkt
 
   constructor() {
-    this.checkSessionAndLoadEvents(); // ✅ Nur wenn Session aktiv
-
-    effect(() => {
-      const interval = setInterval(() => this.checkSessionAndLoadEvents(), 5000);
-      return () => clearInterval(interval);
-    });
+    this.waitForSessionAndStart();
   }
 
-  private checkSessionAndLoadEvents() {
-    fetch('/api/auth/check', { credentials: 'include' })
-      .then(res => {
-        if (res.ok) {
-          this.loadEventsPreserveSlide();
-        } else {
+  private waitForSessionAndStart() {
+    const interval = setInterval(() => {
+      this.http.get('/api/auth/check', { withCredentials: true }).subscribe({
+        next: () => {
+          clearInterval(interval);
+          this.loadEvents();         // Initial load
+          this.setupAutoReload();    // 🔁 alle 5s
+        },
+        error: () => {
           console.warn('[EventStore] Nicht eingeloggt – Events werden nicht geladen.');
         }
       });
+    }, 500);
+  }
+
+  private setupAutoReload() {
+    setInterval(() => this.loadEventsPreserveSlide(), 5000);
   }
 
   loadEvents(): void {
@@ -55,11 +60,7 @@ export class EventStore {
           chunk.map(e => e.eventID).sort().join(',') === oldIds
         );
 
-        if (foundIndex !== -1) {
-          this.currentSlide.set(foundIndex); // 🔁 Setze zurück auf vorherigen Slide
-        } else {
-          this.currentSlide.set(0); // Fallback
-        }
+        this.currentSlide.set(foundIndex !== -1 ? foundIndex : 0);
       },
       error: (err) => {
         console.error('[EventStore] Fehler beim Nachladen der Events:', err);
