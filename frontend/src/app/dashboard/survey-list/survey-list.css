@@ -7,8 +7,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 430px;
-  max-height: 430px;
+  height: 400px;
+  max-height: 400px;
   overflow: hidden; /* verhindert Overflow */
 }
 

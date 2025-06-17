@@ -42,7 +42,6 @@ export class EndEventPopupComponent {
 
     this.eventService.endEvent(this.eventIDToEnd).subscribe({
       next: () => {
-        alert('Event wurde erfolgreich beendet!');
         this.close.emit();
       },
       error: (err) => {

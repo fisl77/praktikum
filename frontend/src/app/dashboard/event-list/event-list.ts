@@ -1,9 +1,8 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {EndEventPopupComponent} from '../end-event-popup/end-event-popup.component';
-import {EventStore} from '../../stores/events.store';
-import {computed, signal} from '@angular/core';
+import { EndEventPopupComponent } from '../end-event-popup/end-event-popup.component';
 import { UpdateEventPopupComponent } from '../update-event-popup/update-event-popup.component';
+import { EventStore } from '../../stores/events.store';
 
 @Component({
   selector: 'app-event-list',
@@ -15,10 +14,14 @@ import { UpdateEventPopupComponent } from '../update-event-popup/update-event-po
 export class EventListComponent {
   private store = inject(EventStore);
   events = this.store.events;
+  currentSlide = this.store.currentSlide; // 👈 hinzugefügt
 
-  endEvent(id: number): void {
-    this.store.endEvent(id);
-  }
+  showAllEvents = signal(false);
+  maxVisibleEvents = signal(3);
+
+  visibleEvents = computed(() =>
+    this.showAllEvents() ? this.events() : this.events().slice(0, this.maxVisibleEvents())
+  );
 
   eventChunks = computed(() => this.groupIntoChunks(this.events(), 3));
   isLargeScreen = window.innerWidth >= 992;
@@ -28,13 +31,6 @@ export class EventListComponent {
   selectedEndTime: string | null = null;
   showUpdatePopup = false;
   eventToUpdate: any = null;
-
-  showAllEvents = signal(false);
-  maxVisibleEvents = signal(3);
-
-  visibleEvents = computed(() =>
-    this.showAllEvents() ? this.events() : this.events().slice(0, this.maxVisibleEvents())
-  );
 
   toggleShowAllEvents() {
     this.showAllEvents.set(!this.showAllEvents());
@@ -49,13 +45,10 @@ export class EventListComponent {
     return event.levels.map((l: any) => l.name).join(', ');
   }
 
-  private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
-    const result = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      result.push(array.slice(i, i + chunkSize));
-    }
-    return result;
+  isBeforeEnd(endTime: string): boolean {
+    return new Date(endTime).getTime() > Date.now();
   }
+
   openEndPopup(eventID: number, endTime: string): void {
     this.selectedEventID = eventID;
     this.selectedEndTime = endTime;
@@ -78,7 +71,40 @@ export class EventListComponent {
     this.eventToUpdate = null;
   }
 
-  isBeforeEnd(endTime: string): boolean {
-    return new Date(endTime).getTime() > Date.now();
+  isUpcoming(event: any): boolean {
+    return new Date(event.startTime) > new Date();
+  }
+
+  isFinished(event: any): boolean {
+    return new Date(event.endTime) < new Date();
+  }
+
+  isCurrentlyLive(event: any): boolean {
+    const now = new Date();
+    return new Date(event.startTime) <= now && new Date(event.endTime) > now && event.isLive;
+  }
+
+  prevSlide() {
+    const total = this.eventChunks().length;
+    const current = this.currentSlide();
+    this.currentSlide.set((current - 1 + total) % total);
+  }
+
+  nextSlide() {
+    const total = this.eventChunks().length;
+    const current = this.currentSlide();
+    this.currentSlide.set((current + 1) % total);
+  }
+
+  private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
+  }
+
+  endEvent(id: number): void {
+    this.store.endEvent(id);
   }
 }
