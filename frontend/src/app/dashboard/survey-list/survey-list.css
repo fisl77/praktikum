@@ -6,7 +6,17 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem; /* kompakter statt space-between */
+  justify-content: space-between;
+  height: 430px;
+  max-height: 430px;
+  overflow: hidden; /* verhindert Overflow */
+}
+
+.button-placeholder {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .custom-dashboard-title {
@@ -29,7 +39,6 @@
   transition: width 0.3s ease;
 }
 
-
 .live-label {
   color: #28a745;
   font-weight: bold;
@@ -51,13 +60,6 @@
   margin-top: 0.5rem;
 }
 
-@media (max-width: 576px) {
-  .custom-dashboard-card {
-    padding: 1rem;
-    border-radius: 15px;
-  }
-}
-
 .custom-btn {
   color: #453075;
   background-color: white;
@@ -77,9 +79,9 @@
 .carousel-control-next {
   width: 60px;
   height: 60px;
-  top: 40%; /* leicht zentriert */
+  top: 40%;
   transform: translateY(-50%);
-  background-color: #ca6333; /* Orange */
+  background-color: #ca6333;
   border-radius: 50%;
   opacity: 0.9;
   z-index: 2;
@@ -88,16 +90,16 @@
 
 .carousel-control-prev:hover,
 .carousel-control-next:hover {
-  background-color: #e67645; /* etwas heller beim Hover */
+  background-color: #e67645;
   opacity: 1;
 }
 
 .carousel-control-prev {
-  left: -50px; /* weiter nach links raus */
+  left: -50px;
 }
 
 .carousel-control-next {
-  right: -30px; /* weiter nach rechts raus */
+  right: -30px;
 }
 
 .carousel-flex-wrapper {
@@ -136,11 +138,14 @@
   color: #453075;
 }
 
+/* ✅ Scrollbarer Antwort-Bereich */
 .answers-scrollbox {
-  max-height: 200px; /* je nach Bedarf anpassen */
-  overflow-y: auto;
+  min-height: 130px;
+  max-height: 200px;
   margin-bottom: 1rem;
   padding-right: 4px;
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 .answers-scrollbox::-webkit-scrollbar {
@@ -151,7 +156,8 @@
   border-radius: 4px;
 }
 
-.question-header, .winner-line {
+.question-header,
+.winner-line {
   max-height: 2.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -163,4 +169,19 @@
 
 .custom-title {
   color: #453075;
+}
+
+/* ✅ Mobile Fix: Scroll innerhalb ganzer Card ermöglichen */
+@media (max-width: 576px) {
+  .custom-dashboard-card {
+    padding: 1rem;
+    border-radius: 15px;
+    overflow-y: auto;
+  }
+
+  .answers-scrollbox {
+    min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
 }

@@ -1,3 +1,4 @@
+// survey-list.ts
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService } from '../../services/survey.service';
@@ -14,6 +15,7 @@ import { SurveyStore } from '../../stores/survey.store';
 export class SurveyListComponent {
   private store = inject(SurveyStore);
   surveys = this.store.surveys;
+  currentSlide = this.store.currentSlide; // <- Signal zur Steuerung des aktiven Slides
 
   showAllSurveys = signal(false);
   maxVisibleSurveys = signal(3);
@@ -42,11 +44,22 @@ export class SurveyListComponent {
     this.selectedSurveyEndTime = null;
   }
 
-  isLargeScreen:boolean = window.innerWidth >= 992;
+  isLargeScreen: boolean = window.innerWidth >= 992;
 
   surveyChunks = computed(() => this.groupIntoChunks(this.surveys(), 3));
 
-  // Neue Logik
+  prevSlide() {
+    const total = this.surveyChunks().length;
+    const current = this.store.currentSlide();
+    this.store.currentSlide.set((current - 1 + total) % total);
+  }
+
+  nextSlide() {
+    const total = this.surveyChunks().length;
+    const current = this.store.currentSlide();
+    this.store.currentSlide.set((current + 1) % total);
+  }
+
   isUpcoming(q: any): boolean {
     const now = new Date();
     return new Date(q.startTime) > now;
