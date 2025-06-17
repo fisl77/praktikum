@@ -52,37 +52,40 @@ export class AdminService {
 
   async createEvent(dto: CreateEventRequestDto) {
     const now = new Date();
+    const startTime = new Date(dto.startTime);
+    const endTime = new Date(dto.endTime);
 
     if (new Date(dto.startTime) < now) {
       throw new BadRequestException(
-        'Startzeit darf nicht in der Vergangenheit liegen.',
+        'Start time must not be in the past.',
       );
     }
 
-    const overlappingEvent = await this.eventRepo.findOne({
-      where: [
-        {
-          startTime: LessThanOrEqual(dto.endTime),
-          endTime: MoreThanOrEqual(dto.startTime),
-        },
-      ],
-    });
+    const overlappingEvent = await this.eventRepo
+        .createQueryBuilder('event')
+        .where('event.startTime < :endTime AND event.endTime > :startTime', {
+          startTime,
+          endTime,
+        })
+        .getOne();
+
+    console.log('Found overlapping event:', overlappingEvent);
 
     if (overlappingEvent) {
       throw new BadRequestException(
-        'Es existiert bereits ein aktives Event in diesem Zeitraum.',
+          'There is already an active event in the selected time range.',
       );
     }
 
     const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
     if (validLevels.length !== dto.levelIDs.length) {
-      throw new BadRequestException('Ungültige LevelID(s) übergeben.');
+      throw new BadRequestException('One or more provided level IDs are invalid.');
     }
 
     const enemyIDsFromDto = dto.enemies.map((e) => e.enemyID);
     const validEnemies = await this.enemyRepo.findByIds(enemyIDsFromDto);
     if (validEnemies.length !== enemyIDsFromDto.length) {
-      throw new BadRequestException('Ungültige EnemyID(s) übergeben.');
+      throw new BadRequestException('One or more provided enemy IDs are invalid.');
     }
 
     const isLiveNow =
@@ -120,12 +123,12 @@ export class AdminService {
     const name = await this.enemyNameRepository.findOneBy({
       nameID: dto.nameID,
     });
-    if (!name) throw new Error(`EnemyName mit ID ${dto.nameID} nicht gefunden`);
+    if (!name) throw new Error(`EnemyName with ID ${dto.nameID} not found`);
 
     const type = await this.enemyTypeRepository.findOneBy({
       typeID: dto.typeID,
     });
-    if (!type) throw new Error(`EnemyType mit ID ${dto.typeID} nicht gefunden`);
+    if (!type) throw new Error(`EnemyType with ID ${dto.typeID} not found`);
 
     const isLoner = name.name.toLowerCase() === 'hide';
 
@@ -141,7 +144,7 @@ export class AdminService {
 
     return {
       ok: true,
-      message: 'Enemy gespeichert',
+      message: 'Enemy saved',
       enemyID: saved.enemyID,
     };
   }
@@ -196,13 +199,13 @@ export class AdminService {
 
     if (!event) {
       throw new BadRequestException(
-        `Event mit ID ${dto.eventID} nicht gefunden.`,
+        `Event with ID ${dto.eventID} not found.`,
       );
     }
 
     const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
     if (validLevels.length !== dto.levelIDs.length) {
-      throw new BadRequestException('Mindestens eine Level-ID ist ungültig.');
+      throw new BadRequestException('At least one level ID is invalid.');
     }
 
     const overlappingEvent = await this.eventRepo.findOne({
@@ -215,7 +218,7 @@ export class AdminService {
 
     if (overlappingEvent) {
       throw new BadRequestException(
-        'Überschneidung mit einem anderen aktiven Event.',
+        'Overlap with another active event.',
       );
     }
 
@@ -246,7 +249,7 @@ export class AdminService {
 
     return {
       ok: true,
-      message: `Event ${dto.eventID} erfolgreich aktualisiert.`,
+      message: `Event ${dto.eventID} updated successfully.`,
     };
   }
 
@@ -271,7 +274,7 @@ export class AdminService {
     });
 
     if (!enemy) {
-      throw new BadRequestException(`Enemy mit ID ${id} nicht gefunden`);
+      throw new BadRequestException(`Enemy with ID ${id} not found`);
     }
 
     return {
@@ -325,11 +328,11 @@ export class AdminService {
   }
 
   async getEnemyTypes() {
-    return await this.enemyTypeRepository.find(); // gibt typeID + type
+    return await this.enemyTypeRepository.find();
   }
 
   async getEnemyNames() {
-    return await this.enemyNameRepository.find(); // gibt nameID + name + path
+    return await this.enemyNameRepository.find();
   }
 
   async getLevels() {
@@ -343,7 +346,7 @@ export class AdminService {
   async endEvent(eventID: number): Promise<{ ok: boolean; message: string }> {
     const event = await this.eventRepo.findOne({ where: { eventID } });
     if (!event) {
-      throw new BadRequestException(`Event mit ID ${eventID} nicht gefunden.`);
+      throw new BadRequestException(`Event with ID ${eventID} not found.`);
     }
 
     event.endTime = new Date();
@@ -352,7 +355,7 @@ export class AdminService {
 
     return {
       ok: true,
-      message: `Event ${eventID} wurde erfolgreich beendet.`,
+      message: `Event ${eventID} has been successfully ended.`,
     };
   }
 
@@ -370,7 +373,7 @@ export class AdminService {
     });
 
     if (!event) {
-      throw new BadRequestException(`Event mit ID ${eventID} nicht gefunden.`);
+      throw new BadRequestException(`Event with ID ${eventID} not found.`);
     }
 
     return {

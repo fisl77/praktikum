@@ -38,7 +38,7 @@ export class EventPopupComponent implements OnInit {
       next: (res: any[]) => {
         this.nameOptions = res.map(n => ({ nameID: n.nameID, name: n.name }));
       },
-      error: (err) => console.error('Fehler beim Laden der Namen:', err),
+      error: (err) => console.error('Error loading enemy names:', err),
     });
   }
 
@@ -47,7 +47,7 @@ export class EventPopupComponent implements OnInit {
       next: (res: any[]) => {
         this.typeOptions = res.map(t => ({ typeID: t.typeID, type: t.type }));
       },
-      error: (err) => console.error('Fehler beim Laden der Typen:', err),
+      error: (err) => console.error('Error loading enemy types:', err),
     });
   }
 
@@ -56,18 +56,18 @@ export class EventPopupComponent implements OnInit {
       next: (res: any[]) => {
         this.levelOptions = res.map(l => ({ levelID: l.levelID, name: l.name }));
       },
-      error: (err) => console.error('Fehler beim Laden der Levels:', err),
+      error: (err) => console.error('Error loading levels:', err),
     });
   }
 
   createEnemyAndEvent(): void {
     if (!this.nameID || !this.typeID || !this.levelID) {
-      alert('Bitte Name, Typ und Level auswählen.');
+      alert('Please select name, type and level.');
       return;
     }
 
     if (!this.startTime || !this.endTime) {
-      alert('Bitte Start- und Endzeit angeben.');
+      alert('Please select start and end time.');
       return;
     }
 
@@ -97,14 +97,14 @@ export class EventPopupComponent implements OnInit {
             this.close.emit();
           },
           error: (err) => {
-            console.error('Fehler beim Erstellen des Events:', err);
-            alert('Fehler beim Erstellen des Events');
+            console.error('Error creating event:', err);
+            alert('Error creating event: ' + (err?.error?.message || err.message || 'Unknown Error'));
           },
         });
       },
       error: (err) => {
-        console.error('Fehler beim Erstellen des Enemys:', err);
-        alert('Fehler beim Erstellen des Enemys');
+        console.error('Error creating enemy:', err);
+        alert('Error creating enemy: ' + (err?.error?.message || err.message || 'Unknown Error'));
       },
     });
   }
