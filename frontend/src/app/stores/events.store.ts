@@ -6,12 +6,13 @@ export class EventStore {
   private eventService = inject(EventService);
 
   events = signal<any[]>([]);
+  currentSlide = signal(0); // 🧠 Aktueller Slide wird gemerkt
 
   constructor() {
     this.loadEvents();
 
     effect(() => {
-      const interval = setInterval(() => this.loadEvents(), 5000);
+      const interval = setInterval(() => this.loadEventsPreserveSlide(), 5000);
       return () => clearInterval(interval);
     });
   }
@@ -28,15 +29,50 @@ export class EventStore {
     });
   }
 
+  loadEventsPreserveSlide(): void {
+    const current = this.currentSlide();
+    const oldChunks = this.groupIntoChunks(this.events(), 3);
+    const oldChunk = oldChunks[current] ?? [];
+    const oldIds = oldChunk.map(e => e.eventID).sort().join(',');
+
+    this.eventService.getAllEventsDetailed().subscribe({
+      next: (newEvents) => {
+        this.events.set(newEvents);
+
+        const newChunks = this.groupIntoChunks(newEvents, 3);
+        const foundIndex = newChunks.findIndex(chunk =>
+          chunk.map(e => e.eventID).sort().join(',') === oldIds
+        );
+
+        if (foundIndex !== -1) {
+          this.currentSlide.set(foundIndex); // 🔁 Setze zurück auf vorherigen Slide
+        } else {
+          this.currentSlide.set(0); // Fallback
+        }
+      },
+      error: (err) => {
+        console.error('[EventStore] Fehler beim Nachladen der Events:', err);
+      }
+    });
+  }
+
   endEvent(eventID: number): void {
     this.eventService.endEvent(eventID).subscribe({
       next: () => {
         console.log(`[EventStore] Event ${eventID} beendet.`);
-        this.loadEvents();
+        this.loadEventsPreserveSlide();
       },
       error: (err) => {
         console.error('[EventStore] Fehler beim Beenden des Events:', err);
       },
     });
+  }
+
+  private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
   }
 }

@@ -7,6 +7,20 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 270px;
+  max-height: 400px;
+  overflow: hidden;
+}
+
+.carousel-inner {
+  max-height: 420px;
+  overflow: hidden;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .custom-dashboard-title {
@@ -15,118 +29,26 @@
   margin-bottom: 1rem;
 }
 
-.custom-progress-container {
-  background-color: #e9ecef;
-  border-radius: 10px;
-  height: 20px;
-  overflow: hidden;
-  margin-bottom: 0.75rem;
-}
-
-.custom-progress-bar {
-  background-color: #453075;
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.status-live {
+.live-label {
   color: #28a745;
   font-weight: bold;
-  margin-top: 1rem;
+  font-size: 1rem;
+  margin: 0;
 }
 
-@media (max-width: 576px) {
-  .custom-dashboard-card {
-    padding: 1rem;
-    border-radius: 15px;
-  }
-}
-
-.custom-btn {
-  color: #453075;
-  background-color: white;
-  border: 2px solid #453075;
-  border-radius: 10px;
-  font-size: 1.2rem;
+.live-time {
+  color: #888;
   font-weight: bold;
-  margin: 0.5rem;
+  font-size: 0.95rem;
+  margin-left: 0.4rem;
 }
 
-.custom-btn:hover {
-  background-color: #5e2ca5;
-  color: white;
-}
-
-.carousel-control-prev,
-.carousel-control-next {
-  width: 60px;
-  height: 60px;
-  top: 40%; /* leicht zentriert */
-  transform: translateY(-50%);
-  background-color: #ca6333; /* Orange */
-  border-radius: 50%;
-  opacity: 0.9;
-  z-index: 2;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
-}
-
-.carousel-control-prev:hover,
-.carousel-control-next:hover {
-  background-color: #e67645; /* etwas heller beim Hover */
-  opacity: 1;
-}
-
-.carousel-control-prev {
-  left: -50px; /* weiter nach links raus */
-}
-
-.carousel-control-next {
-  right: -30px; /* weiter nach rechts raus */
-}
-
-.carousel-flex-wrapper {
-  border: 2px solid #453075;
-  border-radius: 20px;
-  padding: 1rem;
-  background-color: white;
-  box-shadow:
-    0 4px 10px rgba(69, 48, 117, 0.15),
-    0 0 0 2px #453075;
-  width: 100%;
-  gap: 1rem;
-}
-
-
-.carousel-arrow {
-  background: transparent;
-  border: none;
-  padding: 0;
-  width: auto;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  filter: invert(1);
-  width: 2rem;
-  height: 2rem;
-}
-.custom-outline-btn {
-  border: 2px solid #453075;
-  background: white;
-  color: #453075;
-  padding: 0.5rem 1rem;
+.status-closed {
+  color: #ca6333;
   font-weight: bold;
-  border-radius: 1rem;
-  transition: all 0.3s ease;
-}
-
-.custom-outline-btn:hover {
-  background: #453075;
-  color: white;
+  font-size: 1rem;
+  margin-top: auto;
+  text-align: center;
 }
 
 .stop-btn {
@@ -157,6 +79,94 @@
   color: white;
 }
 
+.custom-btn {
+  color: #453075;
+  background-color: white;
+  border: 2px solid #453075;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0.5rem;
+}
+
+.custom-btn:hover {
+  background-color: #5e2ca5;
+  color: white;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 60px;
+  height: 60px;
+  top: 40%;
+  transform: translateY(-50%);
+  background-color: #ca6333;
+  border-radius: 50%;
+  opacity: 0.9;
+  z-index: 2;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: #e67645;
+  opacity: 1;
+}
+
+.carousel-control-prev {
+  left: -50px;
+}
+
+.carousel-control-next {
+  right: -30px;
+}
+
+.carousel-flex-wrapper {
+  border: 2px solid #453075;
+  border-radius: 20px;
+  padding: 1rem;
+  background-color: white;
+  box-shadow:
+    0 4px 10px rgba(69, 48, 117, 0.15),
+    0 0 0 2px #453075;
+  width: 100%;
+  gap: 1rem;
+  max-height: 400px;
+}
+
+.carousel-arrow {
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1);
+  width: 2rem;
+  height: 2rem;
+}
+
 .custom-title {
   color: #453075;
+}
+
+.button-placeholder {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 576px) {
+  .custom-dashboard-card {
+    padding: 1rem;
+    border-radius: 15px;
+    overflow-y: auto;
+  }
 }

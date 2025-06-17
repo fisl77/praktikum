@@ -1,6 +1,6 @@
 <h2 class="custom-title">Events</h2>
 
-<!-- 📱 Mobile View: Wenn Events vorhanden -->
+<!-- 📱 Mobile View -->
 <div *ngIf="!isLargeScreen && events().length > 0" class="row row-cols-1 row-cols-md-2 g-4">
   <div class="col" *ngFor="let event of visibleEvents()">
     <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
@@ -15,47 +15,41 @@
             {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
           </span>
         </p>
-        <div *ngIf="event.isLive" class="status-live">Live</div>
       </div>
 
-      <div *ngIf="isBeforeEnd(event.endTime)" class="mt-2 d-flex justify-content-center gap-3">
-        <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">
-          Stop Event
-        </button>
-        <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">
-          Update Event
-        </button>
+      <div *ngIf="isCurrentlyLive(event); else mobilePlaceholder" class="text-center mt-2">
+        <span class="live-label"><strong>Live</strong></span>
+        <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+        <div class="button-group mt-2">
+          <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">Stop Event</button>
+          <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
+        </div>
       </div>
-    </div>
-  </div>
+      <ng-template #mobilePlaceholder>
+        <div class="button-placeholder"></div>
+      </ng-template>
 
-  <div class="text-center mt-3" *ngIf="events().length > maxVisibleEvents()">
-    <button class="custom-btn" (click)="toggleShowAllEvents()">
-      {{ showAllEvents() ? 'Weniger anzeigen' : 'Mehr anzeigen' }}
-    </button>
-  </div>
-</div>
+      <div *ngIf="isUpcoming(event)" class="text-center mt-2">
+        <span class="live-label"><strong>Starts at</strong></span>
+        <span class="live-time">{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+      </div>
 
-<!-- 📱 Mobile View: Wenn KEINE Events -->
-<div *ngIf="!isLargeScreen && events().length === 0" class="row row-cols-1 mb-5">
-  <div class="col">
-    <div class="custom-dashboard-card d-flex justify-content-center align-items-center text-center">
-      <p class="text-muted fs-5 m-0">No events created yet!</p>
+      <div *ngIf="isFinished(event)" class="status-closed text-center mt-2">
+        <strong>Is closed</strong>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- 🖥️ Desktop: Carousel für Events -->
+<!-- 🖥️ Desktop Carousel -->
 <div *ngIf="isLargeScreen" class="carousel-flex-wrapper d-flex align-items-center justify-content-between mb-5">
-  <button class="carousel-arrow" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+  <button class="carousel-arrow" (click)="prevSlide()">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Previous</span>
   </button>
 
-  <div id="eventCarousel" class="carousel slide w-100 mx-3" data-bs-ride="false">
+  <div class="carousel w-100 mx-3">
     <div class="carousel-inner">
-
-      <!-- 🧱 Wenn KEINE Events -->
       <div *ngIf="eventChunks().length === 0" class="carousel-item active">
         <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
           <div class="col">
@@ -66,11 +60,10 @@
         </div>
       </div>
 
-      <!-- ✅ Wenn Events vorhanden -->
-      <div class="carousel-item" *ngFor="let chunk of eventChunks(); let i = index" [class.active]="i === 0">
+      <div class="carousel-item" *ngFor="let chunk of eventChunks(); let i = index" [class.active]="i === currentSlide()">
         <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
           <div class="col" *ngFor="let event of chunk">
-            <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
+            <div class="custom-dashboard-card d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
               <div>
                 <h5 class="custom-dashboard-title">
                   {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
@@ -82,43 +75,52 @@
                     {{ enemy.name }} ({{ enemy.type }})<span *ngIf="!isLastEnemy(enemy, event.enemies)">, </span>
                   </span>
                 </p>
-                <div *ngIf="event.isLive" class="status-live">Live</div>
               </div>
 
-              <div *ngIf="isBeforeEnd(event.endTime)" class="mt-2 d-flex justify-content-center gap-3">
-                <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">
-                  Stop Event
-                </button>
-                <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">
-                  Update Event
-                </button>
+              <div *ngIf="isCurrentlyLive(event); else desktopPlaceholder" class="text-center mt-2">
+                <span class="live-label"><strong>Live</strong></span>
+                <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+                <div class="button-group mt-2">
+                  <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">Stop Event</button>
+                  <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
+                </div>
+              </div>
+              <ng-template #desktopPlaceholder>
+                <div class="button-placeholder"></div>
+              </ng-template>
+
+              <div *ngIf="isUpcoming(event)" class="text-center mt-2">
+                <span class="live-label"><strong>Starts at</strong></span>
+                <span class="live-time">{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+              </div>
+
+              <div *ngIf="isFinished(event)" class="status-closed text-center mt-2">
+                <strong>Is closed</strong>
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <button class="carousel-arrow" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+  <button class="carousel-arrow" (click)="nextSlide()">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Next</span>
   </button>
 </div>
 
-<!-- Pop-up für Event-Ende -->
+<!-- Pop-ups -->
 <app-end-event-popup
   *ngIf="showEndEventPopup"
   [eventIDToEnd]="selectedEventID"
   [eventEndTime]="selectedEndTime"
   (close)="closeEndPopup()"
-></app-end-event-popup>
+/>
 
-<!-- Pop-up für Event-Update -->
 <app-update-event-popup
   *ngIf="showUpdatePopup"
   [eventToUpdate]="eventToUpdate"
   (close)="closeUpdatePopup()"
-  (updated)="closeUpdatePopup();"
-></app-update-event-popup>
+  (updated)="closeUpdatePopup()"
+/>
