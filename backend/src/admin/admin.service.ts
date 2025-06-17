@@ -55,10 +55,15 @@ export class AdminService {
     const startTime = new Date(dto.startTime);
     const endTime = new Date(dto.endTime);
 
-    if (new Date(dto.startTime) < now) {
-      throw new BadRequestException(
-        'Start time must not be in the past.',
-      );
+
+    if (isNaN(startTime.getTime())) {
+      throw new BadRequestException('Invalid start time provided.');
+    }
+    if (startTime >= endTime) {
+      throw new BadRequestException('Start time must be before end time.');
+    }
+    if (startTime < now) {
+      throw new BadRequestException('Start time must not be in the past.');
     }
 
     const overlappingEvent = await this.eventRepo
@@ -192,6 +197,12 @@ export class AdminService {
 
   async updateEvent(dto: UpdateEventRequestDto) {
     const now = new Date();
+    const startTime = new Date(dto.startTime);
+    const endTime = new Date(dto.endTime);
+
+    if (startTime >= endTime) {
+      throw new BadRequestException('Start time must be before end time.');
+    }
 
     const event = await this.eventRepo.findOne({
       where: { eventID: dto.eventID },
@@ -208,17 +219,21 @@ export class AdminService {
       throw new BadRequestException('At least one level ID is invalid.');
     }
 
-    const overlappingEvent = await this.eventRepo.findOne({
-      where: {
-        startTime: LessThanOrEqual(dto.endTime),
-        endTime: MoreThanOrEqual(dto.startTime),
-        eventID: Not(dto.eventID),
-      },
-    });
+    const overlappingEvent = await this.eventRepo
+      .createQueryBuilder('event')
+      .where(
+        'event.startTime < :endTime AND event.endTime > :startTime AND event.eventID != :eventID',
+        {
+          startTime,
+          endTime,
+          eventID: dto.eventID,
+        },
+      )
+      .getOne();
 
     if (overlappingEvent) {
       throw new BadRequestException(
-        'Overlap with another active event.',
+        'There is already an active event in the selected time range.',
       );
     }
 

@@ -43,14 +43,14 @@ export class UpdateEventPopupComponent implements OnInit {
       const enemies = await firstValueFrom(this.eventService.getEnemies());
       this.enemyOptions = enemies;
     } catch (err) {
-      console.error('Fehler beim Laden der Gegner:', err);
+      console.error('Error loading enemies:', err);
     }
   }
 
   loadLevels() {
     this.eventService.getLevels().subscribe({
       next: (res) => (this.levelOptions = res),
-      error: (err) => console.error('Fehler beim Laden der Levels:', err),
+      error: (err) => console.error('Error loading levels:', err),
     });
   }
 
@@ -73,7 +73,7 @@ export class UpdateEventPopupComponent implements OnInit {
 
   submitUpdate() {
     if (!this.levelID || !this.enemyID) {
-      alert('Bitte Level und Gegnerdaten auswählen.');
+      alert('Please select level and enemy data.');
       return;
     }
 
@@ -96,8 +96,8 @@ export class UpdateEventPopupComponent implements OnInit {
         this.close.emit();
       },
       error: (err) => {
-        console.error('Update fehlgeschlagen:', err);
-        alert('Fehler beim Aktualisieren des Events.');
+        console.error('Update failed:', err);
+        alert('Error updating event: ' + (err?.error?.message || err.message || 'Unknown error'));
       },
     });
   }
