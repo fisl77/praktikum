@@ -7,9 +7,9 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 400px;
-  max-height: 400px;
-  overflow: hidden; /* verhindert Overflow */
+  min-height: 430px;         /* ❗ feste Höhe wie vorher */
+  max-height: 430px;
+  overflow-y: auto;          /* ❗ auto statt hidden */
 }
 
 .button-placeholder {
