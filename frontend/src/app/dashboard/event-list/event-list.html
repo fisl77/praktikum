@@ -3,7 +3,7 @@
 <!-- 📱 Mobile View -->
 <div *ngIf="!isLargeScreen && events().length > 0" class="row row-cols-1 row-cols-md-2 g-4">
   <div class="col" *ngFor="let event of visibleEvents()">
-    <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
+    <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }" (click)="openDetailPopup(event)">
       <div>
         <h5 class="custom-dashboard-title">
           {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
@@ -20,7 +20,7 @@
       <div *ngIf="isCurrentlyLive(event); else mobilePlaceholder" class="text-center mt-2">
         <span class="live-label"><strong>Live</strong></span>
         <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
-        <div class="button-group mt-2">
+        <div class="button-group mt-2" (click)="$event.stopPropagation()">
           <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">Stop Event</button>
           <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
         </div>
@@ -63,7 +63,7 @@
       <div class="carousel-item" *ngFor="let chunk of eventChunks(); let i = index" [class.active]="i === currentSlide()">
         <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
           <div class="col" *ngFor="let event of chunk">
-            <div class="custom-dashboard-card d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }">
+            <div class="custom-dashboard-card d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }" (click)="openDetailPopup(event)">
               <div>
                 <h5 class="custom-dashboard-title">
                   {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
@@ -80,7 +80,7 @@
               <div *ngIf="isCurrentlyLive(event); else desktopPlaceholder" class="text-center mt-2">
                 <span class="live-label"><strong>Live</strong></span>
                 <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
-                <div class="button-group mt-2">
+                <div class="button-group mt-2" (click)="$event.stopPropagation()">
                   <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">Stop Event</button>
                   <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
                 </div>
@@ -123,4 +123,10 @@
   [eventToUpdate]="eventToUpdate"
   (close)="closeUpdatePopup()"
   (updated)="closeUpdatePopup()"
+/>
+
+<app-event-detail-popup
+  *ngIf="showEventDetailPopup"
+  [event]="selectedEvent"
+  (close)="closeDetailPopup()"
 />

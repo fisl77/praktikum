@@ -24,3 +24,9 @@
     (close)="closeEndPopup()"
   ></app-end-event-popup>
 </div>
+<!-- Event-Detail-Popup -->
+<app-event-detail-popup
+  *ngIf="showEventDetailPopup"
+  [event]="selectedEvent"
+  (close)="closeDetailPopup()"
+/>

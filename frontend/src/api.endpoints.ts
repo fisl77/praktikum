@@ -13,8 +13,8 @@ export const ApiEndpoints = {
   ADMIN_END_EVENT: (eventID: number) => `/api/admin/event/${eventID}/end`,
 
   // Öffentliche Routen (ohne Login)
-  PUBLIC_ENEMIES: '/api/public/game-client/enemies',
-  PUBLIC_ACTIVE_ENEMIES: '/api/public/game-client/active-enemies',
+  PUBLIC_ENEMIES: '/api/assets/game-client/enemies',
+  PUBLIC_ACTIVE_ENEMIES: '/api/assets/game-client/active-enemies',
   PUBLIC_ENEMY_BY_ID: (id: number) => `/api/public/game-client/enemy/${id}`,
 
   // Authentifizierungs-Routen

@@ -1,4 +1,4 @@
-// src/public/bot.controller.ts
+// src/assets/bot.controller.ts
 import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
 import { BotService } from './bot.service';
 import { CreateQuestionnaireRequestDto } from '../Questionnaire/dto/CreateQuestionnaireRequestDto';

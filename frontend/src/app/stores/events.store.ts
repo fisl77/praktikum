@@ -9,12 +9,23 @@ export class EventStore {
   currentSlide = signal(0); // 🧠 Aktueller Slide wird gemerkt
 
   constructor() {
-    this.loadEvents();
+    this.checkSessionAndLoadEvents(); // ✅ Nur wenn Session aktiv
 
     effect(() => {
-      const interval = setInterval(() => this.loadEventsPreserveSlide(), 5000);
+      const interval = setInterval(() => this.checkSessionAndLoadEvents(), 5000);
       return () => clearInterval(interval);
     });
+  }
+
+  private checkSessionAndLoadEvents() {
+    fetch('/api/auth/check', { credentials: 'include' })
+      .then(res => {
+        if (res.ok) {
+          this.loadEventsPreserveSlide();
+        } else {
+          console.warn('[EventStore] Nicht eingeloggt – Events werden nicht geladen.');
+        }
+      });
   }
 
   loadEvents(): void {

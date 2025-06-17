@@ -1,0 +1,34 @@
+<div class="popup-overlay">
+  <div class="popup-content detail-layout">
+    <button class="close-button" (click)="closePopup()">X</button>
+
+    <h2 class="popup-heading-center">Event Overview</h2>
+
+    <div class="detail-grid">
+      <!-- Linke Seite -->
+      <div class="image-section">
+        <h3 class="section-title">Enemy Details</h3>
+        <img [src]="enemyImageUrl" alt="Enemy Image" class="enemy-image" />
+        <div class="enemy-detail">
+          <p><strong>Enemy:</strong> {{ event.enemies[0]?.name }} ({{ event.enemies[0]?.type }})</p>
+          <p><strong>Scale:</strong> {{ event.enemies[0]?.new_scale ?? '–' }}</p>
+          <p><strong>Max Count:</strong> {{ event.enemies[0]?.quantity ?? '–' }}</p>
+          <p><strong>Loner:</strong> {{ event.enemies[0]?.loners ? 'Yes' : 'No' }}</p>
+
+          <p><strong>Lore:</strong></p>
+          <div class="lore-box">
+            {{ loreText }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Rechte Seite -->
+      <div class="info-section">
+        <h3 class="section-title">Event Details</h3>
+        <p><strong>Level(s):</strong> {{ levelNames }}</p>
+        <p><strong>Start Time:</strong> {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</p>
+        <p><strong>End Time:</strong> {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</p>
+      </div>
+    </div>
+  </div>
+</div>

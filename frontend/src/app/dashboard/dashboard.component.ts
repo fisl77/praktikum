@@ -1,15 +1,17 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+// 🔧 Erweiterte Dashboard-Komponente mit Event-Detail-Popup
+import { Component, OnInit } from '@angular/core';
 import { EventPopupComponent } from './event-popup/event-popup';
-import { SurveyPopupComponent} from './survey-popup/survey-popup.component';
+import { SurveyPopupComponent } from './survey-popup/survey-popup.component';
 import { SurveyListComponent } from './survey-list/survey-list';
 import { EventListComponent } from './event-list/event-list';
+import { EventDetailPopupComponent } from './event-detail-popup/event-detail-popup.component';
 import { NavComponent } from '../nav/navbar.component';
-import {NgIf, NgForOf, DatePipe, CommonModule} from '@angular/common';
+import { NgIf, CommonModule } from '@angular/common';
 import { EventService } from '../services/event.service';
 import { SurveyService } from '../services/survey.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import {EndEventPopupComponent} from './end-event-popup/end-event-popup.component';
+import { EndEventPopupComponent } from './end-event-popup/end-event-popup.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,8 +22,9 @@ import {EndEventPopupComponent} from './end-event-popup/end-event-popup.componen
     SurveyListComponent,
     EventPopupComponent,
     SurveyPopupComponent,
-    NgIf,
+    EventDetailPopupComponent,
     EndEventPopupComponent,
+    NgIf,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -29,9 +32,13 @@ import {EndEventPopupComponent} from './end-event-popup/end-event-popup.componen
 export class DashboardComponent implements OnInit {
   events: any[] = [];
   surveys: any[] = [];
-
   showEventPopup = false;
   showSurveyPopup = false;
+  showEndEventPopup = false;
+  showEventDetailPopup = false;
+  selectedEvent: any = null;
+  selectedEventID: number | null = null;
+  selectedEndTime: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -44,18 +51,8 @@ export class DashboardComponent implements OnInit {
   eventChunks: any[][] = [];
   maxVisibleEvents = 3;
   showAllEvents = false;
-  selectedEventID: number | null = null;
-  selectedEndTime: string | null = null;
-  showEndEventPopup = false;
-
-
-  groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
-    const result = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      result.push(array.slice(i, i + chunkSize));
-    }
-    return result;
-  }
+  maxVisibleSurveys = 3;
+  showAllSurveys = false;
 
   ngOnInit(): void {
     this.loadData();
@@ -64,22 +61,27 @@ export class DashboardComponent implements OnInit {
   loadData(): void {
     this.eventService.getAllEventsDetailed().subscribe({
       next: (events) => {
-        console.log('Geladene Events:', events);
         this.events = events;
-        this.eventChunks = this.groupIntoChunks(this.events, 3)
+        this.eventChunks = this.groupIntoChunks(this.events, 3);
       },
       error: (err) => console.error('Fehler beim Laden der Events:', err),
     });
 
     this.surveyService.getAllSurveys().subscribe({
       next: (surveys) => {
-        console.log('Geladene Surveys:', surveys);
         this.surveys = surveys;
         this.surveyChunks = this.groupIntoChunks(this.surveys, 3);
       },
       error: (err) => console.error('Fehler beim Laden der Surveys:', err),
     });
+  }
 
+  groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
   }
 
   openEventPopup(): void {
@@ -92,34 +94,14 @@ export class DashboardComponent implements OnInit {
   }
 
   openSurveyPopup(): void {
-    console.log('[DEBUG] openSurveyPopup() aufgerufen');
     this.showSurveyPopup = true;
-    console.log('[DEBUG] showSurveyPopup ist jetzt:', this.showSurveyPopup);
-    }
+  }
 
   closeSurveyPopup(): void {
     this.showSurveyPopup = false;
     this.loadData();
   }
 
-  maxVisibleSurveys = 3;
-  showAllSurveys = false;
-
-  get visibleSurveys() {
-    return this.showAllSurveys ? this.surveys : this.surveys.slice(0, this.maxVisibleSurveys);
-  }
-
-  toggleShowAll() {
-    this.showAllSurveys = !this.showAllSurveys;
-  }
-
-  get visibleEvents() {
-    return this.showAllEvents ? this.events : this.events.slice(0, this.maxVisibleEvents);
-  }
-
-  toggleShowAllEvents() {
-    this.showAllEvents = !this.showAllEvents;
-  }
   openEndPopup(eventID: number, endTime: string) {
     this.selectedEventID = eventID;
     this.selectedEndTime = endTime;
@@ -130,5 +112,31 @@ export class DashboardComponent implements OnInit {
     this.showEndEventPopup = false;
     this.selectedEventID = null;
     this.selectedEndTime = null;
+  }
+
+  openDetailPopup(event: any): void {
+    this.selectedEvent = event;
+    this.showEventDetailPopup = true;
+  }
+
+  closeDetailPopup(): void {
+    this.selectedEvent = null;
+    this.showEventDetailPopup = false;
+  }
+
+  get visibleSurveys() {
+    return this.showAllSurveys ? this.surveys : this.surveys.slice(0, this.maxVisibleSurveys);
+  }
+
+  get visibleEvents() {
+    return this.showAllEvents ? this.events : this.events.slice(0, this.maxVisibleEvents);
+  }
+
+  toggleShowAll() {
+    this.showAllSurveys = !this.showAllSurveys;
+  }
+
+  toggleShowAllEvents() {
+    this.showAllEvents = !this.showAllEvents;
   }
 }

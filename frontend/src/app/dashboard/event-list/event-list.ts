@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { EndEventPopupComponent } from '../end-event-popup/end-event-popup.component';
 import { UpdateEventPopupComponent } from '../update-event-popup/update-event-popup.component';
 import { EventStore } from '../../stores/events.store';
+import {EventDetailPopupComponent} from '../event-detail-popup/event-detail-popup.component';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, EndEventPopupComponent, UpdateEventPopupComponent],
+  imports: [CommonModule, EndEventPopupComponent, UpdateEventPopupComponent, EventDetailPopupComponent],
   templateUrl: './event-list.html',
   styleUrls: ['./event-list.css']
 })
@@ -31,6 +32,8 @@ export class EventListComponent {
   selectedEndTime: string | null = null;
   showUpdatePopup = false;
   eventToUpdate: any = null;
+  selectedEvent: any = null;
+  showEventDetailPopup = false;
 
   toggleShowAllEvents() {
     this.showAllEvents.set(!this.showAllEvents());
@@ -71,6 +74,16 @@ export class EventListComponent {
     this.eventToUpdate = null;
   }
 
+  openDetailPopup(event: any) {
+    this.selectedEvent = event;
+    this.showEventDetailPopup = true;
+  }
+
+  closeDetailPopup() {
+    this.showEventDetailPopup = false;
+  }
+
+
   isUpcoming(event: any): boolean {
     return new Date(event.startTime) > new Date();
   }
@@ -107,4 +120,5 @@ export class EventListComponent {
   endEvent(id: number): void {
     this.store.endEvent(id);
   }
+
 }

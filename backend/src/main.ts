@@ -3,12 +3,15 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
 
   app.use(cookieParser());
+
   app.use(
     session({
       secret: 'ultrasecretkey', // oder aus .env lesen
@@ -16,10 +19,16 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 1000 * 60 * 60, // 1h
-        sameSite: 'lax', // nicht "strict"!
-        secure: false, // darf über http laufen
+        sameSite: 'lax', // wichtig für Cookies mit Angular
+        secure: false, // true nur bei https
       },
     }),
+  );
+
+  // 🔥 Statisches Verzeichnis für Enemy-Bilder freigeben
+  app.use(
+    '/enemy-images',
+    express.static(join(__dirname, '..', 'assets', 'enemy-images')),
   );
 
   const config = new DocumentBuilder()

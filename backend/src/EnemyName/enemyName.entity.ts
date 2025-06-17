@@ -14,4 +14,12 @@ export class EnemyName {
 
   @Column()
   path: string;
+
+  // ✅ Neues Feld: Bildpfad
+  @Column({ nullable: true })
+  imageUrl: string;
+
+  // ✅ Neues Feld: Lore-Text
+  @Column({ type: 'text', nullable: true })
+  lore: string;
 }

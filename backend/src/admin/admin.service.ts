@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Not, Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { EventLevel } from '../EventLevel/eventLevel.entity';
 import { EventEnemy } from '../EventEnemy/eventEnemy.entity';
 import { Questionnaire } from '../Questionnaire/questionnaire.entity';
@@ -55,7 +55,6 @@ export class AdminService {
     const startTime = new Date(dto.startTime);
     const endTime = new Date(dto.endTime);
 
-
     if (isNaN(startTime.getTime())) {
       throw new BadRequestException('Invalid start time provided.');
     }
@@ -67,30 +66,34 @@ export class AdminService {
     }
 
     const overlappingEvent = await this.eventRepo
-        .createQueryBuilder('event')
-        .where('event.startTime < :endTime AND event.endTime > :startTime', {
-          startTime,
-          endTime,
-        })
-        .getOne();
+      .createQueryBuilder('event')
+      .where('event.startTime < :endTime AND event.endTime > :startTime', {
+        startTime,
+        endTime,
+      })
+      .getOne();
 
     console.log('Found overlapping event:', overlappingEvent);
 
     if (overlappingEvent) {
       throw new BadRequestException(
-          'There is already an active event in the selected time range.',
+        'There is already an active event in the selected time range.',
       );
     }
 
     const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
     if (validLevels.length !== dto.levelIDs.length) {
-      throw new BadRequestException('One or more provided level IDs are invalid.');
+      throw new BadRequestException(
+        'One or more provided level IDs are invalid.',
+      );
     }
 
     const enemyIDsFromDto = dto.enemies.map((e) => e.enemyID);
     const validEnemies = await this.enemyRepo.findByIds(enemyIDsFromDto);
     if (validEnemies.length !== enemyIDsFromDto.length) {
-      throw new BadRequestException('One or more provided enemy IDs are invalid.');
+      throw new BadRequestException(
+        'One or more provided enemy IDs are invalid.',
+      );
     }
 
     const isLiveNow =
@@ -186,6 +189,11 @@ export class AdminService {
             name: ee.enemy.name.name,
             type: ee.enemy.type.type,
             quantity: ee.quantity,
+            new_scale: ee.enemy.new_scale,
+            max_count: ee.enemy.max_count,
+            loners: ee.enemy.loners,
+            lore: ee.enemy.name.lore,
+            imageUrl: ee.enemy.name.imageUrl,
           })),
         };
       })
@@ -209,9 +217,7 @@ export class AdminService {
     });
 
     if (!event) {
-      throw new BadRequestException(
-        `Event with ID ${dto.eventID} not found.`,
-      );
+      throw new BadRequestException(`Event with ID ${dto.eventID} not found.`);
     }
 
     const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
@@ -347,7 +353,15 @@ export class AdminService {
   }
 
   async getEnemyNames() {
-    return await this.enemyNameRepository.find();
+    const names = await this.enemyNameRepository.find();
+
+    return names.map((name) => ({
+      nameID: name.nameID,
+      name: name.name,
+      path: name.path,
+      imageUrl: name.imageUrl ?? null,
+      lore: name.lore ?? null,
+    }));
   }
 
   async getLevels() {
