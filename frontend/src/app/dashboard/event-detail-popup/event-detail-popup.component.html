@@ -1,5 +1,5 @@
 <div class="popup-overlay">
-  <div class="popup-content detail-layout">
+  <div class="popup-content detail-layout wide fixed-height">
     <button class="close-button" (click)="closePopup()">X</button>
 
     <h2 class="popup-heading-center">Event Overview</h2>
@@ -8,14 +8,27 @@
       <!-- Linke Seite -->
       <div class="image-section">
         <h3 class="section-title">Enemy Details</h3>
-        <img [src]="enemyImageUrl" alt="Enemy Image" class="enemy-image" />
+        <img [src]="enemyImageUrl" alt="Enemy Image" class="enemy-image tight" />
+
         <div class="enemy-detail">
           <p><strong>Enemy:</strong> {{ event.enemies[0]?.name }} ({{ event.enemies[0]?.type }})</p>
-          <p><strong>Scale:</strong> {{ event.enemies[0]?.new_scale ?? '–' }}</p>
-          <p><strong>Max Count:</strong> {{ event.enemies[0]?.quantity ?? '–' }}</p>
-          <p><strong>Loner:</strong> {{ event.enemies[0]?.loners ? 'Yes' : 'No' }}</p>
 
-          <p><strong>Enemy Lore:</strong></p>
+          <p><strong>Scale:</strong> {{ event.enemies[0]?.new_scale ?? '–' }}</p>
+          <details class="info-block"><summary>Was bedeutet Scale?</summary>
+            <p class="info-description">Skalierungsfaktor für den Gegner.</p>
+          </details>
+
+          <p><strong>Max Count:</strong> {{ event.enemies[0]?.quantity ?? '–' }}</p>
+          <details class="info-block"><summary>Was bedeutet Max Count?</summary>
+            <p class="info-description">Maximale Anzahl von Gegnern dieses Typs.</p>
+          </details>
+
+          <p><strong>Loner:</strong> {{ event.enemies[0]?.loners ? 'Yes' : 'No' }}</p>
+          <details class="info-block"><summary>Was bedeutet Loner?</summary>
+            <p class="info-description">Nur einer darf gleichzeitig aktiv sein.</p>
+          </details>
+
+          <p class="lore-title"><strong>Enemy Lore:</strong></p>
           <div class="lore-box">
             {{ loreText }}
           </div>
@@ -34,11 +47,10 @@
         />
 
         <p><strong>Name:</strong> {{ levelImages[0]?.name }}</p>
-
         <p><strong>Start Time:</strong> {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</p>
         <p><strong>End Time:</strong> {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</p>
 
-        <p><strong>Level Lore:</strong></p>
+        <p class="lore-title"><strong>Level Lore:</strong></p>
         <div *ngIf="levelImages[0]?.lore" class="lore-box">
           {{ levelImages[0].lore }}
         </div>

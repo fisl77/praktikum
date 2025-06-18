@@ -95,9 +95,8 @@
 
 /* Lore-Box mit scrollbar */
 .lore-box {
-  min-height: 180px;
-  max-height: 240px;
-  overflow-y: auto;
+  max-height: 150px;
+  overflow-y: scroll;
   background-color: #f8f9fa;
   padding: 0.75rem;
   border-radius: 8px;
@@ -206,3 +205,84 @@
   border-radius: 2px;
 }
 
+.text-muted {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+/* Breitere Popup-Variante */
+.popup-content.wide {
+  max-width: 1000px;
+}
+
+/* Reduzierter Abstand zum Bild */
+.enemy-image.tight {
+  margin-bottom: 0.5rem;
+}
+
+/* Einklappbarer Bereich */
+details {
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+}
+summary.tech-summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #453075;
+  margin-bottom: 0.3rem;
+}
+
+.tech-info p {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+.popup-content.wide.fixed-height {
+  max-width: 1000px;
+  max-height: 750px;
+  overflow-y: auto;
+}
+
+.enemy-image.tight {
+  margin-bottom: 0.5rem;
+}
+
+/* Einzeln aufklappbare Info */
+.info-block {
+  margin: 0.4rem 0;
+}
+.info-block summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #453075;
+}
+.info-description {
+  font-size: 0.85rem;
+  margin-left: 1rem;
+  margin-top: 0.2rem;
+  color: #555;
+}
+.enemy-image.tight {
+  margin-bottom: 0.5rem;
+}
+
+.popup-content.wide.fixed-height {
+  max-width: 1000px;
+  max-height: 750px;
+  overflow-y: auto;
+}
+
+/* Einzeln aufklappbare Erklärtexte */
+.info-block {
+  margin: 0.4rem 0 1rem 0;
+}
+.info-block summary {
+  cursor: pointer;
+  color: #453075;
+  font-size: 0.9rem;
+}
+.info-description {
+  font-size: 0.85rem;
+  margin-left: 1rem;
+  margin-top: 0.3rem;
+  color: #555;
+}
