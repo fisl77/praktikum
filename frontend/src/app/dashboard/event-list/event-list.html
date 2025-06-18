@@ -17,22 +17,26 @@
         </p>
       </div>
 
-      <div *ngIf="isCurrentlyLive(event); else mobilePlaceholder" class="text-center mt-2">
-        <span class="live-label"><strong>Live</strong></span>
-        <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+      <div *ngIf="isCurrentlyLive(event) || isUpcoming(event); else mobilePlaceholder" class="text-center mt-2">
+        <div *ngIf="isCurrentlyLive(event)">
+          <span class="live-label"><strong>Live</strong></span>
+          <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+
+        <div *ngIf="isUpcoming(event)">
+          <span class="live-label"><strong>Starts at</strong></span>
+          <span class="live-time">{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+        </div>
+
         <div class="button-group mt-2" (click)="$event.stopPropagation()">
           <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">Stop Event</button>
           <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
         </div>
       </div>
+
       <ng-template #mobilePlaceholder>
         <div class="button-placeholder"></div>
       </ng-template>
-
-      <div *ngIf="isUpcoming(event)" class="text-center mt-2">
-        <span class="live-label"><strong>Starts at</strong></span>
-        <span class="live-time">{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
-      </div>
 
       <div *ngIf="isFinished(event)" class="status-closed text-center mt-2">
         <strong>Is closed</strong>
@@ -77,22 +81,26 @@
                 </p>
               </div>
 
-              <div *ngIf="isCurrentlyLive(event); else desktopPlaceholder" class="text-center mt-2">
-                <span class="live-label"><strong>Live</strong></span>
-                <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+              <div *ngIf="isCurrentlyLive(event) || isUpcoming(event); else desktopPlaceholder" class="text-center mt-2">
+                <div *ngIf="isCurrentlyLive(event)">
+                  <span class="live-label"><strong>Live</strong></span>
+                  <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+                </div>
+
+                <div *ngIf="isUpcoming(event)">
+                  <span class="live-label"><strong>Starts at</strong></span>
+                  <span class="live-time">{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+                </div>
+
                 <div class="button-group mt-2" (click)="$event.stopPropagation()">
                   <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">Stop Event</button>
                   <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
                 </div>
               </div>
+
               <ng-template #desktopPlaceholder>
                 <div class="button-placeholder"></div>
               </ng-template>
-
-              <div *ngIf="isUpcoming(event)" class="text-center mt-2">
-                <span class="live-label"><strong>Starts at</strong></span>
-                <span class="live-time">{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
-              </div>
 
               <div *ngIf="isFinished(event)" class="status-closed text-center mt-2">
                 <strong>Is closed</strong>
