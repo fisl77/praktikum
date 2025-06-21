@@ -44,7 +44,7 @@
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -126,10 +126,12 @@ select {
   flex-direction: column;
   justify-content: flex-start;
   min-height: 140px;
+  margin-bottom: 0.3rem;
 }
 
 .info-block {
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .info-block summary {
