@@ -1,7 +1,8 @@
 import {Component, ElementRef, EventEmitter, Output, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import { NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SurveyService } from '../../services/survey.service'; // <-- Service benutzen
+import { SurveyService } from '../../services/survey.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-survey-popup',
@@ -22,7 +23,7 @@ export class SurveyPopupComponent {
   endTime: string = '';
   minDateTime: string = '';
 
-  constructor(private surveyService: SurveyService) {
+  constructor(private surveyService: SurveyService, private toastr: ToastrService) {
     this.minDateTime = this.getMinDateTime();
   }
 
@@ -51,12 +52,13 @@ export class SurveyPopupComponent {
 
     this.surveyService.startSurvey(payload).subscribe({
       next: (response) => {
-        console.log('Umfrage erfolgreich gestartet:', response);
+        console.log('Survey started successfully:', response);
+        this.toastr.success('Survey started successfully:', response)
         this.close.emit();
       },
       error: (error) => {
-        console.error('Fehler beim Starten der Umfrage:', error);
-        alert('Fehler beim Erstellen der Umfrage');
+        console.error('Error starting the survey', error);
+        this.toastr.error('Error starting the survey:', error);
       }
     });
   }

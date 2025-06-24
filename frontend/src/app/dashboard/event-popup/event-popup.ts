@@ -63,13 +63,17 @@ export class EventPopupComponent implements OnInit {
 
   createEnemyAndEvent(): void {
     if (!this.nameID || !this.typeID || !this.levelID) {
-      this.toastr.error('Please select name, type and level.')
-      //alert('Please select name, type and level.');
+      this.toastr.error('Please select level, enemy and type.')
+      return;
+    }
+
+    if (!this.scale || !this.maxCount) {
+      this.toastr.error('Please select scale and maxCount.')
       return;
     }
 
     if (!this.startTime || !this.endTime) {
-      alert('Please select start and end time.');
+      this.toastr.error('Please select start and end time.')
       return;
     }
 
@@ -96,17 +100,18 @@ export class EventPopupComponent implements OnInit {
 
         this.eventService.createEvent(eventPayload).subscribe({
           next: () => {
+            this.toastr.success('Event created successfully.');
             this.close.emit();
           },
           error: (err) => {
             console.error('Error creating event:', err);
-            alert('Error creating event: ' + (err?.error?.message || err.message || 'Unknown Error'));
+            this.toastr.error('Error creating event: ' + (err?.error?.message || err.message || 'Unknown Error'));
           },
         });
       },
       error: (err) => {
         console.error('Error creating enemy:', err);
-        alert('Error creating enemy: ' + (err?.error?.message || err.message || 'Unknown Error'));
+        this.toastr.error('Error creating enemy: ' + (err?.error?.message || err.message || 'Unknown Error'));
       },
     });
   }

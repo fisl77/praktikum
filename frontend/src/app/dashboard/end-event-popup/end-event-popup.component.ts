@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventService } from '../../services/event.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-end-event-popup',
@@ -17,7 +18,7 @@ export class EndEventPopupComponent {
   showEndConfirm = true; // direkt anzeigen
   originalEndTime: string | null = null;
 
-  constructor(private eventService: EventService) {}
+  constructor(private eventService: EventService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     if (this.eventEndTime) {
@@ -46,7 +47,7 @@ export class EndEventPopupComponent {
       },
       error: (err) => {
         console.error('Fehler beim Beenden des Events:', err);
-        alert('Fehler beim Beenden');
+        this.toastr.error(err.message || 'Unknown Error');
       },
     });
   }
