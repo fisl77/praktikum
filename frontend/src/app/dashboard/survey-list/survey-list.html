@@ -101,30 +101,32 @@
                 </div>
               </div>
 
-              <div *ngIf="!questionnaire.isLive" class="winner-line text-center mt-1" [title]="getWinner(questionnaire.answers)">
-                <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong> {{ getWinner(questionnaire.answers) }}
-              </div>
+
 
               <div *ngIf="isCurrentlyLive(questionnaire); else buttonPlaceholderDesktop" class="text-center mt-2">
+
                 <span class="live-label"><strong>Live</strong></span>
                 <span class="live-time">ends at {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
-                <div class="mt-2">
-                  <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
-                    Stop Questionnaire
-                  </button>
-                </div>
+
               </div>
               <ng-template #buttonPlaceholderDesktop>
                 <div class="button-placeholder"></div>
               </ng-template>
 
               <div *ngIf="isUpcoming(questionnaire)" class="text-center mt-2">
+                <div class="mt-2">
+                  <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
+                    Stop Questionnaire
+                  </button>
+                </div>
                 <span class="live-label"><strong>Starts at</strong></span>
                 <span class="live-time">{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
               </div>
 
               <div *ngIf="isFinished(questionnaire)" class="status-closed text-center mt-2">
-                <strong>Is closed</strong>
+                <div *ngIf="!questionnaire.isLive"  [title]="getWinner(questionnaire.answers)">
+                  <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong> {{ getWinner(questionnaire.answers) }}
+                </div>
               </div>
             </div>
           </div>

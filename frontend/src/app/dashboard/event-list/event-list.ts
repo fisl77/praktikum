@@ -85,7 +85,8 @@ export class EventListComponent {
 
 
   isUpcoming(event: any): boolean {
-    return new Date(event.startTime) > new Date();
+    const now = new Date();
+    return new Date(event.startTime) > now && new Date(event.endTime) > now;
   }
 
   isFinished(event: any): boolean {

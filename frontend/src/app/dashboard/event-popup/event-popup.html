@@ -19,42 +19,36 @@
       </div>
 
       <div class="form-group fixed-info-group">
-        <label>Type:</label>
+        <label>Type:
+          <span class="info-tooltip">?
+            <span class="tooltip-text">Difficulty profile of the opponent.</span>
+          </span>
+        </label>
         <div class="radio-options">
           <label class="radio-option" *ngFor="let type of typeOptions">
             <input type="radio" name="typeID" [value]="type.typeID" [(ngModel)]="typeID" />
             <span>{{ type.type }}</span>
           </label>
         </div>
-        <details class="info-block">
-          <summary>Was bedeutet Type?</summary>
-          <div class="info-description">
-            Gibt den Schwierigkeitsgrad oder das Profil des Gegners an.
-          </div>
-        </details>
       </div>
 
       <div class="form-row">
         <div class="form-group fixed-info-group">
-          <label>Scale:</label>
+          <label>Scale:
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Scaling factor for the opponent.</span>
+            </span>
+          </label>
           <input type="number" step="0.1" [(ngModel)]="scale" />
-          <details class="info-block">
-            <summary>Was bedeutet Scale?</summary>
-            <div class="info-description">
-              Skalierungsfaktor für den Gegner.
-            </div>
-          </details>
         </div>
 
         <div class="form-group fixed-info-group">
-          <label>Max Count:</label>
+          <label>Max Count:
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Maximum number of enemies.</span>
+            </span>
+          </label>
           <input type="number" [(ngModel)]="maxCount" />
-          <details class="info-block">
-            <summary>Was bedeutet Max Count?</summary>
-            <div class="info-description">
-              Maximale Anzahl von Gegnern dieses Typs.
-            </div>
-          </details>
         </div>
       </div>
 

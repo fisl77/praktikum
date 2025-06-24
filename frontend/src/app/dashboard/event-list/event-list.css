@@ -211,7 +211,7 @@
   color: #fff;
   text-align: center;
   border-radius: 6px;
-  padding: 0.5rem 1rem; /* mehr Platz links + rechts */
+  padding: 0.5rem 1rem;
   position: absolute;
   z-index: 1;
   top: -0.2rem;
@@ -220,7 +220,7 @@
   font-size: 0.85rem;
   opacity: 0;
   transition: opacity 0.1s ease-in;
-  pointer-events: none; /* verhindert Ghost-Hover-Verhalten */
+  pointer-events: none;
 }
 
 /* Sofort sichtbarer Tooltip beim Hover */
