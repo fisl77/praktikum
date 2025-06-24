@@ -104,11 +104,7 @@
 
 
               <div *ngIf="isCurrentlyLive(questionnaire); else buttonPlaceholderDesktop" class="text-center mt-2">
-                <div class="mt-2">
-                  <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
-                    Stop Questionnaire
-                  </button>
-                </div>
+
                 <span class="live-label"><strong>Live</strong></span>
                 <span class="live-time">ends at {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
 
@@ -118,6 +114,11 @@
               </ng-template>
 
               <div *ngIf="isUpcoming(questionnaire)" class="text-center mt-2">
+                <div class="mt-2">
+                  <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
+                    Stop Questionnaire
+                  </button>
+                </div>
                 <span class="live-label"><strong>Starts at</strong></span>
                 <span class="live-time">{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
               </div>
