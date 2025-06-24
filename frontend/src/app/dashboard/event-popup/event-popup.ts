@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgIf, NgForOf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EventService } from '../../services/event.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-event-popup',
@@ -25,7 +26,7 @@ export class EventPopupComponent implements OnInit {
   typeOptions: { typeID: number; type: string }[] = [];
   levelOptions: { levelID: number; name: string }[] = [];
 
-  constructor(private eventService: EventService) {}
+  constructor(private eventService: EventService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.loadEnemyNames();
@@ -62,7 +63,8 @@ export class EventPopupComponent implements OnInit {
 
   createEnemyAndEvent(): void {
     if (!this.nameID || !this.typeID || !this.levelID) {
-      alert('Please select name, type and level.');
+      this.toastr.error('Please select name, type and level.')
+      //alert('Please select name, type and level.');
       return;
     }
 
