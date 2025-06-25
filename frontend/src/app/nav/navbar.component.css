@@ -1,21 +1,27 @@
 .custom-navbar {
   background-color: #4b0082;
-  padding: 0.5rem 1rem;
+  height: 6rem;
+  padding: 0 1rem;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 .custom-navbar-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  width: 100%;
   position: relative;
-  flex-wrap: wrap;
 }
 
 .navbar-logo {
-  height: 5rem; /* schön groß */
+  max-height: 100%;
+  height: auto;
   width: auto;
   object-fit: contain;
-  margin: 0 auto;
+  display: block;
 }
 
 .logout-btn {
@@ -31,4 +37,8 @@
 .logout-btn:hover {
   color: #453075;
   background-color: white;
+}
+
+.bi-box-arrow-left {
+  font-size: 1.2rem;
 }

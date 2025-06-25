@@ -5,6 +5,7 @@ import { appConfig } from './app/app.config';
 import { provideAnimations} from '@angular/platform-browser/animations';
 import { provideToastr} from 'ngx-toastr';
 
+
 bootstrapApplication(AppComponent, {
   ...appConfig,
   providers: [
