@@ -286,3 +286,43 @@ summary.tech-summary {
   margin-top: 0.3rem;
   color: #555;
 }
+.info-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.3rem;
+  background-color: #453075;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 1rem;          /* kleiner */
+  height: 1rem;         /* kleiner */
+  text-align: center;
+  line-height: 1rem;    /* passend zur Größe */
+  font-size: 0.9rem;     /* kleinerer Text */
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 280px;
+  background-color: #453075;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 10;
+  top: -0.2rem;
+  left: 1.8rem;
+  white-space: normal;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
