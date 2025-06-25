@@ -40,6 +40,22 @@ export class SurveyPopupComponent {
   }
 
   submitSurvey() {
+    if (!this.question) {
+      this.toastr.error('The Question cannot be empty!')
+      return;
+    }
+
+    if (!this.answers.length || this.answers.some(a => !a.text.trim())) {
+      this.toastr.error('Each answer must be filled out!');
+      return;
+    }
+
+    if (!this.startTime || !this.endTime) {
+      this.toastr.error('Please select start and end time.')
+      return;
+    }
+
+
     const payload = {
       question: this.question,
       startTime: new Date(this.startTime).toISOString(),
@@ -52,13 +68,13 @@ export class SurveyPopupComponent {
 
     this.surveyService.startSurvey(payload).subscribe({
       next: (response) => {
-        console.log('Survey started successfully:', response);
-        this.toastr.success('Survey started successfully:', response)
+        console.log('Survey created successfully', response);
+        this.toastr.success('Survey created successfully')
         this.close.emit();
       },
       error: (error) => {
-        console.error('Error starting the survey', error);
-        this.toastr.error('Error starting the survey:', error);
+        console.error('Error creating the survey', error);
+        this.toastr.error('Error creating the survey');
       }
     });
   }

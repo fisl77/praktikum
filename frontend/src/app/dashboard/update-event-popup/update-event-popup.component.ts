@@ -93,6 +93,7 @@ export class UpdateEventPopupComponent implements OnInit {
 
     this.eventService.updateEvent(payload).subscribe({
       next: () => {
+        this.toastr.success('Event updated successfully.');
         this.updated.emit();
         this.close.emit();
       },

@@ -62,7 +62,7 @@ export class SurveyListComponent {
 
   isUpcoming(q: any): boolean {
     const now = new Date();
-    return new Date(q.startTime && q.endTime) > now;
+    return new Date(q.startTime) > now && new Date(q.endTime) > now;
   }
 
   isFinished(q: any): boolean {

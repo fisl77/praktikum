@@ -43,6 +43,7 @@ export class EndEventPopupComponent {
 
     this.eventService.endEvent(this.eventIDToEnd).subscribe({
       next: () => {
+        this.toastr.success('Survey stopped successfully.');
         this.close.emit();
       },
       error: (err) => {
