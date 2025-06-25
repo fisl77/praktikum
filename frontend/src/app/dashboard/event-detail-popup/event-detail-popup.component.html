@@ -1,4 +1,4 @@
-<div class="popup-overlay">
+<div class="popup-overlay" (click)="closePopup()">
   <div class="popup-content detail-layout wide fixed-height">
     <button class="close-button" (click)="closePopup()">X</button>
 
@@ -13,20 +13,26 @@
         <div class="enemy-detail">
           <p><strong>Enemy:</strong> {{ event.enemies[0]?.name }} ({{ event.enemies[0]?.type }})</p>
 
-          <p><strong>Scale:</strong> {{ event.enemies[0]?.new_scale ?? '–' }}</p>
-          <details class="info-block"><summary>What does Scale mean?</summary>
-            <p class="info-description">Scaling factor for the opponent.</p>
-          </details>
+          <p>
+            <strong>Scale:</strong> {{ event.enemies[0]?.new_scale ?? '–' }}
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Scaling factor for the enemy.</span>
+            </span>
+          </p>
 
-          <p><strong>Max Count:</strong> {{ event.enemies[0]?.quantity ?? '–' }}</p>
-          <details class="info-block"><summary>What does Max Count mean?</summary>
-            <p class="info-description">Maximum number of enemies of this type.</p>
-          </details>
+          <p>
+            <strong>Max Count:</strong> {{ event.enemies[0]?.quantity ?? '–' }}
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Maximum number of this enemy type that appear during the event.</span>
+            </span>
+          </p>
 
-          <p><strong>Loner:</strong> {{ event.enemies[0]?.loners ? 'Yes' : 'No' }}</p>
-          <details class="info-block"><summary>What does loner mean?</summary>
-            <p class="info-description">Only one may be active at a time.</p>
-          </details>
+          <p>
+            <strong>Loner:</strong> {{ event.enemies[0]?.loners ? 'Yes' : 'No' }}
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Loner enemies appear alone. Only one can be active at a time.</span>
+            </span>
+          </p>
 
           <p class="lore-title"><strong>Enemy Lore:</strong></p>
           <div class="lore-box">

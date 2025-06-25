@@ -1,4 +1,11 @@
-<h2 class="custom-title">Questionnaires</h2>
+<div class="event-header-row">
+  <h2 class="custom-title">
+    Questionnaires
+    <span class="info-tooltip">?
+      <span class="tooltip-text">During a questionnaire you can define a question and possible answers for your community to vote on.</span>
+    </span>
+  </h2>
+</div>
 
 <!-- 📱 Mobile View: Wenn Surveys vorhanden -->
 <div *ngIf="!isLargeScreen && surveys().length > 0" class="row row-cols-1 row-cols-md-2 g-4 mb-5">

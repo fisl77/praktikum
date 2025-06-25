@@ -204,26 +204,25 @@
   cursor: pointer;
 }
 
-/* Tooltip-Text */
 .tooltip-text {
   visibility: hidden;
+  width: max-content;
+  max-width: 280px;
   background-color: #453075;
   color: #fff;
   text-align: center;
   border-radius: 6px;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   position: absolute;
-  z-index: 1;
+  z-index: 10;
   top: -0.2rem;
-  left: 2rem;
-  white-space: nowrap;
+  left: 1.8rem;
+  white-space: normal;
   font-size: 0.85rem;
   opacity: 0;
-  transition: opacity 0.1s ease-in;
-  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
 }
 
-/* Sofort sichtbarer Tooltip beim Hover */
 .info-tooltip:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
