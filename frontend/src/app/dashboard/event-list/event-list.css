@@ -16,6 +16,10 @@
   max-height: 420px;
   overflow: hidden;
 }
+.carousel-inner,
+.row {
+  overflow: visible !important;
+}
 
 .button-group {
   display: flex;
@@ -226,4 +230,22 @@
 .info-tooltip:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+.custom-dashboard-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+.col:hover .custom-dashboard-card {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+  position: relative;
+}
+
+.custom-dashboard-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  position: relative;
+  border-color: #e67645;
 }
