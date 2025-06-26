@@ -21,7 +21,7 @@ export class LoginComponent {
   Login(): void {
     console.log(this.username, this.password);
     if (!this.username || !this.password) {
-      this.errorMessage = 'Bitte Username und Passwort eingeben.';
+      this.errorMessage = 'Username and Password cannot be empty.';
       return;
     }
 
@@ -29,12 +29,12 @@ export class LoginComponent {
 
     this.authService.login(this.username, this.password).subscribe({
       next: () => {
-        console.log('Login erfolgreich!');
+        console.log('Login successful!');
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error(err);
-        this.errorMessage = 'Login fehlgeschlagen!';
+        this.errorMessage = 'Login failed!';
       },
     });
   }

@@ -9,7 +9,6 @@ export class AuthService {
   readonly isLoggedIn = signal(false);
 
   constructor(private http: HttpClient) {
-    // Beim Start prüfen, ob eine Session besteht
     this.checkLogin().subscribe();
   }
 

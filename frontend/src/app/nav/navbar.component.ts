@@ -16,14 +16,14 @@ export class NavComponent {
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());
 
   private readonly surveyStore = inject(SurveyStore);
-  private readonly eventStore = inject(EventStore); // ✅ injizieren
+  private readonly eventStore = inject(EventStore);
 
   constructor(private authService: AuthService, private router: Router) {}
 
   logout() {
     this.authService.logout().subscribe(() => {
       this.surveyStore.currentSlide.set(0);
-      this.eventStore.currentSlide.set(0); // ✅ Event-Slide zurücksetzen
+      this.eventStore.currentSlide.set(0);
       this.router.navigate(['/login']);
     });
   }

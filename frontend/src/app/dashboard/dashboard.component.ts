@@ -62,7 +62,7 @@ export class DashboardComponent implements OnInit {
         this.events = events;
         this.eventChunks = this.groupIntoChunks(this.events, 3);
       },
-      error: (err) => console.error('Fehler beim Laden der Events:', err),
+      error: (err) => console.error('Error loading the Events:', err),
     });
 
     this.surveyService.getAllSurveys().subscribe({
@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
         this.surveys = surveys;
         this.surveyChunks = this.groupIntoChunks(this.surveys, 3);
       },
-      error: (err) => console.error('Fehler beim Laden der Surveys:', err),
+      error: (err) => console.error('Error loading the Surveys:', err),
     });
   }
 

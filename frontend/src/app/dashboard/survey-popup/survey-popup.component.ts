@@ -64,7 +64,7 @@ export class SurveyPopupComponent {
       channelId: '1364918839699046400',
     };
 
-    console.log('POST an Bot:', payload);
+    console.log('POST to Bot:', payload);
 
     this.surveyService.startSurvey(payload).subscribe({
       next: (response) => {

@@ -169,7 +169,7 @@
   display: flex;
   align-items: baseline;
   justify-content: start;
-  flex-wrap: wrap; /* für kleinere Bildschirme */
+  flex-wrap: wrap;
 }
 
 .subtitle-info {

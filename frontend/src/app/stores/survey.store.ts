@@ -23,7 +23,7 @@ export class SurveyStore {
       next: (data) => {
         this.surveys.set(data);
       },
-      error: (err) => console.error('Fehler beim Laden der Surveys', err),
+      error: (err) => console.error('Error loading all Questionnaires', err),
     });
   }
 
@@ -49,23 +49,22 @@ export class SurveyStore {
           this.currentSlide.set(0);
         }
       },
-      error: (err) => console.error('Fehler beim Nachladen der Surveys', err)
+      error: (err) => console.error('Error reloading Questionnaires', err)
     });
   }
 
   endQuestionnaire(questionnaireID: string) {
     this.surveyService.endQuestionnaire(questionnaireID).subscribe({
       next: () => {
-        console.log('[SurveyStore] Umfrage erfolgreich beendet:', questionnaireID);
+        console.log('[SurveyStore] Questionnaire ended successfully:', questionnaireID);
         this.loadSurveysPreserveSlide();
       },
       error: (err) => {
-        console.error('[SurveyStore] Fehler beim Beenden der Umfrage:', err);
+        console.error('[SurveyStore] Error ending the Questionnaire:', err);
       }
     });
   }
 
-  // 🧩 Nutze dieselbe Chunk-Methode wie im Component
   private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
     const result = [];
     for (let i = 0; i < array.length; i += chunkSize) {

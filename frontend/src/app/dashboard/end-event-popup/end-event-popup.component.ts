@@ -15,7 +15,7 @@ export class EndEventPopupComponent {
   @Input() eventEndTime: string | null = null;
   @Output() close = new EventEmitter<void>();
 
-  showEndConfirm = true; // direkt anzeigen
+  showEndConfirm = true;
   originalEndTime: string | null = null;
 
   constructor(private eventService: EventService, private toastr: ToastrService) {}
@@ -43,11 +43,11 @@ export class EndEventPopupComponent {
 
     this.eventService.endEvent(this.eventIDToEnd).subscribe({
       next: () => {
-        this.toastr.success('Survey stopped successfully.');
+        this.toastr.success('Event stopped successfully.');
         this.close.emit();
       },
       error: (err) => {
-        console.error('Fehler beim Beenden des Events:', err);
+        console.error('Error ending the Event:', err);
         this.toastr.error(err.message || 'Unknown Error');
       },
     });

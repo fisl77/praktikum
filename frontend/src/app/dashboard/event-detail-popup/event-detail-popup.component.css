@@ -1,4 +1,3 @@
-/* Popup Overlay */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -12,7 +11,6 @@
   z-index: 9999;
 }
 
-/* Popup Container */
 .popup-content {
   background: white;
   padding: 2rem;
@@ -25,7 +23,6 @@
   position: relative;
 }
 
-/* X-Schließen Button */
 .close-button {
   position: absolute;
   top: 1rem;
@@ -37,7 +34,6 @@
   cursor: pointer;
 }
 
-/* Überschrift mittig */
 .popup-heading-center {
   text-align: center;
   font-size: 1.8rem;
@@ -45,13 +41,11 @@
   margin-bottom: 1.5rem;
 }
 
-/* Untertitel pro Sektion */
 .section-title {
   font-size: 1.3rem;
   margin-bottom: 1rem;
 }
 
-/* Zwei-Spalten-Layout */
 .detail-grid {
   display: flex;
   flex-direction: row;
@@ -59,13 +53,11 @@
   position: relative;
 }
 
-/* Linke Spalte (Enemy) */
 .image-section {
   flex: 1;
   min-width: 250px;
 }
 
-/* Rechte Spalte (Event Info) */
 .info-section .lore-box {
   margin-bottom: 1.5rem;
 }
@@ -79,7 +71,6 @@
   text-align: left;
 }
 
-/* Bild des Gegners */
 .enemy-image {
   width: 100%;
   border-radius: 8px;
@@ -87,13 +78,11 @@
   margin-bottom: 1rem;
 }
 
-/* Gegnerdaten */
 .enemy-detail {
   margin-bottom: 1.5rem;
   text-align: left;
 }
 
-/* Lore-Box mit scrollbar */
 .lore-box {
   max-height: 150px;
   overflow-y: scroll;
@@ -105,7 +94,6 @@
   white-space: pre-wrap;
 }
 
-/* Scrollbar lila wie bei Questionnaire */
 .lore-box::-webkit-scrollbar {
   width: 6px;
 }
@@ -121,7 +109,6 @@
   background-color: #321e65;
 }
 
-/* Responsive Layout */
 @media (max-width: 768px) {
   .detail-grid {
     flex-direction: column;
@@ -181,7 +168,6 @@
   display: block;
   margin-top: 0.3rem;
   margin-bottom: 1rem;
-  /* verschiebt Bild nach links */
   margin-left: 0;
 }
 
@@ -192,7 +178,6 @@
   position: relative;
 }
 
-/* 🟣 Vertikale Linie */
 .detail-grid::before {
   content: '';
   position: absolute;
@@ -209,17 +194,15 @@
   font-size: 0.85rem;
   color: #6c757d;
 }
-/* Breitere Popup-Variante */
+
 .popup-content.wide {
   max-width: 1000px;
 }
 
-/* Reduzierter Abstand zum Bild */
 .enemy-image.tight {
   margin-bottom: 0.5rem;
 }
 
-/* Einklappbarer Bereich */
 details {
   margin-top: 0.8rem;
   margin-bottom: 1rem;
@@ -246,7 +229,6 @@ summary.tech-summary {
   margin-bottom: 0.5rem;
 }
 
-/* Einzeln aufklappbare Info */
 .info-block {
   margin: 0.4rem 0;
 }
@@ -271,7 +253,6 @@ summary.tech-summary {
   overflow-y: auto;
 }
 
-/* Einzeln aufklappbare Erklärtexte */
 .info-block {
   margin: 0.4rem 0 1rem 0;
 }
@@ -294,11 +275,11 @@ summary.tech-summary {
   color: white;
   font-weight: bold;
   border-radius: 50%;
-  width: 1rem;          /* kleiner */
-  height: 1rem;         /* kleiner */
+  width: 1rem;
+  height: 1rem;
   text-align: center;
-  line-height: 1rem;    /* passend zur Größe */
-  font-size: 0.9rem;     /* kleinerer Text */
+  line-height: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   vertical-align: middle;
 }

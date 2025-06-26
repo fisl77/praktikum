@@ -19,11 +19,11 @@ export class EventStore {
       this.http.get('/api/auth/check', { withCredentials: true }).subscribe({
         next: () => {
           clearInterval(interval);
-          this.loadEvents();         // Initial load
-          this.setupAutoReload();    // 🔁 alle 5s
+          this.loadEvents();
+          this.setupAutoReload();
         },
         error: () => {
-          console.warn('[EventStore] Nicht eingeloggt – Events werden nicht geladen.');
+          console.warn('[EventStore] Not logged in – Events are not loading.');
         }
       });
     }, 500);
@@ -36,11 +36,11 @@ export class EventStore {
   loadEvents(): void {
     this.eventService.getAllEventsDetailed().subscribe({
       next: (data) => {
-        console.log('[EventStore] Events vom Server:', data);
+        console.log('[EventStore] Events from the Server:', data);
         this.events.set(data);
       },
       error: (err) => {
-        console.error('[EventStore] Fehler beim Laden der Events:', err);
+        console.error('[EventStore] Error loading the Events:', err);
       },
     });
   }
@@ -63,7 +63,7 @@ export class EventStore {
         this.currentSlide.set(foundIndex !== -1 ? foundIndex : 0);
       },
       error: (err) => {
-        console.error('[EventStore] Fehler beim Nachladen der Events:', err);
+        console.error('[EventStore] Error reloading Events:', err);
       }
     });
   }
@@ -71,11 +71,11 @@ export class EventStore {
   endEvent(eventID: number): void {
     this.eventService.endEvent(eventID).subscribe({
       next: () => {
-        console.log(`[EventStore] Event ${eventID} beendet.`);
+        console.log(`[EventStore] Event ${eventID} ended.`);
         this.loadEventsPreserveSlide();
       },
       error: (err) => {
-        console.error('[EventStore] Fehler beim Beenden des Events:', err);
+        console.error('[EventStore] Error ending the Event:', err);
       },
     });
   }

@@ -45,7 +45,7 @@ export class EndSurveyPopupComponent implements OnInit {
       },
       error: (err) => {
         this.toastr.error(err.message || 'Unknown Error');
-        console.error('Fehler beim Beenden der Survey:', err);
+        console.error('Error ending the Survey:', err);
       },
     });
   }

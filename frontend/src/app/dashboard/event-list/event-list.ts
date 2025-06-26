@@ -15,7 +15,7 @@ import {EventDetailPopupComponent} from '../event-detail-popup/event-detail-popu
 export class EventListComponent {
   private store = inject(EventStore);
   events = this.store.events;
-  currentSlide = this.store.currentSlide; // 👈 hinzugefügt
+  currentSlide = this.store.currentSlide;
 
   showAllEvents = signal(false);
   maxVisibleEvents = signal(3);

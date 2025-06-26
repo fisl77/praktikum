@@ -15,7 +15,7 @@ import { SurveyStore } from '../../stores/survey.store';
 export class SurveyListComponent {
   private store = inject(SurveyStore);
   surveys = this.store.surveys;
-  currentSlide = this.store.currentSlide; // <- Signal zur Steuerung des aktiven Slides
+  currentSlide = this.store.currentSlide;
 
   showAllSurveys = signal(false);
   maxVisibleSurveys = signal(3);
