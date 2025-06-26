@@ -16,14 +16,16 @@
 
     <div class="form-group">
       <label>Enemy:</label>
-      <select [(ngModel)]="enemyID">
-        @for (enemy of enemyOptions; track enemy) {
-          <option [value]="enemy.id">
-            {{ enemy.name }} ({{ enemy.type }})
-          </option>
+      <select [(ngModel)]="nameID">
+        @for (name of enemyOptions; track name) {
+          <option [value]="name.nameID">{{ name.name }}</option>
         }
       </select>
     </div>
+
+
+
+
 
     <div class="form-row">
       <div class="form-group">

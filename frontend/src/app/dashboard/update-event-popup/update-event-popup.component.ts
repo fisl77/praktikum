@@ -26,26 +26,38 @@ export class UpdateEventPopupComponent implements OnInit {
   endTime: string = '';
   currentDateTime: string = '';
 
+
+  typeID: number | null = null;
   levelOptions: any[] = [];
   enemyOptions: any[] = [];
+  typeOptions: { typeID: number; type: string }[] = [];
 
   constructor(private eventService: EventService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.currentDateTime = new Date().toISOString().slice(0, 16);
     this.loadLevels();
-    this.loadEnemies().then(() => {
+    this.loadEnemieNames().then(() => {
       this.prefillForm();
     });
   }
 
-  async loadEnemies() {
-    try {
-      const enemies = await firstValueFrom(this.eventService.getEnemies());
-      this.enemyOptions = enemies;
-    } catch (err) {
-      console.error('Error loading enemies:', err);
-    }
+  async loadEnemieNames(): Promise<void> {
+    this.eventService.getEnemyNames().subscribe({
+      next: (res: any[]) => {
+        this.enemyOptions = res.map(n => ({ nameID: n.nameID, name: n.name }));
+      },
+      error: (err) => console.error('Error loading enemy names:', err),
+    });
+  }
+
+  loadEnemyTypes(): void {
+    this.eventService.getEnemyTypes().subscribe({
+      next: (res: any[]) => {
+        this.typeOptions = res.map(t => ({ typeID: t.typeID, type: t.type }));
+      },
+      error: (err) => console.error('Error loading enemy types:', err),
+    });
   }
 
   loadLevels() {

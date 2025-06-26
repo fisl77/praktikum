@@ -267,6 +267,7 @@ export class AdminService {
         event: { eventID: dto.eventID },
         enemy: { enemyID: e.enemyID },
         quantity: e.quantity,
+        type: e.type,
       })),
     );
 

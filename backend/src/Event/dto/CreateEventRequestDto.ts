@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EnemieType } from './EnemieType';
 
 export class CreateEventRequestDto {
   @ApiProperty({ example: '2025-04-10T10:00:00Z' })
@@ -18,5 +19,5 @@ export class CreateEventRequestDto {
     example: [{ enemyID: 1, quantity: 5 }],
     description: 'Gegner mit Menge',
   })
-  enemies: { enemyID: number; quantity: number }[];
+  enemies: { enemyID: number; quantity: number; type: EnemieType }[];
 }
