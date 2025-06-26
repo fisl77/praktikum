@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService } from '../../services/survey.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-end-survey-popup',
@@ -16,7 +17,7 @@ export class EndSurveyPopupComponent implements OnInit {
 
   originalEndTime: string | null = null;
 
-  constructor(private surveyService: SurveyService) {}
+  constructor(private surveyService: SurveyService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     if (this.surveyEndTime) {
@@ -39,12 +40,12 @@ export class EndSurveyPopupComponent implements OnInit {
 
     this.surveyService.endQuestionnaire(this.surveyIDToEnd).subscribe({
       next: () => {
-        //alert('Survey wurde erfolgreich beendet!');
+        this.toastr.success('Survey stopped successfully.');
         this.close.emit();
       },
       error: (err) => {
+        this.toastr.error(err.message || 'Unknown Error');
         console.error('Fehler beim Beenden der Survey:', err);
-        //alert('Fehler beim Beenden');
       },
     });
   }

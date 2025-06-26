@@ -7,7 +7,7 @@ export class SurveyStore {
   private surveyService = inject(SurveyService);
 
   surveys = signal<any[]>([]);
-  currentSlide = signal(0); // 👈 merken des aktuellen Slides
+  currentSlide = signal(0);
 
   constructor() {
     this.loadSurveys();
@@ -18,7 +18,6 @@ export class SurveyStore {
     });
   }
 
-  // ⏳ Normales initiales Laden (z. B. beim Start)
   loadSurveys() {
     this.surveyService.getAllSurveys().subscribe({
       next: (data) => {
@@ -28,13 +27,11 @@ export class SurveyStore {
     });
   }
 
-  // 🧠 Nachladen mit Slide-Erhalt
   loadSurveysPreserveSlide() {
     const current = this.currentSlide();
     const oldChunks = this.groupIntoChunks(this.surveys(), 3);
     const oldChunk = oldChunks[current] ?? [];
 
-    // Merke dir die IDs der aktuell sichtbaren Umfragen im aktiven Chunk
     const oldIds = oldChunk.map(q => q.questionnaireID).sort().join(',');
 
     this.surveyService.getAllSurveys().subscribe({
@@ -47,9 +44,9 @@ export class SurveyStore {
         );
 
         if (foundIndex !== -1) {
-          this.currentSlide.set(foundIndex); // 🧠 setze zurück auf vorherigen Slide
+          this.currentSlide.set(foundIndex);
         } else {
-          this.currentSlide.set(0); // Fallback
+          this.currentSlide.set(0);
         }
       },
       error: (err) => console.error('Fehler beim Nachladen der Surveys', err)

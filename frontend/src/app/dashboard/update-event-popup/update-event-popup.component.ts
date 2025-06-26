@@ -2,7 +2,8 @@ import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EventService } from '../../services/event.service';
-import {firstValueFrom} from 'rxjs';
+import { firstValueFrom} from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-update-event-popup',
@@ -28,7 +29,7 @@ export class UpdateEventPopupComponent implements OnInit {
   levelOptions: any[] = [];
   enemyOptions: any[] = [];
 
-  constructor(private eventService: EventService) {}
+  constructor(private eventService: EventService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.currentDateTime = new Date().toISOString().slice(0, 16);
@@ -73,7 +74,7 @@ export class UpdateEventPopupComponent implements OnInit {
 
   submitUpdate() {
     if (!this.levelID || !this.enemyID) {
-      alert('Please select level and enemy data.');
+      this.toastr.error('Please select level and enemy data.');
       return;
     }
 
@@ -92,12 +93,13 @@ export class UpdateEventPopupComponent implements OnInit {
 
     this.eventService.updateEvent(payload).subscribe({
       next: () => {
+        this.toastr.success('Event updated successfully.');
         this.updated.emit();
         this.close.emit();
       },
       error: (err) => {
         console.error('Update failed:', err);
-        alert('Error updating event: ' + (err?.error?.message || err.message || 'Unknown error'));
+        this.toastr.error('Error updating event: ' + (err?.error?.message || err.message || 'Unknown error'));
       },
     });
   }
