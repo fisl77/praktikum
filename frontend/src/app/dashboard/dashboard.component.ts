@@ -6,7 +6,7 @@ import { SurveyListComponent } from './survey-list/survey-list';
 import { EventListComponent } from './event-list/event-list';
 import { EventDetailPopupComponent } from './event-detail-popup/event-detail-popup.component';
 import { NavComponent } from '../nav/navbar.component';
-import { NgIf, CommonModule } from '@angular/common';
+
 import { EventService } from '../services/event.service';
 import { SurveyService } from '../services/survey.service';
 import { Router } from '@angular/router';
@@ -17,15 +17,13 @@ import { EndEventPopupComponent } from './end-event-popup/end-event-popup.compon
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     EventListComponent,
     SurveyListComponent,
     EventPopupComponent,
     SurveyPopupComponent,
     EventDetailPopupComponent,
-    EndEventPopupComponent,
-    NgIf,
-  ],
+    EndEventPopupComponent
+],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

@@ -6,18 +6,22 @@
     <div class="form-group">
       <label>Level:</label>
       <select [(ngModel)]="levelID">
-        <option *ngFor="let level of levelOptions" [value]="level.levelID">
-          {{ level.name }}
-        </option>
+        @for (level of levelOptions; track level) {
+          <option [value]="level.levelID">
+            {{ level.name }}
+          </option>
+        }
       </select>
     </div>
 
     <div class="form-group">
       <label>Enemy:</label>
       <select [(ngModel)]="enemyID">
-        <option *ngFor="let enemy of enemyOptions" [value]="enemy.id">
-          {{ enemy.name }} ({{ enemy.type }})
-        </option>
+        @for (enemy of enemyOptions; track enemy) {
+          <option [value]="enemy.id">
+            {{ enemy.name }} ({{ enemy.type }})
+          </option>
+        }
       </select>
     </div>
 

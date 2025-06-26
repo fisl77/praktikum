@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, Output, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import { NgForOf } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { SurveyService } from '../../services/survey.service';
 import { ToastrService } from 'ngx-toastr';
@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-survey-popup',
   standalone: true,
-  imports: [ NgForOf, FormsModule],
+  imports: [FormsModule],
   templateUrl: './survey-popup.component.html',
   styleUrls: ['./survey-popup.component.css'],
 })

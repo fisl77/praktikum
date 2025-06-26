@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NgIf, NgForOf } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { EventService } from '../../services/event.service';
 import { ToastrService } from 'ngx-toastr';
@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-event-popup',
   standalone: true,
-  imports: [NgForOf, FormsModule],
+  imports: [FormsModule],
   templateUrl: './event-popup.html',
   styleUrls: ['./event-popup.css'],
 })

@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { EventService } from '../../services/event.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-end-event-popup',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './end-event-popup.component.html',
   styleUrls: ['./end-event-popup.component.css'],
 })

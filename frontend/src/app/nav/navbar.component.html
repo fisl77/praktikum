@@ -1,12 +1,13 @@
 <nav class="navbar shadow-sm custom-navbar">
   <div class="container-fluid custom-navbar-container">
-    <button
-      *ngIf="isLoggedIn()"
-      (click)="logout()"
-      class="btn custom-btn btn-sm logout-btn"
-    >
-      <i class="bi bi-box-arrow-left"></i>
-    </button>
+    @if (isLoggedIn()) {
+      <button
+        (click)="logout()"
+        class="btn custom-btn btn-sm logout-btn"
+        >
+        <i class="bi bi-box-arrow-left"></i>
+      </button>
+    }
     <img src="assets/logo.svg" alt="Logo" class="navbar-logo" />
   </div>
 </nav>

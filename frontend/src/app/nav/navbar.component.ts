@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { NgIf } from '@angular/common';
+
 import { SurveyStore } from '../stores/survey.store';
 import { EventStore } from '../stores/events.store'; // ✅ hier importieren
 
@@ -10,7 +10,7 @@ import { EventStore } from '../stores/events.store'; // ✅ hier importieren
   standalone: true,
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
-  imports: [NgIf]
+  imports: []
 })
 export class NavComponent {
   readonly isLoggedIn = computed(() => this.authService.isLoggedIn());

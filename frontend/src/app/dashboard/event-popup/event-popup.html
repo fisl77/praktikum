@@ -7,14 +7,18 @@
       <div class="form-group">
         <label>Level:</label>
         <select [(ngModel)]="levelID">
-          <option *ngFor="let level of levelOptions" [value]="level.levelID">{{ level.name }}</option>
+          @for (level of levelOptions; track level) {
+            <option [value]="level.levelID">{{ level.name }}</option>
+          }
         </select>
       </div>
 
       <div class="form-group">
         <label>Enemy:</label>
         <select [(ngModel)]="nameID">
-          <option *ngFor="let name of nameOptions" [value]="name.nameID">{{ name.name }}</option>
+          @for (name of nameOptions; track name) {
+            <option [value]="name.nameID">{{ name.name }}</option>
+          }
         </select>
       </div>
 
@@ -25,10 +29,12 @@
           </span>
         </label>
         <div class="radio-options">
-          <label class="radio-option" *ngFor="let type of typeOptions">
-            <input type="radio" name="typeID" [value]="type.typeID" [(ngModel)]="typeID" />
-            <span>{{ type.type }}</span>
-          </label>
+          @for (type of typeOptions; track type) {
+            <label class="radio-option">
+              <input type="radio" name="typeID" [value]="type.typeID" [(ngModel)]="typeID" />
+              <span>{{ type.type }}</span>
+            </label>
+          }
         </div>
       </div>
 

@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { SurveyService } from '../../services/survey.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-end-survey-popup',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './end-survey-popup.component.html',
   styleUrls: ['./end-survey-popup.component.css'],
 })

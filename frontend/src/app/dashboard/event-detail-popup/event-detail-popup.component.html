@@ -45,21 +45,24 @@
       <div class="info-section">
         <h3 class="section-title">Level Details</h3>
 
-        <img
-          *ngIf="levelImages[0]?.imagePath"
-          [src]="levelImages[0].imagePath"
-          alt="{{ levelImages[0].name }}"
-          class="level-image large"
-        />
+        @if (levelImages[0]?.imagePath) {
+          <img
+            [src]="levelImages[0].imagePath"
+            alt="{{ levelImages[0].name }}"
+            class="level-image large"
+            />
+        }
 
         <p><strong>Name:</strong> {{ levelImages[0].name }}</p>
         <p><strong>Start Time:</strong> {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</p>
         <p><strong>End Time:</strong> {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</p>
 
         <p class="lore-title"><strong>Level Lore:</strong></p>
-        <div *ngIf="levelImages[0]?.lore" class="lore-box">
-          {{ levelImages[0].lore }}
-        </div>
+        @if (levelImages[0]?.lore) {
+          <div class="lore-box">
+            {{ levelImages[0].lore }}
+          </div>
+        }
       </div>
     </div>
   </div>

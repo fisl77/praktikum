@@ -11,7 +11,7 @@
           class="form-control custom-input"
           placeholder="Username"
           required
-        />
+          />
       </div>
 
       <div class="mb-3">
@@ -22,12 +22,14 @@
           class="form-control custom-input"
           placeholder="Password"
           required
-        />
+          />
       </div>
 
-      <div *ngIf="errorMessage" class="alert alert-danger py-2">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2">
+          {{ errorMessage }}
+        </div>
+      }
 
       <!-- 👉 Direktes Click-Event hier: -->
       <button type="button" class="btn custom-btn w-100" (click)="Login()">Login</button>
