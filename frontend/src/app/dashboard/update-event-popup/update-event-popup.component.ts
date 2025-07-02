@@ -25,6 +25,7 @@ export class UpdateEventPopupComponent implements OnInit {
   startTime: string = '';
   endTime: string = '';
   currentDateTime: string = '';
+  nameID: number | null = null;
 
 
   typeID: number | null = null;
@@ -34,29 +35,45 @@ export class UpdateEventPopupComponent implements OnInit {
 
   constructor(private eventService: EventService, private toastr: ToastrService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.currentDateTime = new Date().toISOString().slice(0, 16);
     this.loadLevels();
-    this.loadEnemieNames().then(() => {
-      this.prefillForm();
-    });
+
+    await Promise.all([
+      this.loadEnemyTypes(),
+      this.loadEnemieNames()
+    ]);
+
+    this.prefillForm();
   }
 
   async loadEnemieNames(): Promise<void> {
-    this.eventService.getEnemyNames().subscribe({
-      next: (res: any[]) => {
-        this.enemyOptions = res.map(n => ({ nameID: n.nameID, name: n.name }));
-      },
-      error: (err) => console.error('Error loading enemy names:', err),
+    return new Promise((resolve, reject) => {
+      this.eventService.getEnemyNames().subscribe({
+        next: (res: any[]) => {
+          this.enemyOptions = res.map(n => ({ nameID: n.nameID, name: n.name }));
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error loading enemy names:', err);
+          reject(err);
+        },
+      });
     });
   }
 
-  loadEnemyTypes(): void {
-    this.eventService.getEnemyTypes().subscribe({
-      next: (res: any[]) => {
-        this.typeOptions = res.map(t => ({ typeID: t.typeID, type: t.type }));
-      },
-      error: (err) => console.error('Error loading enemy types:', err),
+  async loadEnemyTypes(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.eventService.getEnemyTypes().subscribe({
+        next: (res: any[]) => {
+          this.typeOptions = res.map(t => ({ typeID: t.typeID, type: t.type }));
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error loading enemy types:', err);
+          reject(err);
+        },
+      });
     });
   }
 
@@ -69,10 +86,19 @@ export class UpdateEventPopupComponent implements OnInit {
 
   prefillForm() {
     const enemy = this.eventToUpdate.enemies[0];
-    this.levelID = this.eventToUpdate.levels[0].levelID;
     this.enemyID = enemy.enemyID;
     this.scale = enemy.new_scale ?? 1.0;
     this.maxCount = enemy.quantity ?? 1;
+
+    // Mapping: type (string) -> typeID
+    const matchedType = this.typeOptions.find(t => t.type === enemy.type);
+    this.typeID = matchedType ? matchedType.typeID : null;
+
+    // Mapping: name (string) -> nameID
+    const matchedName = this.enemyOptions.find(n => n.name === enemy.name);
+    this.nameID = matchedName ? matchedName.nameID : null;
+
+    this.levelID = this.eventToUpdate.levels[0].levelID;
 
     this.startTime = this.toLocalISOString(this.eventToUpdate.startTime);
     this.endTime = this.toLocalISOString(this.eventToUpdate.endTime);
@@ -85,34 +111,52 @@ export class UpdateEventPopupComponent implements OnInit {
   }
 
   submitUpdate() {
-    if (!this.levelID || !this.enemyID) {
-      this.toastr.error('Please select level and enemy data.');
+    if (!this.levelID || !this.nameID || !this.typeID) {
+      this.toastr.error('Please select all enemy data and a level.');
       return;
     }
 
-    const payload = {
-      eventID: this.eventToUpdate.eventID,
-      startTime: new Date(this.startTime).toISOString(),
-      endTime: new Date(this.endTime).toISOString(),
-      levelIDs: [this.levelID],
-      enemies: [
-        {
-          enemyID: this.enemyID,
-          quantity: this.maxCount,
-        },
-      ],
+    const enemyPayload = {
+      nameID: this.nameID,
+      typeID: this.typeID,
+      new_scale: this.scale,
+      max_count: this.maxCount,
     };
 
-    this.eventService.updateEvent(payload).subscribe({
-      next: () => {
-        this.toastr.success('Event updated successfully.');
-        this.updated.emit();
-        this.close.emit();
+    // Erst neuen Enemy erstellen
+    this.eventService.createEnemy(enemyPayload).subscribe({
+      next: (enemyRes: any) => {
+        const payload = {
+          eventID: this.eventToUpdate.eventID,
+          startTime: new Date(this.startTime).toISOString(),
+          endTime: new Date(this.endTime).toISOString(),
+          levelIDs: [this.levelID],
+          enemies: [
+            {
+              enemyID: enemyRes.enemyID,
+              quantity: this.maxCount,
+              type: this.typeID,
+            },
+          ],
+        };
+
+        this.eventService.updateEvent(payload).subscribe({
+          next: async () => {
+            await this.loadEnemieNames(); // 👈 neu laden
+            this.toastr.success('Event updated successfully.');
+            this.updated.emit();
+            this.close.emit();
+          },
+          error: (err) => {
+            console.error('Update failed:', err);
+            this.toastr.error('Error updating event: ' + (err?.error?.message || err.message || 'Unknown error'));
+          },
+        });
       },
       error: (err) => {
-        console.error('Update failed:', err);
-        this.toastr.error('Error updating event: ' + (err?.error?.message || err.message || 'Unknown error'));
-      },
+        console.error('Enemy creation failed:', err);
+        this.toastr.error('Could not create enemy: ' + (err?.error?.message || err.message || 'Unknown error'));
+      }
     });
   }
 }

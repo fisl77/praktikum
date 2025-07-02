@@ -23,6 +23,22 @@
       </select>
     </div>
 
+    <div class="form-group fixed-info-group">
+      <label>Type:
+        <span class="info-tooltip">?
+            <span class="tooltip-text">Difficulty profile of the opponent.</span>
+          </span>
+      </label>
+      <div class="radio-options">
+        @for (type of typeOptions; track type) {
+          <label class="radio-option">
+            <input type="radio" name="typeID" [value]="type.typeID" [(ngModel)]="typeID" />
+            <span>{{ type.type }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
 
 
 
