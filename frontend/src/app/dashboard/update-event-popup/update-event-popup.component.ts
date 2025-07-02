@@ -124,7 +124,7 @@ export class UpdateEventPopupComponent implements OnInit {
     };
 
     // Erst neuen Enemy erstellen
-    this.eventService.createEnemy(enemyPayload).subscribe({
+    this.eventService.updateEnemy(this.enemyID!, enemyPayload).subscribe({
       next: (enemyRes: any) => {
         const payload = {
           eventID: this.eventToUpdate.eventID,

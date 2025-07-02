@@ -15,6 +15,7 @@ import { EnemyName } from '../EnemyName/enemyName.entity';
 import { EnemyType } from '../EnemyType/enemyType.entity';
 import { UpdateEventRequestDto } from '../Event/dto/UpdateEventRequestDto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { UpdateEnemyRequestDto } from '../Enemy/dto/UpdateEnemyRequestDto';
 
 @Injectable()
 export class AdminService {
@@ -155,6 +156,27 @@ export class AdminService {
       message: 'Enemy saved',
       enemyID: saved.enemyID,
     };
+  }
+  async updateEnemy(enemyID: number, dto: UpdateEnemyRequestDto) {
+    const enemy = await this.enemyRepo.findOne({
+      where: { enemyID },
+      relations: ['name', 'type'],
+    });
+    if (!enemy) throw new BadRequestException('Enemy not found');
+
+    const name = await this.enemyNameRepository.findOneBy({
+      nameID: dto.nameID,
+    });
+    const type = await this.enemyTypeRepository.findOneBy({
+      typeID: dto.typeID,
+    });
+
+    enemy.name = name;
+    enemy.type = type;
+    enemy.new_scale = dto.new_scale;
+    enemy.max_count = dto.max_count;
+
+    return await this.enemyRepo.save(enemy);
   }
 
   async getAllEventsDetailed() {

@@ -15,6 +15,7 @@ import { SessionAuthGuard } from '../auth/auth/session-auth.guard';
 import { CreateEventRequestDto } from '../Event/dto/CreateEventRequestDto';
 import { UpdateEventRequestDto } from '../Event/dto/UpdateEventRequestDto';
 import { CreateEnemyRequestDto } from '../Enemy/dto/CreateEnemyRequestDto';
+import { UpdateEnemyRequestDto } from '../Enemy/dto/UpdateEnemyRequestDto';
 
 @Controller('admin')
 @ApiTags('Admin')
@@ -32,6 +33,14 @@ export class AdminController {
   @ApiOkResponse({ description: 'Gibt alle Events inkl. Details zurück' })
   getEventsDetailed() {
     return this.adminService.getAllEventsDetailed();
+  }
+
+  @Patch('enemy/:enemyID')
+  updateEnemy(
+    @Param('enemyID') enemyID: number,
+    @Body() dto: UpdateEnemyRequestDto,
+  ) {
+    return this.adminService.updateEnemy(enemyID, dto);
   }
 
   @Patch('event')

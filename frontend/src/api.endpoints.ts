@@ -11,6 +11,7 @@ export const ApiEndpoints = {
   ADMIN_LEVELS: '/api/admin/levels',
   ADMIN_EVENT_BY_ID: (eventID: number) => `/api/admin/event/${eventID}`,
   ADMIN_END_EVENT: (eventID: number) => `/api/admin/event/${eventID}/end`,
+  ADMIN_UPDATE_ENEMY: (id: number) => `/api/admin/enemy/${id}`,
 
   // Öffentliche Routen (ohne Login)
   PUBLIC_ENEMIES: '/api/assets/game-client/enemies',
