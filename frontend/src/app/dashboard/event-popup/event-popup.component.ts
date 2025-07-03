@@ -8,8 +8,8 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-event-popup',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './event-popup.html',
-  styleUrls: ['./event-popup.css'],
+  templateUrl: './event-popup.component.html',
+  styleUrls: ['./event-popup.component.css'],
 })
 export class EventPopupComponent implements OnInit {
   @Output() close = new EventEmitter<void>();

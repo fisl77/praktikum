@@ -1,4 +1,4 @@
-// survey-list.ts
+// survey-list.component.ts
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService } from '../../services/survey.service';
@@ -9,8 +9,8 @@ import { SurveyStore } from '../../stores/survey.store';
   selector: 'app-survey-list',
   standalone: true,
   imports: [CommonModule, EndSurveyPopupComponent],
-  templateUrl: './survey-list.html',
-  styleUrls: ['./survey-list.css'],
+  templateUrl: './survey-list.component.html',
+  styleUrls: ['./survey-list.component.css'],
 })
 export class SurveyListComponent {
   private store = inject(SurveyStore);

@@ -9,8 +9,8 @@ import {EventDetailPopupComponent} from '../event-detail-popup/event-detail-popu
   selector: 'app-event-list',
   standalone: true,
   imports: [CommonModule, EndEventPopupComponent, UpdateEventPopupComponent, EventDetailPopupComponent],
-  templateUrl: './event-list.html',
-  styleUrls: ['./event-list.css']
+  templateUrl: './event-list.component.html',
+  styleUrls: ['./event-list.component.css']
 })
 export class EventListComponent {
   private store = inject(EventStore);

@@ -1,9 +1,8 @@
-// 🔧 Erweiterte Dashboard-Komponente mit Event-Detail-Popup
 import { Component, OnInit } from '@angular/core';
-import { EventPopupComponent } from './event-popup/event-popup';
+import { EventPopupComponent } from './event-popup/event-popup.component';
 import { SurveyPopupComponent } from './survey-popup/survey-popup.component';
-import { SurveyListComponent } from './survey-list/survey-list';
-import { EventListComponent } from './event-list/event-list';
+import { SurveyListComponent } from './survey-list/survey-list.component';
+import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailPopupComponent } from './event-detail-popup/event-detail-popup.component';
 import { NavComponent } from '../nav/navbar.component';
 
