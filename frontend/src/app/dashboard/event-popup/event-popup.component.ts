@@ -72,6 +72,16 @@ export class EventPopupComponent implements OnInit {
       return;
     }
 
+    if (this.scale < 0.1 || this.scale > 1.0) {
+      this.toastr.error('Scale must be between 0.1 and 1.0.');
+      return;
+    }
+
+    if (this.maxCount < 1 || this.maxCount > 10) {
+      this.toastr.error('Max Count must be between 1 and 10.');
+      return;
+    }
+
     if (!this.startTime || !this.endTime) {
       this.toastr.error('Please select start and end time.')
       return;
