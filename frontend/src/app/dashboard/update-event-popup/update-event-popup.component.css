@@ -46,6 +46,18 @@
   margin-bottom: 1rem;
 }
 
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-row .form-group:first-child {
+  margin-right: 0.05rem;
+}
+
+.form-row .form-group:last-child {
+  margin-left: 0.05rem;
+}
+
 .radio-options {
   display: flex;
   flex-wrap: wrap;
@@ -151,4 +163,3 @@ select {
   position: relative;
   border-color: #e67645;
 }
-
