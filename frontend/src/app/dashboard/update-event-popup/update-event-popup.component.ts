@@ -6,7 +6,7 @@ import { firstValueFrom} from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-update-event-popup',
+  selector: 'app-update-create.event-popup',
   standalone: true,
   imports: [FormsModule],
   templateUrl: './update-event-popup.component.html',

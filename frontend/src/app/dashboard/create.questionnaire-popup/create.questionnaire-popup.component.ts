@@ -5,13 +5,13 @@ import { SurveyService } from '../../services/survey.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-survey-popup',
+  selector: 'app-create.questionnaire-popup',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './survey-popup.component.html',
-  styleUrls: ['./survey-popup.component.css'],
+  templateUrl: './create.questionnaire-popup.component.html',
+  styleUrls: ['./create.questionnaire-popup.component.css'],
 })
-export class SurveyPopupComponent {
+export class CreateQuestionnairePopupComponent {
   @Output() close = new EventEmitter<void>();
 
   @ViewChild('questionInput') questionInput!: ElementRef<HTMLInputElement>;
