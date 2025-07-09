@@ -7,27 +7,46 @@
     </span>
   </h2>
 </div>
-<!-- 📱 Mobile View -->
-@if (!isLargeScreen && events().length > 0) {
-  <div class="row row-cols-1 row-cols-md-2 g-4">
-    @for (event of visibleEvents(); track event) {
+
+<div class="carousel-flex-wrapper">
+@if (events().length === 0) {
+  <div class="text-center my-5">
+    <div class="custom-dashboard-card d-flex justify-content-center align-items-center text-center">
+      <p class="text-muted fs-5 m-0">No events created yet!</p>
+    </div>
+  </div>
+}
+
+@if (events().length > 0) {
+  <p-carousel
+    [value]="events()"
+    [numVisible]="3"
+    [numScroll]="1"
+    [responsiveOptions]="responsiveOptions"
+    [circular]="true"
+    [showNavigators]="true"
+    [showIndicators]="true"
+    styleClass="w-100">
+    <ng-template pTemplate="item" let-event>
       <div class="col">
-        <div class="custom-dashboard-card h-100 d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }" (click)="openDetailPopup(event)">
+        <div class="custom-dashboard-card d-flex flex-column justify-content-between"
+          [ngClass]="{ 'border-live': event.isLive }"
+          (click)="openDetailPopup(event)">
           <div>
             <h5 class="custom-dashboard-title">
               {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
             </h5>
-            @if (event.levels?.length) {
-              <p><strong>Level:</strong> {{ getLevelNames(event) }}</p>
+            @if (event.levels.length) {
+              <p>
+                <strong>Level:</strong> {{ getLevelNames(event) }}
+              </p>
             }
             <p>
               <strong>Enemy:</strong>
-              @for (enemy of event.enemies; track enemy) {
-                <span>
-                  {{ enemy.name }} ({{ enemy.type }})@if (!isLastEnemy(enemy, event.enemies)) {
-                  <span>, </span>
-                }
-              </span>
+              @for (enemy of event.enemies; track enemy; let last = $last) {
+                {{ enemy.name }} ({{ enemy.type }})@if (!last) {
+                <span>, </span>
+              }
             }
           </p>
         </div>
@@ -50,8 +69,6 @@
               <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
             </div>
           </div>
-        } @else {
-          <div class="button-placeholder"></div>
         }
         @if (isFinished(event)) {
           <div class="status-closed text-center mt-2">
@@ -60,95 +77,10 @@
         }
       </div>
     </div>
-  }
-</div>
-}
+  </ng-template>
+</p-carousel>
+}</div>
 
-<!-- 🖥️ Desktop Carousel -->
-@if (isLargeScreen) {
-  <div class="carousel-flex-wrapper d-flex align-items-center justify-content-between mb-5">
-    <button class="carousel-arrow" (click)="prevSlide()">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <div class="carousel w-100 mx-3">
-      <div class="carousel-inner">
-        @if (eventChunks().length === 0) {
-          <div class="carousel-item active">
-            <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-              <div class="col">
-                <div class="custom-dashboard-card d-flex justify-content-center align-items-center text-center">
-                  <p class="text-muted fs-5 m-0">No events created yet!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-        @for (chunk of eventChunks(); track chunk; let i = $index) {
-          <div class="carousel-item" [class.active]="i === currentSlide()">
-            <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-              @for (event of chunk; track event) {
-                <div class="col">
-                  <div class="custom-dashboard-card d-flex flex-column justify-content-between" [ngClass]="{ 'border-live': event.isLive }" (click)="openDetailPopup(event)">
-                    <div>
-                      <h5 class="custom-dashboard-title">
-                        {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}
-                      </h5>
-                      @if (event.levels?.length) {
-                        <p><strong>Level:</strong> {{ getLevelNames(event) }}</p>
-                      }
-                      <p>
-                        <strong>Enemy:</strong>
-                        @for (enemy of event.enemies; track enemy) {
-                          <span>
-                            {{ enemy.name }} ({{ enemy.type }})@if (!isLastEnemy(enemy, event.enemies)) {
-                            <span>, </span>
-                          }
-                        </span>
-                      }
-                    </p>
-                  </div>
-                  @if (isCurrentlyLive(event) || isUpcoming(event)) {
-                    <div class="text-center mt-2">
-                      @if (isCurrentlyLive(event)) {
-                        <div>
-                          <span class="live-label"><strong>Live</strong></span>
-                          <span class="live-time">ends at {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
-                        </div>
-                      }
-                      @if (isUpcoming(event)) {
-                        <div>
-                          <span class="live-label"><strong>Starts at</strong></span>
-                          <span class="live-time">{{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
-                        </div>
-                      }
-                      <div class="button-group mt-2" (click)="$event.stopPropagation()">
-                        <button class="btn btn-sm stop-btn" (click)="openEndPopup(event.eventID, event.endTime)">Stop Event</button>
-                        <button class="btn btn-sm update-btn" (click)="openUpdatePopup(event)">Update Event</button>
-                      </div>
-                    </div>
-                  } @else {
-                    <div class="button-placeholder"></div>
-                  }
-                  @if (isFinished(event)) {
-                    <div class="status-closed text-center mt-2">
-                      <strong>Is closed</strong>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-  <button class="carousel-arrow" (click)="nextSlide()">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
-}
 
 <!-- Pop-ups -->
 @if (showEndEventPopup) {

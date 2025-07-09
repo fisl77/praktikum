@@ -1,15 +1,17 @@
 .custom-dashboard-card {
-  background-color: white;
+  background-color: transparent;
   border: 2px solid #ca6333;
   border-radius: 20px;
   padding: 1.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 270px;
-  max-height: 400px;
+  min-height: 18rem;
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .carousel-inner {
@@ -126,16 +128,14 @@
 }
 
 .carousel-flex-wrapper {
-  border: 2px solid #453075;
+  border: 3px solid #453075;
   border-radius: 20px;
   padding: 1rem;
-  background-color: white;
-  box-shadow:
-    0 4px 10px rgba(69, 48, 117, 0.15),
-    0 0 0 2px #453075;
+  background-color: transparent;
+  box-shadow: none;
   width: 100%;
   gap: 1rem;
-  max-height: 400px;
+  max-height: 450px;
 }
 
 .carousel-arrow {
@@ -231,21 +231,23 @@
   visibility: visible;
   opacity: 1;
 }
-.custom-dashboard-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-}
-.col:hover .custom-dashboard-card {
-  transform: scale(1.03);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+
+.col:hover .custom-dashboard-card,
+.custom-dashboard-card:hover {
+  transform: scale(1.02);
   z-index: 2;
   position: relative;
+  border-color: #e67645;
 }
 
-.custom-dashboard-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  z-index: 10;
-  position: relative;
-  border-color: #e67645;
+.col {
+  height: auto;
+}
+
+::ng-deep .p-carousel .p-carousel-content .p-carousel-item {
+  padding: 0 0.5rem;
+}
+
+::ng-deep .p-carousel .p-carousel-content {
+  padding: 0 0.5rem;
 }

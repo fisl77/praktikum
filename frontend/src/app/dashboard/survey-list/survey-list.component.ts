@@ -1,32 +1,27 @@
-// survey-list.component.ts
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService } from '../../services/survey.service';
 import { EndSurveyPopupComponent } from '../end-survey-popup/end-survey-popup.component';
 import { SurveyStore } from '../../stores/survey.store';
+import { CarouselModule} from 'primeng/carousel';
 
 @Component({
   selector: 'app-survey-list',
   standalone: true,
-  imports: [CommonModule, EndSurveyPopupComponent],
+  imports: [CommonModule, EndSurveyPopupComponent, CarouselModule],
   templateUrl: './survey-list.component.html',
   styleUrls: ['./survey-list.component.css'],
 })
 export class SurveyListComponent {
   private store = inject(SurveyStore);
   surveys = this.store.surveys;
-  currentSlide = this.store.currentSlide;
 
-  showAllSurveys = signal(false);
-  maxVisibleSurveys = signal(3);
+  responsiveOptions = [
+    { breakpoint: '1024px', numVisible: 3, numScroll: 1 },
+    { breakpoint: '768px', numVisible: 2, numScroll: 1 },
+    { breakpoint: '576px', numVisible: 1, numScroll: 1 }
+  ];
 
-  visibleSurveys = computed(() =>
-    this.showAllSurveys() ? this.surveys() : this.surveys().slice(0, this.maxVisibleSurveys())
-  );
-
-  toggleShowAll() {
-    this.showAllSurveys.set(!this.showAllSurveys());
-  }
 
   showEndSurveyPopup = false;
   selectedSurveyID: string | null = null;
@@ -42,22 +37,6 @@ export class SurveyListComponent {
     this.showEndSurveyPopup = false;
     this.selectedSurveyID = null;
     this.selectedSurveyEndTime = null;
-  }
-
-  isLargeScreen: boolean = window.innerWidth >= 992;
-
-  surveyChunks = computed(() => this.groupIntoChunks(this.surveys(), 3));
-
-  prevSlide() {
-    const total = this.surveyChunks().length;
-    const current = this.store.currentSlide();
-    this.store.currentSlide.set((current - 1 + total) % total);
-  }
-
-  nextSlide() {
-    const total = this.surveyChunks().length;
-    const current = this.store.currentSlide();
-    this.store.currentSlide.set((current + 1) % total);
   }
 
   isUpcoming(q: any): boolean {
@@ -97,14 +76,6 @@ export class SurveyListComponent {
     const maxVotes = Math.max(...answers.map(a => a.totalVotes));
     const winners = answers.filter(a => a.totalVotes === maxVotes);
     return winners.length > 1;
-  }
-
-  private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
-    const result = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      result.push(array.slice(i, i + chunkSize));
-    }
-    return result;
   }
 
   endQuestionnaire(questionnaireID: string): void {

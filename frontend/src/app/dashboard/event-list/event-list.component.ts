@@ -2,30 +2,36 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EndEventPopupComponent } from '../end-event-popup/end-event-popup.component';
 import { UpdateEventPopupComponent } from '../update-event-popup/update-event-popup.component';
+import { EventDetailPopupComponent } from '../event-detail-popup/event-detail-popup.component';
 import { EventStore } from '../../stores/events.store';
-import {EventDetailPopupComponent} from '../event-detail-popup/event-detail-popup.component';
+import { CarouselModule } from 'primeng/carousel';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, EndEventPopupComponent, UpdateEventPopupComponent, EventDetailPopupComponent],
+  imports: [
+    CommonModule,
+    EndEventPopupComponent,
+    UpdateEventPopupComponent,
+    EventDetailPopupComponent,
+    CarouselModule
+  ],
   templateUrl: './event-list.component.html',
   styleUrls: ['./event-list.component.css']
 })
 export class EventListComponent {
   private store = inject(EventStore);
   events = this.store.events;
-  currentSlide = this.store.currentSlide;
 
   showAllEvents = signal(false);
-  maxVisibleEvents = signal(3);
 
-  visibleEvents = computed(() =>
-    this.showAllEvents() ? this.events() : this.events().slice(0, this.maxVisibleEvents())
-  );
 
-  eventChunks = computed(() => this.groupIntoChunks(this.events(), 3));
-  isLargeScreen = window.innerWidth >= 992;
+
+  responsiveOptions = [
+    { breakpoint: '1024px', numVisible: 3, numScroll: 1 },
+    { breakpoint: '768px', numVisible: 2, numScroll: 1 },
+    { breakpoint: '576px', numVisible: 1, numScroll: 1 }
+  ];
 
   showEndEventPopup = false;
   selectedEventID: number | null = null;
@@ -35,21 +41,10 @@ export class EventListComponent {
   selectedEvent: any = null;
   showEventDetailPopup = false;
 
-  toggleShowAllEvents() {
-    this.showAllEvents.set(!this.showAllEvents());
-  }
-
-  isLastEnemy(enemy: any, enemies: any[]): boolean {
-    return enemies.indexOf(enemy) === enemies.length - 1;
-  }
 
   getLevelNames(event: any): string {
     if (!event || !Array.isArray(event.levels)) return '';
     return event.levels.map((l: any) => l.name).join(', ');
-  }
-
-  isBeforeEnd(endTime: string): boolean {
-    return new Date(endTime).getTime() > Date.now();
   }
 
   openEndPopup(eventID: number, endTime: string): void {
@@ -83,7 +78,6 @@ export class EventListComponent {
     this.showEventDetailPopup = false;
   }
 
-
   isUpcoming(event: any): boolean {
     const now = new Date();
     return new Date(event.startTime) > now && new Date(event.endTime) > now;
@@ -98,28 +92,7 @@ export class EventListComponent {
     return new Date(event.startTime) <= now && new Date(event.endTime) > now && event.isLive;
   }
 
-  prevSlide() {
-    const total = this.eventChunks().length;
-    const current = this.currentSlide();
-    this.currentSlide.set((current - 1 + total) % total);
-  }
-
-  nextSlide() {
-    const total = this.eventChunks().length;
-    const current = this.currentSlide();
-    this.currentSlide.set((current + 1) % total);
-  }
-
-  private groupIntoChunks<T>(array: T[], chunkSize: number): T[][] {
-    const result = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      result.push(array.slice(i, i + chunkSize));
-    }
-    return result;
-  }
-
   endEvent(id: number): void {
     this.store.endEvent(id);
   }
-
 }
