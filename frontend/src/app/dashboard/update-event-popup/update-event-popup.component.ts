@@ -115,6 +115,15 @@ export class UpdateEventPopupComponent implements OnInit {
       this.toastr.error('Please select all enemy data and a level.');
       return;
     }
+    if (this.scale < 0.1 || this.scale > 1.0) {
+      this.toastr.error('Scale must be between 0.1 and 1.0.');
+      return;
+    }
+
+    if (this.maxCount < 1 || this.maxCount > 10) {
+      this.toastr.error('Max Count must be between 1 and 10.');
+      return;
+    }
 
     const enemyPayload = {
       nameID: this.nameID,
