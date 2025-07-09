@@ -7,8 +7,16 @@
   </h2>
 </div>
 
+<div class="carousel-flex-wrapper">
+  @if (surveys().length === 0) {
+    <div class="text-center my-5">
+      <div class="custom-dashboard-card d-flex justify-content-center align-items-center text-center">
+        <p class="text-muted fs-5 m-0">No questionnaires created yet!</p>
+      </div>
+    </div>
+  }
+
 @if (surveys().length > 0) {
-  <div class="carousel-flex-wrapper">
     <p-carousel
       [value]="surveys()"
       [numVisible]="3"
@@ -66,8 +74,9 @@
         </div>
       </ng-template>
     </p-carousel>
-  </div>
 }
+  </div>
+
 
 <!-- 📤 Survey-End-Popup -->
 @if (showEndSurveyPopup) {
