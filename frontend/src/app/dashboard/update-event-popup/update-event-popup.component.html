@@ -3,6 +3,7 @@
     <button class="close-button" (click)="close.emit()">X</button>
     <h2>Update Event</h2>
 
+
     <div class="form-group">
       <label>Level:</label>
       <select [(ngModel)]="levelID">
@@ -14,6 +15,7 @@
       </select>
     </div>
 
+
     <div class="form-group">
       <label>Enemy:</label>
       <select [(ngModel)]="nameID">
@@ -23,11 +25,12 @@
       </select>
     </div>
 
+
     <div class="form-group fixed-info-group">
       <label>Type:
         <span class="info-tooltip">?
-            <span class="tooltip-text">Difficulty profile of the opponent.</span>
-          </span>
+           <span class="tooltip-text">Difficulty profile of the opponent.</span>
+         </span>
       </label>
       <div class="radio-options">
         @for (type of typeOptions; track type) {
@@ -43,28 +46,37 @@
 
 
 
+
+
+
+
+
     <div class="form-row">
       <div class="form-group">
         <label>Scale:</label>
-        <input type="number" step="0.1" [(ngModel)]="scale"[attr.max]="1" />
+        <input type="number" step="0.1" [(ngModel)]="scale" [attr.max]="1" [attr.min]="0.1" />
       </div>
       <div class="form-group">
         <label>Max Count:</label>
-        <input type="number" [(ngModel)]="maxCount" [attr.max]="10" />
+        <input type="number" [(ngModel)]="maxCount" [attr.max]="10" [attr.min]="1"/>
       </div>
     </div>
 
+
     <hr />
+
 
     <div class="form-group">
       <label>Start Time:</label>
       <input type="datetime-local" [(ngModel)]="startTime" [min]="currentDateTime" />
     </div>
 
+
     <div class="form-group">
       <label>End Time:</label>
       <input type="datetime-local" [(ngModel)]="endTime" [min]="currentDateTime" />
     </div>
+
 
     <button class="submit-button" (click)="submitUpdate()">Update</button>
   </div>
