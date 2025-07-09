@@ -4,7 +4,7 @@ import { EventService } from '../../services/event.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-end-event-popup',
+  selector: 'app-end-create.event-popup',
   standalone: true,
   imports: [],
   templateUrl: './end-event-popup.component.html',

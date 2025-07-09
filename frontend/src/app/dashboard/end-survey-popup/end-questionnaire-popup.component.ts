@@ -4,13 +4,13 @@ import { SurveyService } from '../../services/survey.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-end-survey-popup',
+  selector: 'app-end-create.questionnaire-popup',
   standalone: true,
   imports: [],
-  templateUrl: './end-survey-popup.component.html',
-  styleUrls: ['./end-survey-popup.component.css'],
+  templateUrl: './end-questionnaire-popup.component.html',
+  styleUrls: ['./end-questionnaire-popup.component.css'],
 })
-export class EndSurveyPopupComponent implements OnInit {
+export class EndQuestionnairePopupComponent implements OnInit {
   @Input() surveyIDToEnd: string | null = null;
   @Input() surveyEndTime: string | null = null;
   @Output() close = new EventEmitter<void>();

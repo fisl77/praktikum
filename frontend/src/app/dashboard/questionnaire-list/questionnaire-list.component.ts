@@ -1,18 +1,18 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService } from '../../services/survey.service';
-import { EndSurveyPopupComponent } from '../end-survey-popup/end-survey-popup.component';
+import { EndQuestionnairePopupComponent } from '../end-survey-popup/end-questionnaire-popup.component';
 import { SurveyStore } from '../../stores/survey.store';
 import { CarouselModule} from 'primeng/carousel';
 
 @Component({
-  selector: 'app-survey-list',
+  selector: 'app-questionnaire-list',
   standalone: true,
-  imports: [CommonModule, EndSurveyPopupComponent, CarouselModule],
-  templateUrl: './survey-list.component.html',
-  styleUrls: ['./survey-list.component.css'],
+  imports: [CommonModule, EndQuestionnairePopupComponent, CarouselModule],
+  templateUrl: './questionnaire-list.component.html',
+  styleUrls: ['./questionnaire-list.component.css'],
 })
-export class SurveyListComponent {
+export class QuestionnaireListComponent {
   private store = inject(SurveyStore);
   surveys = this.store.surveys;
 

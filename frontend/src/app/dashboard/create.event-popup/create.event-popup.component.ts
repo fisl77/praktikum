@@ -5,13 +5,13 @@ import { EventService } from '../../services/event.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-event-popup',
+  selector: 'app-create.event-popup',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './event-popup.component.html',
-  styleUrls: ['./event-popup.component.css'],
+  templateUrl: './create.event-popup.component.html',
+  styleUrls: ['./create.event-popup.component.css'],
 })
-export class EventPopupComponent implements OnInit {
+export class CreateEventPopupComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
 
   nameID: number | null = null;

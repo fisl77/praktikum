@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { EventPopupComponent } from './event-popup/event-popup.component';
-import { SurveyPopupComponent } from './survey-popup/survey-popup.component';
-import { SurveyListComponent } from './survey-list/survey-list.component';
+import { CreateEventPopupComponent } from './create.event-popup/create.event-popup.component';
+import { CreateQuestionnairePopupComponent } from './create.questionnaire-popup/create.questionnaire-popup.component';
+import { QuestionnaireListComponent } from './questionnaire-list/questionnaire-list.component';
 import { EventListComponent } from './event-list/event-list.component';
 import { EventDetailPopupComponent } from './event-detail-popup/event-detail-popup.component';
 import { NavComponent } from '../nav/navbar.component';
@@ -17,9 +17,9 @@ import { EndEventPopupComponent } from './end-event-popup/end-event-popup.compon
   standalone: true,
   imports: [
     EventListComponent,
-    SurveyListComponent,
-    EventPopupComponent,
-    SurveyPopupComponent,
+    QuestionnaireListComponent,
+    CreateEventPopupComponent,
+    CreateQuestionnairePopupComponent,
     EventDetailPopupComponent,
     EndEventPopupComponent
 ],
