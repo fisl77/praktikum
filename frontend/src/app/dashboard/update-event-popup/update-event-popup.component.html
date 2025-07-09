@@ -46,11 +46,11 @@
     <div class="form-row">
       <div class="form-group">
         <label>Scale:</label>
-        <input type="number" step="0.1" [(ngModel)]="scale" />
+        <input type="number" step="0.1" [(ngModel)]="scale"[attr.max]="5" />
       </div>
       <div class="form-group">
         <label>Max Count:</label>
-        <input type="number" [(ngModel)]="maxCount" />
+        <input type="number" [(ngModel)]="maxCount" [attr.max]="10" />
       </div>
     </div>
 

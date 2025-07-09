@@ -16,6 +16,7 @@ import { EnemyType } from '../EnemyType/enemyType.entity';
 import { UpdateEventRequestDto } from '../Event/dto/UpdateEventRequestDto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { UpdateEnemyRequestDto } from '../Enemy/dto/UpdateEnemyRequestDto';
+import { In } from 'typeorm';
 
 @Injectable()
 export class AdminService {
@@ -74,15 +75,15 @@ export class AdminService {
       })
       .getOne();
 
-    console.log('Found overlapping event:', overlappingEvent);
-
     if (overlappingEvent) {
       throw new BadRequestException(
         'There is already an active event in the selected time range.',
       );
     }
 
-    const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
+    const validLevels = await this.levelRepo.findBy({
+      levelID: In(dto.levelIDs),
+    });
     if (validLevels.length !== dto.levelIDs.length) {
       throw new BadRequestException(
         'One or more provided level IDs are invalid.',
@@ -90,7 +91,9 @@ export class AdminService {
     }
 
     const enemyIDsFromDto = dto.enemies.map((e) => e.enemyID);
-    const validEnemies = await this.enemyRepo.findByIds(enemyIDsFromDto);
+    const validEnemies = await this.enemyRepo.findBy({
+      enemyID: In(enemyIDsFromDto),
+    });
     if (validEnemies.length !== enemyIDsFromDto.length) {
       throw new BadRequestException(
         'One or more provided enemy IDs are invalid.',
@@ -244,9 +247,21 @@ export class AdminService {
       throw new BadRequestException(`Event with ID ${dto.eventID} not found.`);
     }
 
-    const validLevels = await this.levelRepo.findByIds(dto.levelIDs);
+    const validLevels = await this.levelRepo.findBy({
+      levelID: In(dto.levelIDs),
+    });
     if (validLevels.length !== dto.levelIDs.length) {
       throw new BadRequestException('At least one level ID is invalid.');
+    }
+
+    const enemyIDsFromDto = dto.enemies.map((e) => e.enemyID);
+    const validEnemies = await this.enemyRepo.findBy({
+      enemyID: In(enemyIDsFromDto),
+    });
+    if (validEnemies.length !== enemyIDsFromDto.length) {
+      throw new BadRequestException(
+        'One or more provided enemy IDs are invalid.',
+      );
     }
 
     const overlappingEvent = await this.eventRepo
@@ -269,8 +284,7 @@ export class AdminService {
 
     event.startTime = dto.startTime;
     event.endTime = dto.endTime;
-    event.isLive =
-      now >= new Date(dto.startTime) && now <= new Date(dto.endTime);
+    event.isLive = now >= startTime && now <= endTime;
 
     await this.eventRepo.save(event);
 
