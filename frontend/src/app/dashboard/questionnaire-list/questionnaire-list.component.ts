@@ -8,7 +8,7 @@ import { CarouselModule} from 'primeng/carousel';
 @Component({
   selector: 'app-questionnaire-list',
   standalone: true,
-  imports: [CommonModule, EndQuestionnairePopupComponent, CarouselModule],
+  imports: [CommonModule, CarouselModule],
   templateUrl: './questionnaire-list.component.html',
   styleUrls: ['./questionnaire-list.component.css'],
 })
