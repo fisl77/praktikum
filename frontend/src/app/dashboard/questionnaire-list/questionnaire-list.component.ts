@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveyService } from '../../services/survey.service';
-import { EndQuestionnairePopupComponent } from '../end-survey-popup/end-questionnaire-popup.component';
+import { EndQuestionnairePopupComponent } from '../end-questionnaire-popup/end-questionnaire-popup.component';
 import { SurveyStore } from '../../stores/survey.store';
 import { CarouselModule} from 'primeng/carousel';
 
