@@ -10,8 +10,6 @@
   min-height: 18rem;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  z-index: 1;
   cursor: pointer;
   box-sizing: border-box;
 }
@@ -243,16 +241,14 @@
 }
 
 .col {
+  height: auto;
   position: relative;
   z-index: 1;
 }
 .col:hover {
   z-index: 10;
 }
-::ng-deep .p-carousel .p-carousel-items-content,
-::ng-deep .p-carousel .p-carousel-content {
-  overflow: visible !important;
-}
+
 ::ng-deep .p-carousel .p-carousel-content .p-carousel-item {
   padding: 0 0.5rem;
 }
