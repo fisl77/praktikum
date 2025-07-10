@@ -234,14 +234,19 @@
 
 .col:hover .custom-dashboard-card,
 .custom-dashboard-card:hover {
-  transform: scale(1.02);
-  z-index: 2;
+  transform: scale(1.01);
+  z-index: 11;
   position: relative;
   border-color: #e67645;
 }
 
 .col {
   height: auto;
+  position: relative;
+  z-index: 1;
+}
+.col:hover {
+  z-index: 10;
 }
 
 ::ng-deep .p-carousel .p-carousel-content .p-carousel-item {
