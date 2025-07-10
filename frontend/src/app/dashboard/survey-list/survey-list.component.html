@@ -62,7 +62,6 @@
               </div>
             } @else if (isFinished(questionnaire)) {
               <div class="status-closed text-center mt-2">
-                <strong>Is closed</strong>
                 @if (!questionnaire.isLive) {
                   <div [title]="getWinner(questionnaire.answers)">
                     <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong> {{ getWinner(questionnaire.answers) }}
