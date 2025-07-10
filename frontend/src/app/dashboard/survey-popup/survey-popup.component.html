@@ -1,0 +1,57 @@
+<div class="popup-overlay">
+  <div class="popup-content">
+    <button class="close-button" (click)="closePopup()">X</button>
+    <h2>Create Questionnaire</h2>
+
+    <form (ngSubmit)="submitSurvey()">
+      <div class="form-group">
+        <label>Question</label>
+        <input #questionInput type="text" [(ngModel)]="question" name="question" required />
+      </div>
+
+      <div class="form-group">
+        <label>Answers</label>
+        <div class="answers-scrollbox">
+          @for (answer of answers; track answer; let i = $index) {
+            <div class="form-row">
+              <input
+                #answerInput
+                type="text"
+                [(ngModel)]="answer.text"
+                [name]="'answer' + i"
+                required
+                />
+              <button type="button" (click)="removeAnswer(i)" class="remove-answer-btn">✖️</button>
+            </div>
+          }
+        </div>
+        <button type="button" (click)="addAnswer()" class="submit-button">Add Answer</button>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Starttime</label>
+          <input
+            type="datetime-local"
+            [(ngModel)]="startTime"
+            name="startTime"
+            [min]="minDateTime"
+            required
+            />
+        </div>
+        <div class="form-group">
+          <label>Endtime</label>
+          <input
+            type="datetime-local"
+            [(ngModel)]="endTime"
+            name="endTime"
+            [min]="startTime || minDateTime"
+            required
+            />
+        </div>
+      </div>
+      <button type="submit" class="submit-button">Create Questionnaire</button>
+
+    </form>
+  </div>
+</div>

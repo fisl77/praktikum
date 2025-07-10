@@ -1,0 +1,19 @@
+<div class="popup-overlay">
+  <div class="popup-content end-event-popup">
+    <button class="close-button" (click)="cancelEnd()">X</button>
+    <h2 class="confirm-title">End Survey</h2>
+
+    <div class="confirm-box">
+      <p>
+        This survey isn't supposed to end until
+        <strong>{{ originalEndTime }}</strong>.
+        <br />
+        Do you still want to end it immediately?
+      </p>
+      <div class="button-row">
+        <button class="confirm-yes" (click)="confirmEndNow()">Stop Survey</button>
+        <button class="confirm-no" (click)="cancelEnd()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

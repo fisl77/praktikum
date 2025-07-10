@@ -1,0 +1,253 @@
+.custom-dashboard-card {
+  background-color: transparent;
+  border: 2px solid #ca6333;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 18rem;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.carousel-inner {
+  max-height: 420px;
+  overflow: hidden;
+}
+.carousel-inner,
+.row {
+  overflow: visible !important;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.custom-dashboard-title {
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 1rem;
+}
+
+.live-label {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.live-time {
+  color: #888;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-left: 0.4rem;
+}
+
+.status-closed {
+  color: #ca6333;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-top: auto;
+  text-align: center;
+}
+
+.stop-btn {
+  color: #ca6333;
+  background-color: white;
+  border: 2px solid #ca6333;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.stop-btn:hover {
+  background-color: #b5552b;
+  color: white;
+}
+
+.update-btn {
+  color: #453075;
+  background-color: white;
+  border: 2px solid #453075;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.update-btn:hover {
+  background-color: #4b0082;
+  color: white;
+}
+
+.custom-btn {
+  color: #453075;
+  background-color: white;
+  border: 2px solid #453075;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0.5rem;
+}
+
+.custom-btn:hover {
+  background-color: #5e2ca5;
+  color: white;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 60px;
+  height: 60px;
+  top: 40%;
+  transform: translateY(-50%);
+  background-color: #ca6333;
+  border-radius: 50%;
+  opacity: 0.9;
+  z-index: 2;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: #e67645;
+  opacity: 1;
+}
+
+.carousel-control-prev {
+  left: -50px;
+}
+
+.carousel-control-next {
+  right: -30px;
+}
+
+.carousel-flex-wrapper {
+  border: 3px solid #453075;
+  border-radius: 20px;
+  padding: 1rem;
+  background-color: transparent;
+  box-shadow: none;
+  width: 100%;
+  gap: 1rem;
+  max-height: 450px;
+}
+
+.carousel-arrow {
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1);
+  width: 2rem;
+  height: 2rem;
+}
+
+.custom-title {
+  color: #453075;
+  font-size: 2.2rem;
+}
+.event-header p {
+  font-size: 1.1rem;
+  color: #6c5b9f;
+}
+
+.event-header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: start;
+  flex-wrap: wrap;
+}
+
+.subtitle-info {
+  font-size: 1.3rem;
+  color: #6c5b9f;
+}
+
+.button-placeholder {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 576px) {
+  .custom-dashboard-card {
+    padding: 1rem;
+    border-radius: 15px;
+    overflow-y: auto;
+  }
+
+}
+.info-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.5rem;
+  background-color: #453075;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  text-align: center;
+  line-height: 1.3rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 280px;
+  background-color: #453075;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 10;
+  top: -0.2rem;
+  left: 1.8rem;
+  white-space: normal;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.col:hover .custom-dashboard-card,
+.custom-dashboard-card:hover {
+  transform: scale(1.02);
+  z-index: 2;
+  position: relative;
+  border-color: #e67645;
+}
+
+.col {
+  height: auto;
+}
+
+::ng-deep .p-carousel .p-carousel-content .p-carousel-item {
+  padding: 0 0.5rem;
+}
+
+::ng-deep .p-carousel .p-carousel-content {
+  padding: 0 0.5rem;
+}

@@ -1,0 +1,309 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.2rem;
+  width: 90%;
+  max-width: 850px;
+  border: 3px solid #ca6333;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  font-family: sans-serif;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.popup-heading-center {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  position: relative;
+}
+
+.image-section {
+  flex: 1;
+  min-width: 250px;
+}
+
+.info-section .lore-box {
+  margin-bottom: 1.5rem;
+}
+
+.info-section p:nth-of-type(3) {
+  margin-top: 1.2rem;
+}
+
+.info-section {
+  flex: 1;
+  text-align: left;
+}
+
+.enemy-image {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.enemy-detail {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.lore-box {
+  max-height: 150px;
+  overflow-y: scroll;
+  background-color: #f8f9fa;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+.lore-box::-webkit-scrollbar {
+  width: 6px;
+}
+.lore-box::-webkit-scrollbar-track {
+  background: #e0e0e0;
+  border-radius: 3px;
+}
+.lore-box::-webkit-scrollbar-thumb {
+  background-color: #453075;
+  border-radius: 3px;
+}
+.lore-box::-webkit-scrollbar-thumb:hover {
+  background-color: #321e65;
+}
+
+@media (max-width: 768px) {
+  .detail-grid {
+    flex-direction: column;
+  }
+
+  .image-section,
+  .info-section {
+    width: 100%;
+  }
+
+  .enemy-image {
+    max-width: 200px;
+    margin: 0 auto 1rem auto;
+  }
+
+  .popup-heading-center {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .popup-content {
+    max-width: 95vw;
+  }
+}
+.level-box {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.level-image {
+  width: 100%;
+  max-width: 180px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin: 0.5rem auto;
+  display: block;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.level-name {
+  text-align: left;
+  font-weight: bold;
+  margin: 0.5rem 0 0.3rem 0;
+}
+
+.lore-title {
+  text-align: left;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.level-image.large {
+  width: 100%;
+  max-width: 260px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  margin-left: 0;
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  position: relative;
+}
+
+.detail-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background-color: #453075;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.text-muted {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.popup-content.wide {
+  max-width: 1000px;
+}
+
+.enemy-image.tight {
+  margin-bottom: 0.5rem;
+}
+
+details {
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+}
+summary.tech-summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #453075;
+  margin-bottom: 0.3rem;
+}
+
+.tech-info p {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+.popup-content.wide.fixed-height {
+  max-width: 1000px;
+  max-height: 750px;
+  overflow-y: auto;
+}
+
+.enemy-image.tight {
+  margin-bottom: 0.5rem;
+}
+
+.info-block {
+  margin: 0.4rem 0;
+}
+.info-block summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #453075;
+}
+.info-description {
+  font-size: 0.85rem;
+  margin-left: 1rem;
+  margin-top: 0.2rem;
+  color: #555;
+}
+.enemy-image.tight {
+  margin-bottom: 0.5rem;
+}
+
+.popup-content.wide.fixed-height {
+  max-width: 1000px;
+  max-height: 750px;
+  overflow-y: auto;
+}
+
+.info-block {
+  margin: 0.4rem 0 1rem 0;
+}
+.info-block summary {
+  cursor: pointer;
+  color: #453075;
+  font-size: 0.9rem;
+}
+.info-description {
+  font-size: 0.85rem;
+  margin-left: 1rem;
+  margin-top: 0.3rem;
+  color: #555;
+}
+.info-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.3rem;
+  background-color: #453075;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  text-align: center;
+  line-height: 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 280px;
+  background-color: #453075;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 10;
+  top: -0.2rem;
+  left: 1.8rem;
+  white-space: normal;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

@@ -1,0 +1,46 @@
+.custom-login-card {
+  border: 2px solid #453075;
+  border-radius: 20px;
+  background-color: white;
+}
+
+.custom-input {
+  border: 2px solid #453075;
+  border-radius: 10px;
+}
+
+.custom-input:focus {
+  border-color: #ca6333;
+  box-shadow: 0 0 0 0.25rem rgba(202, 99, 51, 0.5);
+  outline: none;
+}
+
+.custom-btn {
+  color: white;
+  background-color: #453075;
+  border: 2px solid #453075;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.custom-btn:hover {
+  background-color: #5e2ca5;
+  border-color: #5e2ca5;
+}
+
+body {
+  background-color: #f8f9fa;
+}
+
+@media (max-width: 576px) {
+  .custom-login-card {
+    padding: 2rem 1rem;
+    margin: 0 1rem;
+    border-radius: 15px;
+  }
+
+  .custom-btn {
+    font-size: 1rem;
+  }
+}

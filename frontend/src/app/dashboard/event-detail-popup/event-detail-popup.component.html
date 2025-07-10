@@ -1,0 +1,69 @@
+<div class="popup-overlay" (click)="closePopup()">
+  <div class="popup-content detail-layout wide fixed-height">
+    <button class="close-button" (click)="closePopup()">X</button>
+
+    <h2 class="popup-heading-center">Event Overview</h2>
+
+    <div class="detail-grid">
+      <!-- Linke Seite -->
+      <div class="image-section">
+        <h3 class="section-title">Enemy Details</h3>
+        <img [src]="enemyImageUrl" alt="Enemy Image" class="enemy-image tight" />
+
+        <div class="enemy-detail">
+          <p><strong>Enemy:</strong> {{ event.enemies[0]?.name }} ({{ event.enemies[0]?.type }})</p>
+
+          <p>
+            <strong>Scale:</strong> {{ event.enemies[0]?.new_scale ?? '–' }}
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Scaling factor for the enemy.</span>
+            </span>
+          </p>
+
+          <p>
+            <strong>Max Count:</strong> {{ event.enemies[0]?.quantity ?? '–' }}
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Maximum number of this enemy type that appear during the event.</span>
+            </span>
+          </p>
+
+          <p>
+            <strong>Loner:</strong> {{ event.enemies[0]?.loners ? 'Yes' : 'No' }}
+            <span class="info-tooltip">?
+              <span class="tooltip-text">Loner enemies appear alone. Only one can be active at a time.</span>
+            </span>
+          </p>
+
+          <p class="lore-title"><strong>Enemy Lore:</strong></p>
+          <div class="lore-box">
+            {{ loreText }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Rechte Seite -->
+      <div class="info-section">
+        <h3 class="section-title">Level Details</h3>
+
+        @if (levelImages[0]?.imagePath) {
+          <img
+            [src]="levelImages[0].imagePath"
+            alt="{{ levelImages[0].name }}"
+            class="level-image large"
+            />
+        }
+
+        <p><strong>Name:</strong> {{ levelImages[0].name }}</p>
+        <p><strong>Start Time:</strong> {{ event.startTime | date: 'dd.MM.yyyy HH:mm' }}</p>
+        <p><strong>End Time:</strong> {{ event.endTime | date: 'dd.MM.yyyy HH:mm' }}</p>
+
+        <p class="lore-title"><strong>Level Lore:</strong></p>
+        @if (levelImages[0]?.lore) {
+          <div class="lore-box">
+            {{ levelImages[0].lore }}
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

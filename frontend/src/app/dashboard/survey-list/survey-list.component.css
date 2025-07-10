@@ -1,0 +1,230 @@
+.custom-dashboard-card {
+  background-color: white;
+  border: 2px solid #ca6333;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 430px;
+  max-height: 430px;
+  overflow-y: auto;
+
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  min-width: 0;
+  flex: 1 1 30%;
+}
+
+.button-placeholder {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-dashboard-title {
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 1rem;
+}
+
+.custom-progress-container {
+  background-color: #e9ecef;
+  border-radius: 10px;
+  height: 20px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.custom-progress-bar {
+  background-color: #453075;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.live-label {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.live-time {
+  color: #888;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-left: 0.4rem;
+}
+
+.status-closed {
+  color: #ca6333;
+}
+
+.custom-btn {
+  color: #453075;
+  background-color: white;
+  border: 2px solid #453075;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0.5rem;
+}
+
+.custom-btn:hover {
+  background-color: #5e2ca5;
+  color: white;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 60px;
+  height: 60px;
+  top: 40%;
+  transform: translateY(-50%);
+  background-color: #ca6333;
+  border-radius: 50%;
+  opacity: 0.9;
+  z-index: 2;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: #e67645;
+  opacity: 1;
+}
+
+.carousel-control-prev {
+  left: -50px;
+}
+
+.carousel-control-next {
+  right: -30px;
+}
+
+.carousel-flex-wrapper {
+  border: 2px solid #453075;
+  border-radius: 20px;
+  padding: 1rem;
+  background-color: white;
+  box-shadow:
+    0 4px 10px rgba(69, 48, 117, 0.15),
+    0 0 0 2px #453075;
+  width: 100%;
+  gap: 1rem;
+}
+
+.carousel-arrow {
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1);
+  width: 2rem;
+  height: 2rem;
+}
+
+.percentage-label {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #453075;
+}
+
+/* ✅ Scrollbarer Antwort-Bereich */
+.answers-scrollbox {
+  min-height: 130px;
+  max-height: 200px;
+  margin-bottom: 1rem;
+  padding-right: 4px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.answers-scrollbox::-webkit-scrollbar {
+  width: 3px;
+}
+.answers-scrollbox::-webkit-scrollbar-thumb {
+  background-color: #453075;
+  border-radius: 4px;
+}
+
+.question-header,
+.winner-line {
+  max-height: 2.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  justify-content: center;
+}
+
+.custom-title {
+  color: #453075;
+}
+
+/* ✅ Mobile Fix: Scroll innerhalb ganzer Card ermöglichen */
+@media (max-width: 576px) {
+  .custom-dashboard-card {
+    padding: 1rem;
+    border-radius: 15px;
+    overflow-y: auto;
+  }
+
+  .answers-scrollbox {
+    min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+}
+
+.info-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.5rem;
+  background-color: #453075;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  text-align: center;
+  line-height: 1.3rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 280px;
+  background-color: #453075;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 10;
+  top: -0.2rem;
+  left: 1.8rem;
+  white-space: normal;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

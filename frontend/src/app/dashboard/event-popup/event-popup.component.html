@@ -1,0 +1,85 @@
+<div class="popup-overlay">
+  <div class="popup-content">
+    <button class="close-button" (click)="close.emit()">X</button>
+    <div class="content-scroll">
+      <h2>Create Event</h2>
+
+
+      <div class="form-group">
+        <label>Level:</label>
+        <select [(ngModel)]="levelID">
+          @for (level of levelOptions; track level) {
+            <option [value]="level.levelID">{{ level.name }}</option>
+          }
+        </select>
+      </div>
+
+
+      <div class="form-group">
+        <label>Enemy:</label>
+        <select [(ngModel)]="nameID">
+          @for (name of nameOptions; track name) {
+            <option [value]="name.nameID">{{ name.name }}</option>
+          }
+        </select>
+      </div>
+
+
+      <div class="form-group fixed-info-group">
+        <label>Type:
+          <span class="info-tooltip">?
+           <span class="tooltip-text">Difficulty profile of the opponent.</span>
+         </span>
+        </label>
+        <div class="radio-options">
+          @for (type of typeOptions; track type) {
+            <label class="radio-option">
+              <input type="radio" name="typeID" [value]="type.typeID" [(ngModel)]="typeID" />
+              <span>{{ type.type }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+
+      <div class="form-row">
+        <div class="form-group fixed-info-group">
+          <label>Scale:
+            <span class="info-tooltip">?
+             <span class="tooltip-text">Scaling factor for the opponent.</span>
+           </span>
+          </label>
+          <input type="number" step="0.1" [(ngModel)]=" scale" [attr.max]="1" [attr.min]="0.1"/>
+        </div>
+
+
+        <div class="form-group fixed-info-group">
+          <label>Max Count:
+            <span class="info-tooltip">?
+             <span class="tooltip-text">Maximum number of enemies.</span>
+           </span>
+          </label>
+          <input type="number" [(ngModel)]="maxCount" [attr.max]="10" [attr.min]="1"/>
+        </div>
+      </div>
+
+
+      <hr />
+
+
+      <div class="form-group">
+        <label>Start Time:</label>
+        <input type="datetime-local" [(ngModel)]="startTime" />
+      </div>
+
+
+      <div class="form-group">
+        <label>End Time:</label>
+        <input type="datetime-local" [(ngModel)]="endTime" />
+      </div>
+
+
+      <button class="submit-button" (click)="createEnemyAndEvent()">Create Event</button>
+    </div>
+  </div>
+</div>

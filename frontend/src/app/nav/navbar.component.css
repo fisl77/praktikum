@@ -1,0 +1,44 @@
+.custom-navbar {
+  background-color: #4b0082;
+  height: 6rem;
+  padding: 0 1rem;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.custom-navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.navbar-logo {
+  max-height: 100%;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.logout-btn {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  border-color: white;
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  color: #453075;
+  background-color: white;
+}
+
+.bi-box-arrow-left {
+  font-size: 1.2rem;
+}

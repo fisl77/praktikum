@@ -1,0 +1,87 @@
+<div class="event-header-row">
+  <h2 class="custom-title">
+    Questionnaires
+    <span class="info-tooltip">?
+      <span class="tooltip-text">During a questionnaire you can define a question and possible answers for your community to vote on.</span>
+    </span>
+  </h2>
+</div>
+
+<div class="carousel-flex-wrapper">
+  @if (surveys().length === 0) {
+    <div class="text-center my-5">
+      <div class="custom-dashboard-card d-flex justify-content-center align-items-center text-center">
+        <p class="text-muted fs-5 m-0">No questionnaires created yet!</p>
+      </div>
+    </div>
+  }
+
+@if (surveys().length > 0) {
+    <p-carousel
+      [value]="surveys()"
+      [numVisible]="3"
+      [numScroll]="1"
+      [responsiveOptions]="responsiveOptions"
+      [circular]="true"
+      [showNavigators]="true"
+      [showIndicators]="true"
+      styleClass="w-100">
+
+      <ng-template pTemplate="item" let-questionnaire>
+        <div class="col">
+          <div class="custom-dashboard-card d-flex flex-column justify-content-between">
+            <h5 class="custom-dashboard-title" [title]="questionnaire.question">{{ questionnaire.question }}</h5>
+            <div class="text-muted mb-2">
+              {{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }} – {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}
+            </div>
+            <div class="answers-scrollbox">
+              @for (answer of questionnaire.answers; track answer) {
+                <div>
+                  @if (answer.answer) {
+                    <p class="mb-1">{{ answer.answer }}</p>
+                  }
+                  <div class="custom-progress-container">
+                    <div class="custom-progress-bar" [style.width.%]="calculatePercentage(answer.totalVotes, questionnaire.answers)"></div>
+                  </div>
+                  <p class="percentage-label text-end small">{{ calculatePercentage(answer.totalVotes, questionnaire.answers) }} %</p>
+                </div>
+              }
+            </div>
+            @if (isCurrentlyLive(questionnaire)) {
+              <div class="text-center mt-2">
+                <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
+                  Stop Questionnaire
+                </button>
+                <span class="live-label"><strong>Live</strong></span>
+                <span class="live-time">ends at {{ questionnaire.endTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+              </div>
+            } @else if (isUpcoming(questionnaire)) {
+              <div class="text-center mt-2">
+                <span class="live-label"><strong>Starts at</strong></span>
+                <span class="live-time">{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
+              </div>
+            } @else if (isFinished(questionnaire)) {
+              <div class="status-closed text-center mt-2">
+                @if (!questionnaire.isLive) {
+                  <div [title]="getWinner(questionnaire.answers)">
+                    <strong>{{ isDraw(questionnaire.answers) ? 'Draw' : 'Winner' }}:</strong> {{ getWinner(questionnaire.answers) }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </ng-template>
+    </p-carousel>
+}
+  </div>
+
+
+<!-- 📤 Survey-End-Popup -->
+@if (showEndSurveyPopup) {
+  <app-end-survey-popup
+    [surveyIDToEnd]="selectedSurveyID"
+    [surveyEndTime]="selectedSurveyEndTime"
+    (close)="closeEndSurveyPopup()"
+    />
+}

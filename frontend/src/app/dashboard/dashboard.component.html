@@ -1,0 +1,38 @@
+<div class="container my-4">
+  <!-- Header und Buttons -->
+  <div class="row mb-4 justify-content-between align-items-center">
+    <div class="col-auto">
+      <button class="btn custom-btn" (click)="openEventPopup()">Create Event</button>
+      <button class="btn custom-btn" (click)="openSurveyPopup()">Create Questionnaire</button>
+    </div>
+  </div>
+
+
+  <app-survey-list></app-survey-list>
+
+  <app-event-list></app-event-list>
+
+
+
+  <!-- Popups -->
+  @if (showEventPopup) {
+    <app-event-popup (close)="closeEventPopup()"></app-event-popup>
+  }
+  @if (showSurveyPopup) {
+    <app-survey-popup (close)="closeSurveyPopup()"></app-survey-popup>
+  }
+  @if (showEndEventPopup) {
+    <app-end-event-popup
+      [eventIDToEnd]="selectedEventID"
+      [eventEndTime]="selectedEndTime"
+      (close)="closeEndPopup()"
+    ></app-end-event-popup>
+  }
+</div>
+<!-- Event-Detail-Popup -->
+@if (showEventDetailPopup) {
+  <app-event-detail-popup
+    [event]="selectedEvent"
+    (close)="closeDetailPopup()"
+    />
+}

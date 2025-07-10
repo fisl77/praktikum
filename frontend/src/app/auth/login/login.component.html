@@ -1,0 +1,37 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card p-4 shadow custom-login-card w-100" style="max-width: 400px;">
+    <h2 class="text-center mb-4">Log in</h2>
+
+    <form class="needs-validation" novalidate>
+
+      <div class="mb-3">
+        <input
+          [(ngModel)]="username"
+          name="username"
+          class="form-control custom-input"
+          placeholder="Username"
+          required
+          />
+      </div>
+
+      <div class="mb-3">
+        <input
+          [(ngModel)]="password"
+          name="password"
+          type="password"
+          class="form-control custom-input"
+          placeholder="Password"
+          required
+          />
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button type="button" class="btn custom-btn w-100" (click)="Login()">Login</button>
+    </form>
+  </div>
+</div>

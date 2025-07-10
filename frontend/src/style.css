@@ -1,0 +1,15 @@
+.toast-success {
+  background-color: #453075 !important; /* dein Lila */
+  color: white !important;
+}
+
+.toast-error {
+  background-color: #ca6333 !important; /* dein Orange */
+  color: white !important;
+}
+
+.toast {
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+}
