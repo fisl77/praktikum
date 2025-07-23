@@ -13,7 +13,7 @@ export class SurveyStore {
     this.loadSurveys();
 
     effect(() => {
-      const interval = setInterval(() => this.loadSurveysPreserveSlide(), 5000);
+      const interval = setInterval(() => this.loadSurveysPreserveSlide(), 1000);
       return () => clearInterval(interval);
     });
   }

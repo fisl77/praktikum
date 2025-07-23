@@ -30,7 +30,7 @@ export class EventStore {
   }
 
   private setupAutoReload() {
-    setInterval(() => this.loadEventsPreserveSlide(), 5000);
+    setInterval(() => this.loadEventsPreserveSlide(), 1000);
   }
 
   loadEvents(): void {
