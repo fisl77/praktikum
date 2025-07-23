@@ -1,5 +1,4 @@
 <div class="container my-4">
-  <!-- Header und Buttons -->
   <div class="row mb-4 justify-content-between align-items-center">
     <div class="col-auto">
       <button class="btn custom-btn" (click)="openEventPopup()">Create Event</button>
@@ -14,7 +13,6 @@
 
 
 
-  <!-- Popups -->
   @if (showEventPopup) {
     <app-event-popup (close)="closeEventPopup()"></app-event-popup>
   }
@@ -29,7 +27,7 @@
     ></app-end-event-popup>
   }
 </div>
-<!-- Event-Detail-Popup -->
+
 @if (showEventDetailPopup) {
   <app-event-detail-popup
     [event]="selectedEvent"
