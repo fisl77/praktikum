@@ -46,7 +46,7 @@
         <div class="form-group fixed-info-group">
           <label>Scale:
             <span class="info-tooltip">?
-             <span class="tooltip-text">Scaling factor for the opponent.</span>
+             <span class="tooltip-text">Scaling factor for the opponent between 0.1 and 1.</span>
            </span>
           </label>
           <input type="number" step="0.1" [(ngModel)]=" scale" [attr.max]="1" [attr.min]="0.1"/>
@@ -56,7 +56,7 @@
         <div class="form-group fixed-info-group">
           <label>Max Count:
             <span class="info-tooltip">?
-             <span class="tooltip-text">Maximum number of enemies.</span>
+             <span class="tooltip-text">Maximum number of enemies between 1 and 10.</span>
            </span>
           </label>
           <input type="number" [(ngModel)]="maxCount" [attr.max]="10" [attr.min]="1"/>
