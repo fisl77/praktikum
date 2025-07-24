@@ -47,7 +47,7 @@
                 </div>
               }
             </div>
-            @if (isCurrentlyLive(questionnaire) || isUpcoming(questionnaire)) {
+            @if (isCurrentlyLive(questionnaire)) {
               <div class="text-center mt-2">
                 <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
                   Stop Questionnaire
@@ -57,6 +57,9 @@
               </div>
             } @else if (isUpcoming(questionnaire)) {
               <div class="text-center mt-2">
+                <button class="custom-btn" (click)="openEndSurveyPopup(questionnaire.questionnaireID, questionnaire.endTime)">
+                  Stop Questionnaire
+                </button>
                 <span class="live-label"><strong>Starts at</strong></span>
                 <span class="live-time">{{ questionnaire.startTime | date: 'dd.MM.yyyy HH:mm' }}</span>
               </div>
